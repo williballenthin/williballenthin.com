@@ -1,0 +1,52 @@
+
+
+
+
+body {
+	background-color:white;
+	background-image: url("../img/kite_pattern1.png");
+}
+
+
+#main {
+	width:100%;
+	height: 1000px;
+	background-color:black;
+	margin-left:150px;
+	border-left:5px solid #6c91db;
+
+	box-shadow: -3px -5px 10px #000;
+	-moz-box-shadow: -3px -5px 10px #000;
+	-webkit-box-shadow: -3px -5px 10px #000;
+}
+
+#main .logo {
+	position:relative;
+	top: 100px;
+	left:100px;
+}
+
+#main ul.links {
+	position:relative;
+	top:200px;
+	left:400px;
+	width:300px;
+	padding-right:30px;
+	border-right:1px solid #6c91db;
+}
+
+#main ul.links li a {
+	color:white;
+	text-decoration:none;
+	font-family: 'Josefin Sans Std Light', arial, serif;
+	font-size: 3em;
+	display:block;
+	width:100%;
+	text-align:right;
+}
+
+#main ul.links li a:hover {
+}
+
+
+

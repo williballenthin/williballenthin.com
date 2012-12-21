@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" /> 
+<link href="/css/prettify.css" type="text/css" rel="stylesheet" />
+<link href="/css/prettify_desert.css" type="text/css" rel="stylesheet" />
+<link href="/css/base.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="/js/prettify/prettify.js"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-23141359-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</head>
+<body onload="prettyPrint()">
+<div class="content">
+
+  <h1><code>TSK & Ext4</code></h1>
+
+  <h2>Background</h2>
+  I have developed a set of patches that bring basic support for the Ext4 file system to <a href="http://www.sleuthkit.org/">The Sleuth Kit</a>.
+  Specific features that are supported, or not, are detailed below. 
+  <br /><br />
+  The major feature of Ext4 that affects most users is the use of extents that replace indirect blocks.
+  <i>This set of patches supports the new extent structures, and most Ext4 file systems.</i>
+  <br /><br />
+  Until the patches are fully incorporated by Brian Carrier into TSK, they will be developed in parallel and released on this webpage. 
+  <br />
+  Support is provided to users and testers of the patches that provide feedback and bug reports.
+  Please contact me <a href="http://www.williballenthin.com/contact.html">here</a>.
+
+  <h2>Status</h2>
+  <ul>
+    <li><b>Extents</b> <span style="color: green;">Done</span></li>    
+    <li><b>Updated Superblock <span style="color: green;">Done</span></b></li>
+    <li><b>Updated Inode <span style="color: green;">Done</span></b>
+      <ul>
+	<li>created timestamp <span style="color: green;">Done</span></li>
+	<li>modified timestamp, subsecond precision <span style="color: green;">Done</span></li>
+	<li>accessed timestamp, subsecond precision <span style="color: green;">Done</span></li>
+	<li>changed timestamp, subsecond precision <span style="color: green;">Done</span></li>
+	<li>created timestamp, subsecond precision <span style="color: green;">Done</span></li>
+      </ul>
+    </li>
+    <li><b>Updated Block Group Descriptor <span style="color: red;">Todo</span></b></li>
+    <li><b>64-bit support <span style="color: red;">Todo</span></b>
+      <ul>
+	<li>inode table entries <span style="color: red;">Todo</span></li>
+	<li>group descriptor table entry structures <span style="color: red;">Todo</span></li>
+	<li>superblock s_blocks_count_hi <span style="color: red;">Todo</span></li>
+	<li>superblock s_r_blocks_count_hi <span style="color: red;">Todo</span></li>
+	<li>superblock s_free_blocks_count_hi <span style="color: red;">Todo</span></li>
+      </ul>
+    </li>
+    <li><b>Huge Files <span style="color: red;">Todo</span></b></li>
+    <li><b>Multiple Mount Protection (MMP) <span style="color: red;">Todo</span></b></li>
+    <li><b>Meta Block Groups <span style="color: red;">Todo</span></b></li>
+    <li><b>Uninitialized Block Groups <span style="color: red;">Todo</span></b></li>
+    <li><b>Flexible Block Groups <span style="color: red;">Todo</span></b></li>
+    <li><b>Journal Checksumming <span style="color: red;">Todo</span></b></li>
+  </ul>
+
+  <h2>Download</h2>
+  <ul>
+    <li><b>TSK 3.2.2</b>
+      <ul>
+	<li><a href="./TSK-Ext4-r3.patch">r3</a> (2011-08-21) fix bug affecting older Ext2/3 file systems</li>
+	<li><a href="./TSK-Ext4-r2.patch">r2</a> (2011-07-23) fix sorter tool</li>
+      </ul>
+    </li>
+    <li><b>TSK 3.2.1</b>
+      <ul>
+	<li><a href="./TSK-Ext4-r3.patch">r3</a> (2011-08-21) fix bug affecting older Ext2/3 file systems</li>
+	<li><a href="./TSK-Ext4-r2.patch">r2</a> (2011-07-23) fix sorter tool</li>
+	<li><a href="./TSK-Ext4-r1.patch">r1</a> (2011-06-05) initial patch</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h2>Usage</h2>
+  You must build TSK from source to use the Ext4 patches. 
+  You must also have the patch utility installed, as well as a compiler toolset such as GCC.
+
+  <ol>
+    <li><b>Download TSK source.</b> 
+      Download and extract a version of TSK from <a href="http://www.sleuthkit.org/"> the homepage</a>.</li>
+    <li><b>Download Ext4 patch.</b> 
+      Download a patch from this website that corresponds to TSK version you downloaded in the above step.  
+      Try to pick the greatest revision number.</li>
+    <li><b>Apply patch.</b> 
+      From the command line, change directory into TSK source directory. 
+      If you perform a directory listing, you should see the file "Makefile". 
+      Now, run the patch command <code>patch -p1 &lt; "../path/to/patch/file"</code>.</li>
+    <li><b>Build TSK.</b> 
+      Configure and install by running the following commands: 
+      <ol>
+	<li><code>./configure</code></li>
+	<li><code>make</code></li>
+	<li><code>make install</code></li>
+      </ol>
+    </li>
+  </ol>
+</div>
+</body>
+</html>

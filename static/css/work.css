@@ -1,0 +1,36 @@
+body {
+	background-color:white;
+}
+
+#main {
+}
+
+#main .logo {
+	width:200px;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+#main .content {
+	width:500px;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+#main .content img {
+	margin-top: 50px;
+	width: 500px;
+	border: 10px solid #762B36;
+}
+
+#main .content .caption {
+	margin-top:50px;
+	margin-bottom:50px;
+	display:block;
+	width:100%;
+	text-align:center;
+	font-family: 'IM Fell English SC', arial, serif;
+	color: #83142e;
+	font-size: 3em;
+}
+

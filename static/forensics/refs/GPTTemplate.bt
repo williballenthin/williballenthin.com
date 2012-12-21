@@ -1,0 +1,91 @@
+//--------------------------------------
+//--- 010 Editor v3.2.2 Binary Template
+//
+// File: GPTTemplate.bt
+// Author: Willi Ballenthin <william.ballenthin@mandiant.com>
+// Revision: v0.1
+// Purpose: Parse the GPT partition table from a raw image.
+// Thanks to Christian Schaffalitzky and A.Babecki for the MBR template.
+// Sources: http://msdn.microsoft.com/en-us/windows/hardware/gg463524
+//          http://en.wikipedia.org/wiki/GUID_Partition_Table
+//--------------------------------------
+
+#define SECTORSIZE 512
+
+BitfieldRightToLeft();
+BitfieldDisablePadding();
+
+typedef struct fdisk_partition {
+  unsigned char  bootid;         /* bootable?  0=no, 128=yes  */
+  unsigned short beghead : 8;    /* beginning head number */
+  unsigned short begsect : 6;    /* beginning sector number */
+  unsigned short begcyl  : 10;   /* 10 bit nmbr */	
+  unsigned char  systid;         /* Operating System type indicator code */
+  unsigned short endhead : 8;    /* ending head number */
+  unsigned short endsect : 6;    /* ending sector number */
+  unsigned short endcyl  : 10;   /* also a 10 bit nmbr */
+  unsigned int relsect;          /* first sector relative to start of disk */
+  unsigned int numsect;          /* number of sectors in partition */
+};
+
+typedef struct master_boot_record {
+  char    bootinst[446];   /* space to hold actual boot code */
+  fdisk_partition partitions[4];
+  ushort  signature;       /* set to 0xAA55 to indicate PC MBR format */
+};
+
+typedef struct gpt_header {
+    byte   signature[8]; // == EFI PART
+    uint32 revision;
+    uint32 size;
+    uint32 crc32;
+    uint32 reserved;
+    uint64 current_sector;
+    uint64 backup_sector;
+    uint64 first_sector;
+    uint64 last_sector;
+    byte   disk_guid[16];
+    uint64 entries_sector;
+    uint32 num_entries;
+    uint32 entry_size;
+    uint32 entries_crc32;
+    byte   reserved1[SECTORSIZE - 92]; 
+};
+
+typedef struct gpt_entry {
+    byte    type_guid[16];
+    byte    partition_guid[16];
+    uint64  first_sector;
+    uint64  last_sector; // inclusive
+    uint64  flags;
+    wchar_t partition_name[36];
+    local uint64 __ = FTell();
+    FSeek(SECTORSIZE * first_sector);
+    byte _dummy_partition_start;
+    FSeek(__);
+};
+
+typedef struct gpt {
+    local uint64 i;
+    gpt_header header;
+    
+    FSeek(SECTORSIZE * header.entries_sector);
+    struct {
+        gpt_entry entry[header.num_entries]<optimize=false>;
+    } entries;
+
+    FSeek(SECTORSIZE * header.backup_sector);
+    gpt_header backup_header;
+
+    FSeek(SECTORSIZE * header.backup_sector - backup_header.num_entries * backup_header.entry_size);
+    struct {
+        gpt_entry backup_entry[header.num_entries]<optimize=false>;
+    } backup_entries;
+};
+
+
+LittleEndian();
+
+FSeek(0);
+master_boot_record MBR;
+gpt GPT;

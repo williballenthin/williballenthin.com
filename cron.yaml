@@ -1,0 +1,4 @@
+cron:
+- description: update TOR status
+  url: /tor/status/update
+  schedule: every 24 hours
