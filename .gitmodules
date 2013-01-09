@@ -1,0 +1,3 @@
+[submodule "octopress"]
+	path = octopress
+	url = git://github.com/imathis/octopress.git
