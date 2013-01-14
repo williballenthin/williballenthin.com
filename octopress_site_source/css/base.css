@@ -1,0 +1,69 @@
+body {
+    background: white; 
+    color: black;
+}
+
+h1, h2, h3, h4, h5, h6 {
+/*    color: red;   */
+    margin-top: 1.0em;
+    margin-bottom: 0.3em;
+}
+
+.content {
+    width: 600px;
+    padding-left: 50px;
+}
+
+.content p {
+    line-height: 1.5em;
+}
+
+.content a {
+    color: #08C;
+}
+
+a {
+  color: #0088cc;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #005580;
+  text-decoration: underline;
+}
+
+pre {
+    color: white;
+    margin-top: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+}
+
+pre.prettyprint {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+	background-color: #333;
+}
+
+pre.code {
+    width: 98%;
+}
+
+.caption {
+    font-weight: bold;
+    text-align:  center;
+    margin-top:  4px;
+}
+
+img {
+    display:block;
+    margin-top:10px;
+    margin-bottom: 10px;
+    margin-left:20px;
+}
+
+ul, ol {
+    margin-top: 18px;
+}
