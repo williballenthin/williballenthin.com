@@ -183,49 +183,50 @@ or a system file. Applying this template to the ITEMPOS Registry
 value, we see there are four list items: one invalid entry, and three
 `SHITEM_FILEENTRY` items.
 
-{% codeblock %}
-00 00 00 00  --> header/footer
-00 00 00 00  --> unknown padding (item position?)
-00 00 00 00  --> invalid SHITEM_FILEENTRY
-00 00 00 00  --> SHITEM_FILEENTRY
 
-0000   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00    ................
-0010   15 00 00 00 51 00 00 00 14 00 1F 60 40 F0 5F 64    ....Q......`@._d
-0020   81 50 1B 10 9F 08 00 AA 00 2F 95 4E 15 00 00 00    .P......./.N....
-0030   A0 00 00 00 46 00 3A 00 02 02 00 00 10 3D 0C 8E    ....F.:......=..
-0040   20 00 43 79 67 77 69 6E 2E 6C 6E 6B 00 00 2C 00     .Cygwin.lnk..,.
-0050   03 00 04 00 EF BE 10 3D 0C 8E 10 3D 0C 8E 14 00    .......=...=....
-0060   00 00 43 00 79 00 67 00 77 00 69 00 6E 00 2E 00    ..C.y.g.w.i.n...
-0070   6C 00 6E 00 6B 00 00 00 1A 00 15 00 00 00 02 00    l.n.k...........
-0080   00 00 5A 00 3A 00 42 06 00 00 10 3D 91 7C 20 00    ..Z.:.B....=.| .
-0090   4D 4F 5A 49 4C 4C 7E 31 2E 4C 4E 4B 00 00 3E 00    MOZILL~1.LNK..>.
-00A0   03 00 04 00 EF BE 10 3D 91 7C 10 3D 61 85 14 00    .......=.|.=a...
-00B0   00 00 4D 00 6F 00 7A 00 69 00 6C 00 6C 00 61 00    ..M.o.z.i.l.l.a.
-00C0   20 00 46 00 69 00 72 00 65 00 66 00 6F 00 78 00     .F.i.r.e.f.o.x.
-00D0   2E 00 6C 00 6E 00 6B 00 00 00 1C 00 41 01 00 00    ..l.n.k.....A...
-00E0   51 00 00 00 30 00 31 00 00 00 00 00 10 3D 2C 81    Q...0.1......=,.
-00F0   10 00 4D 49 52 00 1E 00 03 00 04 00 EF BE 10 3D    ..MIR..........=
-0100   B0 80 10 3D A7 8C 14 00 00 00 4D 00 49 00 52 00    ...=......M.I.R.
-0110   00 00 12 00 41 01 00 00 51 00 00 00 00 00 00 00    ....A...Q.......
-{% endcodeblock %}
+<pre>
+<span style="color: red;">00 00 00 00 </span> --> header/footer
+<span style="color: blue;">00 00 00 00 </span> --> unknown padding (item position?)
+<span style="color: green;">00 00 00 00 </span> --> invalid SHITEM_FILEENTRY
+<span style="color: yellow;">00 00 00 00 </span> --> SHITEM_FILEENTRY
+
+0000 <span style="color: red;">00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</span> ................
+0010 <span style="color: blue;">15 00 00 00 51 00 00 00</span> <span style="color: green;">14 00 1F 60 40 F0 5F 64</span> ....Q......`@._d
+0020 <span style="color: green;">81 50 1B 10 9F 08 00 AA 00 2F 95 4E 15</span> <span style="color: blue;">00 00 00</span> .P......./.N....
+0030 <span style="color: blue;">A0 00 00 00</span><span style="color: yellow;"> 46 00 3A 00 02 02 00 00 10 3D 0C 8E</span> ....F.:......=..
+0040 <span style="color: yellow;">20 00 43 79 67 77 69 6E 2E 6C 6E 6B 00 00 2C 00</span> .Cygwin.lnk..,.
+0050 <span style="color: yellow;">03 00 04 00 EF BE 10 3D 0C 8E 10 3D 0C 8E 14 00</span> .......=...=....
+0060 <span style="color: yellow;">00 00 43 00 79 00 67 00 77 00 69 00 6E 00 2E 00</span> ..C.y.g.w.i.n...
+0070 <span style="color: yellow;">6C 00 6E 00 6B 00 00 00 1A 00</span> <span style="color: blue;">15 00 00 00 02 00</span> l.n.k...........
+0080 <span style="color: blue;">00 00 </span><span style="color: yellow;">5A 00 3A 00 42 06 00 00 10 3D 91 7C 20 00</span> ..Z.:.B....=.| .
+0090 <span style="color: yellow;">4D 4F 5A 49 4C 4C 7E 31 2E 4C 4E 4B 00 00 3E 00</span> MOZILL~1.LNK..>.
+00A0 <span style="color: yellow;">03 00 04 00 EF BE 10 3D 91 7C 10 3D 61 85 14 00</span> .......=.|.=a...
+00B0 <span style="color: yellow;">00 00 4D 00 6F 00 7A 00 69 00 6C 00 6C 00 61 00</span> ..M.o.z.i.l.l.a.
+00C0 <span style="color: yellow;">20 00 46 00 69 00 72 00 65 00 66 00 6F 00 78 00</span> .F.i.r.e.f.o.x.
+00D0 <span style="color: yellow;">2E 00 6C 00 6E 00 6B 00 00 00 1C 00</span><span style="color: blue;"> 41 01 00 00</span> ..l.n.k.....A...
+00E0 <span style="color: blue;">51 00 00 00</span><span style="color: yellow;"> 30 00 31 00 00 00 00 00 10 3D 2C 81</span> Q...0.1......=,.
+00F0 <span style="color: yellow;">10 00 4D 49 52 00 1E 00 03 00 04 00 EF BE 10 3D</span> ..MIR..........=
+0100 <span style="color: yellow;">B0 80 10 3D A7 8C 14 00 00 00 4D 00 49 00 52 00</span> ...=......M.I.R.
+0110 <span style="color: yellow;">00 00 12 00 </span><span style="color: blue;">41 01 00 00 51 00 00 00 </span><span style="color: red;">00 00 00 00</span> ....A...Q.......
+</pre>
 
 Taking the first valid entry from offset 0x34, let's parse out the
 fields from the binary. The following block visually maps out the
 relevant bytes, while the table translates each field into a human
 readable value.
 
-{% codeblock %}
-00 00 00 00 --> SHITEM_FILEENTRY size
-00 00 00 00 --> filesize
-00 00 00 00 --> timestamp
-00 00 00 00 --> filename
+<pre>
+<span style="color: yellow;">00 00 00 00</span> --> SHITEM_FILEENTRY size
+<span style="color: green;">00 00 00 00</span> --> filesize
+<span style="color: blue;">00 00 00 00</span> --> timestamp
+<span style="color: red;">00 00 00 00</span> --> filename
 
-0000   46 00 3A 00 02 02 00 00 10 3D 0C 8E 20 00 43 79    F.:.....w.=.Ž Cy 
-0010   67 77 69 6E 2E 6C 6E 6B 00 00 2C 00 03 00 04 00    gwin.lnk..,..... 
-0020   EF BE 10 3D 0C 8E 10 3D 0C 8E 14 00 00 00 43 00    ï¾.=.Ž.=.Ž....C. 
-0030   79 00 67 00 77 00 69 00 6E 00 2E 00 6C 00 6E 00    y.g.w.i.n...l.n. 
-0040   6B 00 00 00 1A 00                                  k.....
-{% endcodeblock %}
+0000 <span style="color: yellow;">46 00</span> 3A 00 <span style="color: green;">02 02 00 00</span> <span style="color: blue;">10 3D 0C 8E</span> 20 00 <span style="color: red;">43 79</span> <span style="color: yellow;">F.</span>:.<span style="color: green;">....</span><span style="color: blue;">w.=.</span>Ž <span style="color: red;">Cy</span>
+0010 <span style="color: red;">67 77 69 6E 2E 6C 6E 6B 00</span> 00 2C 00 03 00 04 00 <span style="color: red;">gwin.lnk.</span>.,.....
+0020 EF BE <span style="color: blue;">10 3D 0C 8E 10 3D 0C 8E </span>14 00 00 00 <span style="color: red;">43 00</span> ï¾<span style="color: blue;">.=.Ž.=.Ž</span>....<span style="color: red;">C.</span>
+0030 <span style="color: red;">79 00 67 00 77 00 69 00 6E 00 2E 00 6C 00 6E 00</span> <span style="color: red;">y.g.w.i.n...l.n. </span>
+0040 <span style="color: red;">6B 00 00 00</span> 1A 00 <span style="color: red;">k...</span>..
+</pre>
 
 <table>
     <tr>
