@@ -7,9 +7,6 @@ sharing: true
 footer: true
 ---
 
-INDXParse
-=========
-
 Introduction
 ------------
 INDX files are features of the Windows NTFS file system. They can be
@@ -108,6 +105,7 @@ epoch will be printed instead.
 
 The full command line help is included here:
 
+{% codeblock %}
     INDX $ python INDXParse.py -h
     usage: INDXParse.py [-h] [-c | -b] [-d] filename
     
@@ -121,6 +119,7 @@ The full command line help is included here:
       -c Output CSV
       -b Output Bodyfile
       -d Find entries in slack space
+{% endcodeblock %}
 
 `INDXTemplate.bt` is a template file for the useful [010 Editor](http://www.sweetscape.com/).
 Use it as you would any other template by applying it to INDX files.
@@ -135,6 +134,7 @@ the '-d' option to recover entries from the INDX structure slack
 spaces. This listing shows only a portion of the 91 total entries
 identified by `INDXParse.py`.
 
+{% codeblock %}
     INDX $ python INDXParse.py \$I30.copy1 -d -b
     0|.bash_history|0|0|0|0|12|1281639617|1281639617|1281639617|1281639617
     0|.gitconfig|0|0|0|0|415|1297111026|1281643804|1297111026|1281643804
@@ -163,11 +163,13 @@ identified by `INDXParse.py`.
     0|InstallAnywhere (slack at 0x9f8)|0|0|0|0|0|1289338594|1289338594|1289338595|1289338594
     0|INSTAL~1 (slack at 0xa68)|0|0|0|0|0|1289338594|1289338594|1289338595|1289338594
     0|JavaSnoop.properties (slack at 0xad0)|0|0|0|0|98|1280436493|1280436492|1280436493|1280436492
+{% endcodeblock %}
 
 When I run the output through Mactime, I can use the resulting timeline
 to identify periods of suspicious activity. This listing shows only a portion
 of the 164 total timeline entries identified by Mactime.
 
+{% codeblock %}
     INDX $ python INDXParse.py \$I30.copy1 -d -b | mactime -m
      Sun 07 18 2010 19:17:08 0 macb 0 0 0 0 APPLIC~1
                                     0 ...b 0 0 0 0 Downloads
@@ -203,6 +205,7 @@ of the 164 total timeline entries identified by Mactime.
                                   920 ...b 0 0 0 0 GITK~1
                                   920 macb 0 0 0 0 GITK~1 (slack at 0x930)
      Fri 11 19 2010 15:08:39 8126464 .ac. 0 0 0 0 NTUSER.DAT (slack at 0xf50)
+{% endcodeblock %}
 
 License
 -------
