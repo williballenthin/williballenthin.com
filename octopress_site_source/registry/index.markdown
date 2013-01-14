@@ -10,14 +10,13 @@ footer: true
 -   [Introduction](#introduction)
 -   [Download](https://github.com/williballenthin/python-registry)
 -   [Usage](#usage)
--   [Documentation](doc/Registry.html)
+-   [Documentation](./doc/Registry.html)
 -   [Testing](#testing)
--   [Wanted](#wanted)
--   [License](#license)
 -   [Sources](#sources)
--   [Sample](#sample)
+-   [License](#license)
 
-Introduction
+
+Introduction <a id="introduction"></a>
 ------------
 
 python-registry was originally written by [Willi Ballenthin](http://www.williballenthin.com), a forensic analyst who wanted
@@ -30,20 +29,20 @@ study of the Windows Registry. python-registry is written in pure
 Python, making it portable across all major platforms.
 
 
-Download
+Download <a id="download"></a>
 --------
 
 python-registry can be downloaded at GitHub [here](https://github.com/williballenthin/python-registry).
 
 
-Documentation
+Documentation <a id="documentation"></a>
 -------------
 
 Static API documentation for python-registry can be found here:
 [Documentation](doc/Registry.html).
 
 
-Usage
+Usage <a id="usage"></a>
 -----
 
 Most users will find the `Registry.Registry` module most appropriate.
@@ -100,7 +99,7 @@ may find the `Registry.RegistryParse` module useful. This module
 implements all known structures of the Windows Registry.
 
 
-Testing
+Testing <a id="testing"></a>
 -------
 
 python-registry was developed using Python 2.6.5 on Ubuntu Linux. More
@@ -112,7 +111,7 @@ tool can be used to identify regressions and deficiencies in the
 development of python-registry.
 
 
-Sources
+Sources <a id="sources"></a>
 -------
 
 Nearly all structure definitions used in python-registry came from one
@@ -125,7 +124,7 @@ Copies of these resources are included in the `documentation/` directory
 of the python-registry source.
 
 
-Samples
+Samples <a id="samples"></a>
 ------
 
 The source directory for python-registry contains a `samples/` subdirectory
@@ -136,7 +135,7 @@ implemented in a few hundred lines.
 ![Screenshot of regview.py](regview-thumb.png) 
 
 
-License
+License <a id="license"></a>
 -------
 
 python-registry is released under the [Apache v2.0 license](http://www.apache.org/licenses/LICENSE-2.0.html).
