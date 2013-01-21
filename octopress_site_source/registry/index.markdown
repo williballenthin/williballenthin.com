@@ -2,19 +2,10 @@
 layout: page
 title: "python-registry"
 date: 2013-01-14 03:12
-comments: true
-sharing: true
+comments: false
+sharing: false
 footer: true
 ---
-
--   [Introduction](#introduction)
--   [Download](https://github.com/williballenthin/python-registry)
--   [Usage](#usage)
--   [Documentation](./doc/Registry.html)
--   [Testing](#testing)
--   [Sources](#sources)
--   [License](#license)
-
 
 Introduction <a id="introduction"></a>
 ------------
@@ -33,13 +24,6 @@ Download <a id="download"></a>
 --------
 
 python-registry can be downloaded at GitHub [here](https://github.com/williballenthin/python-registry).
-
-
-Documentation <a id="documentation"></a>
--------------
-
-Static API documentation for python-registry can be found here:
-[Documentation](doc/Registry.html).
 
 
 Usage <a id="usage"></a>
@@ -97,6 +81,13 @@ for value in [v for v key.values() \
 Advanced users who wish to study the structure of the Windows Registry
 may find the `Registry.RegistryParse` module useful. This module
 implements all known structures of the Windows Registry.
+
+
+Documentation <a id="documentation"></a>
+-------------
+
+Static API documentation for python-registry can be found here:
+[Documentation](doc/Registry.html).
 
 
 Testing <a id="testing"></a>

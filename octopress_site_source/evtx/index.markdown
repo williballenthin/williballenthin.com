@@ -63,10 +63,6 @@ Updates to python-evtx are pushed to PyPi, so you can install the module using e
 The source code for python-evtx is hosted at Github, and you may download, fork, and review it from this repository [python-evtx](http://www.github.com/williballenthin/python-evtx).  Please report issues or feature requests through Github's bug tracker associated with the project.
 
 
-Hacking
--------
-
-
 License
 -------
 python-evtx is licensed under the Apache License, Version 2.0.  This means it is freely available for use and modification in a personal and professional capacity.  Please feel encouraged to use python-evtx during your forensic investigations, or integrate it into larger projects.
