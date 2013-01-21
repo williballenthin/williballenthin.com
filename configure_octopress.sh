@@ -24,7 +24,7 @@ sed -i \
 if grep -q "^logo:" ./octopress/_config.yml; then
     sed -i \
       -e "s/^logo:.*$/logo: \/img\/logo.png/g" \
-      -e "s/^favicon:.*$/favicon: \/img\/favicon.ico\/g" \
+      -e "s/^favicon:.*$/favicon: \/img\/favicon.ico/g" \
       ./octopress/_config.yml;
 else
     cat >> ./octopress/_config.yml <<EOF
