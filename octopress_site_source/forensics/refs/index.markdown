@@ -2,8 +2,8 @@
 layout: page
 title: "The Microsoft ReFS On-Disk Layout"
 date: 2013-01-14 01:02
-comments: true
-sharing: true
+comments: false
+sharing: false
 footer: true
 ---
 

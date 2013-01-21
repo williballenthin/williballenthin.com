@@ -6,13 +6,29 @@ sed -i \
  -e "s/^subtitle:.*$/subtitle:/g" \
  -e "s/^author:.*$/author: Willi Ballenthin/g" \
  -e "s/^source:.*$/source: source/g" \
+ -e "s/^email:.*$/email: willi.ballenthin@gmail.com/g" \
+ -e "s/^subscribe_rss:.*$/subscribe_rss:/g" \
+ -e "s/^titlecase:.*$/titlecase: false/g" \
  -e "s/^github_user:.*$/github_user: williballenthin/g" \
  -e "s/^github_repo_count:.*$/github_repo_count: 5/g" \
  -e "s/^twitter_user:.*$/twitter_user: williballenthin/g" \
  -e "s/^twitter_tweet_button:.*$/twitter_tweet_button: false/g" \
  -e "s/^googleplus_user:.*$/googleplus_user: wilbal1087@gmail.com/g" \
+ -e "s/^googleplus_hidden:.*$/googleplus_hidden: true/g" \
  -e "s/^google_analytics_tracking_id:.*$/google_analytics_tracking_id: UA-23141359-1/g" \
  ./octopress/_config.yml;
+
+if grep -q "^logo:" ./octopress/_config.yml; then
+    sed -i -e "s/^logo:.*$/logo: \/img\/logo.png/g" ./octopress/_config.yml;
+else
+    cat <<EOF
+# ----------------------- #
+#      Theme Resources    #
+# ----------------------- #
+logo: /img/logo.png
+EOF
+fi
+
 
 CD=$(readlink -f .);
 rm -r "$CD/octopress/source";

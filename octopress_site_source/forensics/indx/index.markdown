@@ -2,8 +2,8 @@
 layout: page
 title: "NTFS INDX Parsing"
 date: 2013-01-13 19:32
-comments: true
-sharing: true
+comments: false
+sharing: false
 footer: true
 ---
 

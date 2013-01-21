@@ -2,8 +2,8 @@
 layout: page
 title: "Analog Cache Forensics"
 date: 2013-01-13 19:54
-comments: true
-sharing: true
+comments: false
+sharing: false
 footer: true
 ---
 

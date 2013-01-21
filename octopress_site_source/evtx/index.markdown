@@ -2,8 +2,8 @@
 layout: page
 title: "python-evtx"
 date: 2013-01-18 22:54
-comments: true
-sharing: true
+comments: false
+sharing: false
 footer: true
 ---
 

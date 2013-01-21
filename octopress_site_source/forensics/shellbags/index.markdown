@@ -2,8 +2,8 @@
 layout: page
 title: "Windows Shellbag Forensics"
 date: 2013-01-14 02:00
-comments: true
-sharing: true
+comments: false
+sharing: false
 footer: true
 ---
 

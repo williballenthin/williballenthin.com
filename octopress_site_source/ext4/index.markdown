@@ -2,8 +2,8 @@
 layout: page
 title: "The Sleuthkit and Ext4"
 date: 2013-01-14 04:17
-comments: true
-sharing: true
+comments: false
+sharing: false
 footer: true
 ---
 
