@@ -39,5 +39,14 @@ rm -r "$CD/octopress/source";
 ln -s "$CD/octopress_site_source" "$CD/octopress/source";
 
 pushd ./octopress/;
-rake install;
+if [ ! -d ./.themes/williballenthin-octopress-theme ]; then
+    pushd .themes;
+    git clone git@github.com:williballenthin/williballenthin-octopress-theme.git williballenthin-octopress-theme;
+    popd;
+else
+    pushd .themes/williballenthin-octopress-theme;
+    git pull origin master;
+    popd;
+fi
+rake install[williballenthin-octopress-theme];
 popd;
