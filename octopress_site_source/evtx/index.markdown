@@ -53,6 +53,9 @@ print "</Events>"
 
 Working with python-evtx is really easy!
 
+Documentation
+-------------
+You can browse HTML documentation for the module [here](./doc/index.html).  These [epydoc](http://epydoc.sourceforge.net/) generated documents include complete class listings and hyperlinked source code. 
 
 Installation
 ------------
