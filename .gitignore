@@ -45,6 +45,9 @@ octopress_site_source/blog/*
 octopress_site_source/font/*
 octopress_site_source/images/*
 octopress_site_source/javascripts/*
-octopress_site_source/robots.txt
 octopress_site_source/stylesheets/*
+octopress_site_source/robots.txt
+octopress_site_source/robots.txt
+octopress_site_source/default.html
+octopress_site_source/index.html
 octopress/*
