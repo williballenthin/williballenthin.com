@@ -37,3 +37,14 @@ nosetests.xml
 
 
 *~
+octopress_site_source/_includes/*
+octopress_site_source/_layouts/*
+octopress_site_source/assets/*
+octopress_site_source/atom.xml
+octopress_site_source/blog/*
+octopress_site_source/font/*
+octopress_site_source/images/*
+octopress_site_source/javascripts/*
+octopress_site_source/robots.txt
+octopress_site_source/stylesheets/*
+octopress/*
