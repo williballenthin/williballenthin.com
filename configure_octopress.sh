@@ -27,7 +27,7 @@ if grep -q "^logo:" ./octopress/_config.yml; then
       -e "s/^favicon:.*$/favicon: \/img\/favicon.ico\/g" \
       ./octopress/_config.yml;
 else
-    cat <<EOF
+    cat >> ./octopress/_config.yml <<EOF
 # ----------------------- #
 #      Theme Resources    #
 # ----------------------- #
