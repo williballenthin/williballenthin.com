@@ -11,7 +11,7 @@ footer: true
 About
 -----
 This is the personal website of Willi Ballenthin.  I am a consultant at
-Mandiant, specializing in incident response and computer forensics.  Below, you'll find an index of my public projects.  Please feel encouraged to contact me via the link to your left.
+[Mandiant](http://www.mandiant.com/), specializing in incident response and computer forensics.  Below, you'll find an index of my public projects.  Please feel encouraged to contact me via the link to your left.
 
 Projects
 --------
