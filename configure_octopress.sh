@@ -1,5 +1,8 @@
 #!/bin/bash
 
+git submodule init;
+git submodule update;
+
 sed -i \
  -e "s/^url:.*$/url: http:\/\/www.williballenthin.com/g" \
  -e "s/^title:.*$/title: williballenthin.com/g" \
