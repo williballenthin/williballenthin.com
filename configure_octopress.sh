@@ -19,15 +19,15 @@ sed -i \
  -e "s/^googleplus_user:.*$/googleplus_user: wilbal1087@gmail.com/g" \
  -e "s/^googleplus_hidden:.*$/googleplus_hidden: true/g" \
  -e "s/^google_analytics_tracking_id:.*$/google_analytics_tracking_id: UA-23141359-1/g" \
- ./octopress/_config.yml;
+ "./octopress/_config.yml";
 
-if grep -q "^logo:" ./octopress/_config.yml; then
+if grep -q "^logo:" "./octopress/_config.yml"; then
     sed -i \
       -e "s/^logo:.*$/logo: \/img\/logo.png/g" \
       -e "s/^favicon:.*$/favicon: \/img\/favicon.ico/g" \
-      ./octopress/_config.yml;
+      "./octopress/_config.yml";
 else
-    cat >> ./octopress/_config.yml <<EOF
+    cat >> "./octopress/_config.yml" <<EOF
 # ----------------------- #
 #      Theme Resources    #
 # ----------------------- #
@@ -41,15 +41,10 @@ CD=$(readlink -f .);
 rm -r "$CD/octopress/source";
 ln -s "$CD/octopress_site_source" "$CD/octopress/source";
 
-pushd ./octopress/;
-if [ ! -d ./.themes/williballenthin-octopress-theme ]; then
-    pushd .themes;
-    git clone git@github.com:williballenthin/williballenthin-octopress-theme.git williballenthin-octopress-theme;
-    popd;
-else
-    pushd .themes/williballenthin-octopress-theme;
-    git pull origin master;
-    popd;
+pushd "./octopress/";
+if [ ! -e "./.themes/williballenthin-octopress-theme" ]; then
+    pushd ".themes";
+    ln -s "$(pwd)/../../williballenthin-octopress-theme" "williballenthin-octopress-theme";
 fi
 rake install[williballenthin-octopress-theme];
 popd;

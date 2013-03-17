@@ -2,3 +2,6 @@
 	path = octopress
 	url = git://github.com/imathis/octopress.git
     ignore = dirty
+[submodule "williballenthin-octopress-theme"]
+	path = williballenthin-octopress-theme
+	url = git@github.com:williballenthin/williballenthin-octopress-theme.git
