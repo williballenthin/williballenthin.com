@@ -1,7 +1,18 @@
 #!/bin/bash
 
+CD=$(readlink -f .);
+CCD=$(echo -n "$CD" | sed -e "s/\//\\\\\\//g");
+
+echo "CD: $CD"
+echo "CCD: $CCD"
+
 git submodule init;
 git submodule update;
+
+sed -i \
+ -e "s/^template .*$/template "$CCD"\/rawdog\/page.template/g" \
+ -e "s/^itemtemplate .*$/itemtemplate "$CCD"\/rawdog\/item.template/g" \
+ "./rawdog/config";
 
 sed -i \
  -e "s/^url:.*$/url: http:\/\/www.williballenthin.com/g" \
@@ -36,8 +47,6 @@ favicon: /img/favicon.ico
 EOF
 fi
 
-
-CD=$(readlink -f .);
 rm -r "$CD/octopress/source";
 ln -s "$CD/octopress_site_source" "$CD/octopress/source";
 
