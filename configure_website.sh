@@ -9,9 +9,18 @@ echo "CCD: $CCD"
 git submodule init;
 git submodule update;
 
+if [ ! -d "./octopress/public/rss" ]; then
+    mkdir -p "./octopress/public/rss";
+fi
+
+if [ ! -e "./octopress/public/rss/style.css" ]; then
+    ln -s "$CD""/rawdog/style.css" "$CD""/octopress/public/rss/style.css";
+fi
+
 sed -i \
  -e "s/^template .*$/template "$CCD"\/rawdog\/page.template/g" \
  -e "s/^itemtemplate .*$/itemtemplate "$CCD"\/rawdog\/item.template/g" \
+ -e "s/^outputfile .*$/outputfile "$CCD"\/octopress\/public\/rss\/index.html/g" \
  "./rawdog/config";
 
 sed -i \

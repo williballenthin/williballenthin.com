@@ -2,7 +2,7 @@
 <p class="itemheader">
 <span class="itemtitle">__title__</span>
 <span class="itemfrom">[__feed_title__]</span>
-<span class="itemdate">[__date__]</span>
+<span class="itemdate">__date__</span>
 </p>
 __if_description__<div class="itemdescription">
 __description__
