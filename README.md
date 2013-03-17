@@ -12,3 +12,13 @@ Layout:
 
 Dependencies:
   - GAE appcfg.py is at /home/willi/Tools/google\_appengine/
+  - rake
+  - Ruby 1.9.3 with rvm (curl -L https://get.rvm.io | bash -s stable --ruby)
+    - curl -L https://get.rvm.io | bash -s stable --ruby
+    - rvm install 1.9.3
+    - rvm use 1.9.3
+    - rvm rubygems latest
+  - bundler
+    - gem install bundler
+    - rbenv rehash    # If you use rbenv, rehash to be able to run the bundle command
+    - bundle install
