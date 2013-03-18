@@ -5,13 +5,13 @@ Source for my personal website
 
 
 Layout:
-  - app - A Google App Engine application ready to be uploaded. 
   - octopress - A Git submodule that tracks octopress. Don't change anything in it.
-  - Use `configure_octopress.sh` to apply the appropriate configuration to octopress to use with this website.
-  - Use `deploy_octopress.sh` to configure, generate, and deploy the website using GAE.
+  - williballenthin-octopress-theme - A Git submodule that tracks the theme used for this website. Commit there, not here.
+  - Use `configure_website.sh` to apply the appropriate configuration to Octopress, and build the website.
+  - rawdog - Configuration and templates for a curated set of RSS feeds.
+  - tor - A simple application that fetches TOR endpoints and writes to a file. Used here to track them over time.
 
 Dependencies:
-  - GAE appcfg.py is at /home/willi/Tools/google\_appengine/
   - rake
   - Ruby 1.9.3 with rvm (curl -L https://get.rvm.io | bash -s stable --ruby)
     - curl -L https://get.rvm.io | bash -s stable --ruby
@@ -22,3 +22,4 @@ Dependencies:
     - gem install bundler
     - rbenv rehash    # If you use rbenv, rehash to be able to run the bundle command
     - bundle install
+  - rawdog

@@ -20,6 +20,7 @@ __refresh__
 <body id="rawdog">
 <div id="header">
 <h1>rawdog</h1>
+A curated RSS aggregation of articles and posts that reflects some of my interests.  You are welcomed and encouraged to bookmark and follow this "river of news", brought to you by <a href="http://offog.org/code/rawdog.html">rawdog</a>.
 </div>
 <div id="items">
 __items__

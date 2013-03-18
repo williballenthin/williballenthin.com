@@ -3,8 +3,10 @@
 CD=$(readlink -f .);
 CCD=$(echo -n "$CD" | sed -e "s/\//\\\\\\//g");
 
-git submodule init;
-git submodule update;
+if [ ! -e "./williballenthin-octopress-theme/source" ]; then
+    git submodule init;
+fi
+git submodule foreach git pull;
 
 sed -i \
  -e "s/^template .*$/template "$CCD"\/rawdog\/page.template/g" \
@@ -34,7 +36,8 @@ if grep -q "^logo:" "./octopress/_config.yml"; then
     sed -i \
       -e "s/^logo:.*$/logo: \/img\/logo.png/g" \
       -e "s/^favicon:.*$/favicon: \/img\/favicon.ico/g" \
-      "./octopress/_config.yml";
+      -e "s/^curated_rss:.*$/curated_rss: \/rss\/index.html/g" \
+    "./octopress/_config.yml";
 else
     cat >> "./octopress/_config.yml" <<EOF
 # ----------------------- #
@@ -54,6 +57,7 @@ if [ ! -e "./.themes/williballenthin-octopress-theme" ]; then
     pushd ".themes";
     ln -s "$(pwd)/../../williballenthin-octopress-theme" "williballenthin-octopress-theme";
 fi
+bundle install;
 rake install[williballenthin-octopress-theme];
 rake generate;
 popd;
