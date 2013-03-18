@@ -54,7 +54,7 @@ def main():
                         ])
                     ])
                  ])
-    with open(os.path.join(sys.argv[1], d), "wb") as f:
+    with open(os.path.join(sys.argv[1], d + ".html"), "wb") as f:
         f.write(output)
 
 if __name__ == "__main__":
