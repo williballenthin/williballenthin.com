@@ -22,6 +22,7 @@ sed -i \
  -e "s/^source:.*$/source: source/g" \
  -e "s/^email:.*$/email: willi.ballenthin@gmail.com/g" \
  -e "s/^subscribe_rss:.*$/subscribe_rss:/g" \
+ -e "s/^paginate:.*$/paginate: 100/g" \
  -e "s/^titlecase:.*$/titlecase: false/g" \
  -e "s/^github_user:.*$/github_user: williballenthin/g" \
  -e "s/^github_repo_count:.*$/github_repo_count: 5/g" \

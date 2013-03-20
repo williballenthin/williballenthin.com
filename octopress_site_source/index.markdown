@@ -40,3 +40,16 @@ Projects
     used the Analog web log analyzer cache file during a forensic
     investigation and described my usage.
 
+Blog Posts
+----------
+<ul id="posts">
+{% for post in site.posts %}
+  <li class="post">
+    <a class="post_link" href="{{ root_url }}{{ post.url }}">{{ post.title }}</a> 
+    <span class="post_date">{{ post.date | date: "%B %d, %Y" }}</span>
+  </li>
+{% endfor %}
+
+  <li>[<a href="{{ root_url }}/blog/archives/">Archives</a>] [<a href="{{ root_url }}/atom.xml">atom.xml</a>]</li>
+</ul>
+
