@@ -78,6 +78,7 @@ h3 {
 }
 .itemtitle {
 	font-weight: bold;
+	color: black;
 }
 .itemfrom {
 	font-style: italic;

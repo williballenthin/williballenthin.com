@@ -127,7 +127,6 @@ itemtemplate /home/ubuntu/williballenthin.com/rawdog/item.template
 # (You will probably want to make this an absolute path, else rawdog will write
 # to a file in your ~/.rawdog directory.)
 outputfile /home/ubuntu/williballenthin.com/public/rss/index.html
-#outputfile /home/you/public_html/rawdog.html
 
 # Whether to use a <meta http-equiv="Refresh" ...> tag in the generated
 # HTML to indicate that the page should be refreshed automatically. If
@@ -335,7 +334,6 @@ feed 1h http://hooked-on-mnemonics.blogspot.com/feeds/posts/default define_categ
 feed 1h http://www.inreverse.net/?feed=rss2 define_category=RE
 feed 1h https://malwarereversing.wordpress.com/feed/ define_category=RE
 feed 1h http://blogs.technet.com/b/mmpc/rss.aspx define_category=RE
-feed 1h http://sandsprite.com/blogs/feeds.php?uid=7 define_category=RE
 feed 1h http://internetopenurla.blogspot.com/feeds/posts/default define_category=RE
 feed 1h http://practicalmalwareanalysis.com/feed/ define_category=RE
 feed 1h http://www.cutawaysecurity.com/blog/feed define_category=RE
@@ -367,7 +365,6 @@ feed 1h https://grepular.com/rss define_category=security
 feed 1h http://www.npr.org/rss/rss.php?id=1122 define_category=security
 feed 1h http://nion.modprobe.de/blog/feeds/index.rss2 define_category=security
 feed 1h http://www.offensivecomputing.net/?q=node/feed define_category=security
-feed 1h http://rss.packetstormsecurity.com/news/ define_category=security
 feed 1h http://www.packetstan.com/feeds/posts/default define_category=security
 feed 1h http://www.posthumorous.com/feeds/posts/default define_category=security
 feed 1h http://feeds.feedburner.com/schneier/fulltext define_category=security
