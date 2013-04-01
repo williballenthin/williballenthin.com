@@ -415,3 +415,4 @@ feed 1h http://content.stamen.com/node/feed define_category=infoviz-maps
 feed 1h http://mike.teczno.com/notes/index.xml define_category=infoviz-maps
 feed 1h http://feeds.feedburner.com/ironicsans/feed define_category=typography
 feed 1h http://www.visualisingdata.com/?feed=rss define_category=infoviz-data
+feed 1h http://digitalresidue.blogspot.com/ define_category=forensics
