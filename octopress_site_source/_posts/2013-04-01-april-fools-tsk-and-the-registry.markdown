@@ -14,7 +14,7 @@ Building
 ========
 The `registryfs` branch of TSK is hosted in a Github repository [here](https://github.com/williballenthin/sleuthkit/tree/registryfs).  To quickly get up and running, you may execute the following instructions to build from source.
 
-{% codeblock %}git clone git@github.com:williballenthin/sleuthkit.git
+{% codeblock %}git clone git://github.com/williballenthin/sleuthkit.git
 cd sleuthkit
 checkout registryfs
 rm -rf tsk3/fs/.deps
