@@ -8,6 +8,7 @@ __if_description__<div class="itemdescription">
 <span class="itemlink">__title__</span><br /><br />
 __description__
 </div>__endif__
+__if_category__ <br /><div class="category">__category__</div>__endif__
 </div>
 
 

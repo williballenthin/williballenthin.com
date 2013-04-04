@@ -417,3 +417,4 @@ feed 1h http://feeds.feedburner.com/ironicsans/feed define_category=typography
 feed 1h http://www.visualisingdata.com/?feed=rss define_category=infoviz-data
 feed 1h http://digitalresidue.blogspot.com/ define_category=forensics
 feed 1h http://lambda-the-ultimate.org/rss.xml define_category=programming
+feed 1h http://digiforensics.blogspot.com/feeds/posts/default define_category=forensics
