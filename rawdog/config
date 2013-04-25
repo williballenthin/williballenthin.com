@@ -420,3 +420,4 @@ feed 1h http://lambda-the-ultimate.org/rss.xml define_category=programming
 feed 1h http://digiforensics.blogspot.com/feeds/posts/default define_category=forensics
 feed 1h http://feeds.feedburner.com/VolatileMinds define_category=forensics
 feed 1h http://blogs.mcafee.com/mcafee-labs/feed define_category=malware
+feed 1h http://feeds.feedburner.com/michaelboman/LfHQ?format=xml define_category=malware
