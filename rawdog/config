@@ -422,3 +422,7 @@ feed 1h http://feeds.feedburner.com/VolatileMinds define_category=forensics
 feed 1h http://blogs.mcafee.com/mcafee-labs/feed define_category=malware
 feed 1h http://feeds.feedburner.com/michaelboman/LfHQ?format=xml define_category=malware
 feed 1h http://cyb3rsleuth.blogspot.com/ define_category=malware
+feed 1h http://dfirjournal.wordpress.com/feed/ define_category=forensics
+feed 1h http://erratasec.blogspot.com/feeds/posts/default define_category=infosec
+feed 1h http://www.securelist.com/en/rss/allupdates defined_category=infosec
+feed 1h https://forksec.wordpress.com/feed/ defined_category=forensics
