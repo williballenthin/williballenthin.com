@@ -23,3 +23,8 @@ Dependencies:
     - rbenv rehash    # If you use rbenv, rehash to be able to run the bundle command
     - bundle install
   - rawdog
+
+
+Hints:
+  - use `configure_website.sh` to rebuild and deploy the website.
+  - use `rebuild.sh` to regenerate the Octopress resources and deploy them. Run from williballenthin.com/.
