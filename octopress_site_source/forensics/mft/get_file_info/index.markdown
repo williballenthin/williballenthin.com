@@ -60,7 +60,9 @@ git clone https://github.com/williballenthin/INDXParse.git
 {% endcodeblock %}
 
 `get-file-info` depends on a few freely available Python modules. You should
-install these using `pip`, as described [here](TODO). The modules are:
+install these using `pip`, as described 
+[here](http://www.williballenthin.com/blog/2014/01/11/how-to-install-the-python-package-manager/).
+ The modules are:
 
   - [argparse](https://pypi.python.org/pypi/argparse)
   - [jinja2](http://jinja.pocoo.org/docs/)
