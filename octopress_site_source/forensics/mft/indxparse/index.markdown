@@ -30,7 +30,8 @@ records, from INDX attributes. Investigators have often used this technique
 to recover metadata about previously deleted files.
 
 **Timelining**
-[list-mft] is a tool that lists the files and directories present on a NTFS
+[list-mft](http://www.williballenthin.com/forensics/list_mft/) is a tool
+that lists the files and directories present on a NTFS
 file system using only the MFT file. It is fairly performant, and uses a
 constant amount of memory --- `list-mft` easily processes an 8GB MFT.
 
