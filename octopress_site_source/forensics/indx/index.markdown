@@ -9,10 +9,14 @@ footer: true
 
 Introduction
 ------------
-INDX files are features of the Windows NTFS file system. They can be
-thought of as nodes in a B+ tree, where each directory has an INDX
-file. The INDX files contain records for each file within a directory.
-Records contain at least the following information:
+The NTFS file system tracks the contents of a directory using a B+
+tree data structure. It stores this index in the INDEX_ROOT and
+INDEX_ALLOCATION attributes on a directory's MFT record. These are often
+called "INDX files" or "INDX buffers", although the same structures are
+used for other indices elsewhere in NTFS as well.  In directory indices, 
+the key is the FILENAME attribute of the child, and the driver
+uses the filename field to order the keys. Therefore, each directory index
+entry contains at least the following metadata for the child:
 
  -   Filename
  -   Physical size of file
@@ -22,33 +26,29 @@ Records contain at least the following information:
  -   Changed timestamp
  -   Created timestamp
 
-INDX files are interesting to forensic investigators for a number
-of reasons. First, an investigator may use INDX files as a source
-of timestamps to develop a timeline of activity. Secondly, these
-files have significant slack spaces. With careful
-parsing, an investigator may recover old or deleted records from
+These entries are interesting to forensic investigators for a number
+of reasons. First, an investigator may use directory index entries as a source
+of timestamps to develop a timeline of activity. Secondly, the B+ tree
+nodes have significant slack spaces. With careful
+parsing, an investigator may recover old or deleted entries from
 within these data chunks. In other words, the investigator may
 be able to show a file existed even if it has been deleted.
 
-INDX files are not usually accessible from within the Windows
+Directory indices are not usually accessible from within the Windows
 operating system. Forensic utilties such as
-the [FTK Imager](http://accessdata.com/support/adownloads#FTKImager FTK Imager) may allow a user to extract the file by accessing
-the raw hard disk. FTK names the INDX file "$I30".
+the [FTK Imager](http://accessdata.com/support/adownloads#FTKImager FTK Imager) 
+may allow a user to extract the index attributes by accessing
+the raw hard disk. FTK exposes the directory index as a file named "$I30".
 Tools like [the Sleuthkit](http://www.sleuthkit.org/ the Sleuthkit)
-can extract the directory entries from a forensic image. INDXParse
+can extract the directory entries from a forensic image. INDXParse.py
 will not work against a live system.
 
 Previous work & tools
 ---------------------
 I'd like to first mention John McCash, who mentioned he was
-unaware of any non-EnCase tools that parse INDX files in a
+unaware of any non-EnCase tools that parse directory indices in a
 <a href="http://computer-forensics.sans.org/blog/2011/08/01/ultimate-windows-timelining">SANS blog post</a>.
 That got my mental gears turning.
-
-I started out with a document called <a href="http://grayscale-research.org/new/pdfs/NTFS%20forensics.pdf">NTFS Forensics: A Programmers
-View of Raw Filesystem Data Extraction</a> by Jason Medeiros.
-Unfortunately, while this document describes parsing INDX files
-in detail, a number of steps in the explanation were wrong.
 
 The second resource I used, and used extensively, was
 <a href="http://books.google.com/books?id=Ee9PF6Zv_tMC&pg=PA268&source=gbs_toc_r&cad=4#v=onepage&q&f=false">Forensic computing</a> by A. J. Sammes, Tony Sammes, and Brian Jenkinson.
@@ -60,12 +60,12 @@ book.
 for EnCase. This was not useful to me,
 because I was unable to get to the logic of the script.
 
-<a href="http://www.sleuthkit.org/">The Sleuthkit</a> has INDX structures defined in the `tsk_ntfs.h`
+<a href="http://www.sleuthkit.org/">The Sleuthkit</a> has directory index structures defined in the `tsk_ntfs.h`
 header files. I didn't do much digging in the code to see if
-TSK does any parsing of the INDX files (I suspect it does),
+TSK does any parsing of the directory indices (I suspect it does),
 but I did use it to verify the file structure.
 
-I worked with Jeff Hamm at Mandiant to describe INDX records on the company's blog.
+I worked with Jeff Hamm at Mandiant to describe directory indices on the company's blog.
 The result was four blog posts, which you can review here:
 
  -  [Part 1: Extracting an INDX Attribute](https://blog.mandiant.com/archives/3245)
@@ -90,7 +90,7 @@ The CSV schema is as follows:
  -  Changed timestamp
  -  Created timestamp
 
-`INDXParse.py` will parse INDX structure slack space if provided the '-d'
+`INDXParse.py` will parse B+ tree node slack space if provided the '-d'
 flag. Entries identified in the slack space will be tagged with a string
 of the form "(slack at ###)" where ### is the hex offset to the slack
 entry. Note that slack entries will have separate timestamps from the
@@ -127,10 +127,10 @@ Use it as you would any other template by applying it to INDX files.
 Sample Output
 -------------
 In the following example, I run `INDXParse.py` against
-an INDX file acquired from my User directory on my Windows 7
+an INDX attribute file acquired from my User directory on my Windows 7
 virtual machine. I specified the '-b' option to have the
 output formatted according to the Bodyfile specification. I used
-the '-d' option to recover entries from the INDX structure slack
+the '-d' option to recover entries from the index structure slack
 spaces. This listing shows only a portion of the 91 total entries
 identified by `INDXParse.py`.
 
