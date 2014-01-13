@@ -20,8 +20,8 @@ Projects
     and reading Windows Registry files.
 -   [python-evtx](/evtx/index.html) - A pure Python interface to parsing recent
     Windows Event Log files (.evtx files).
--   [NTFS INDX File Parsing](/forensics/indx/index.html) - I wrote a
-    tool to easily extract file entries from NTFS INDX files.
+-   [NTFS INDX Attribute Parsing](/forensics/indx/index.html) - I wrote a
+    tool to easily extract file entries from NTFS directory indices.
 -   [Windows Registry Shellbag Parsing](/forensics/shellbags/index.html) - 
     I wrote a tool to parse Windows shellbag entries into the Bodyfile format.
 -   [Tor](/tor/status/get) - I've not contributed to Tor, but this
