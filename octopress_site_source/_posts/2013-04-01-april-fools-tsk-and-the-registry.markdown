@@ -153,7 +153,7 @@ Value Offset: 1934696
 
 icat
 ====
-And finally, you can use `icat` to acquire the binary contents of a Registry value, just as if you were to recover a file from a file system.  Here, we access the contents of an "AppCompat" value (demonstrating support for "db" record types, something that AccessData cannot claim).
+And finally, you can use `icat` to acquire the binary contents of a Registry value, just as if you were to recover a file from a file system.  Here, we access the contents of an "AppCompat" value (demonstrating support for "db" record types).
 
 {% codeblock %}tools/fstools » ./icat -f reg ./SYSTEM 1916144 | xxd | head -n 35
 0000000: efbe adde 6000 0000 6000 0000 0000 0000  ....`...`.......
