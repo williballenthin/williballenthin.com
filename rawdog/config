@@ -394,7 +394,7 @@ feed 1h http://junkcharts.typepad.com/numbersruleyourworld/atom.xml define_categ
 feed 1h http://www.theusrus.de/blog/feed/ define_category=infoviz-stats
 feed 1h http://www.excelcharts.com/blog/feed/ define_category=infoviz-stats
 feed 1h http://www.perceptualedge.com/blog/?feed=rss2 define_category=infoviz-stats
-feed 1h http://www.visualisingdata.com/index.php/feed/ define_category=infoviz-stats
+#feed 1h http://www.visualisingdata.com/index.php/feed/ define_category=infoviz-stats
 feed 1h http://labs.alienvault.com/labs/index.php/feed/ define_category=Tools
 feed 1h http://googleresearch.blogspot.com/feeds/posts/default define_category=Tools
 feed 1h http://feeds.feedburner.com/LightboxTechnologies define_category=Tools
@@ -426,3 +426,6 @@ feed 1h http://dfirjournal.wordpress.com/feed/ define_category=forensics
 feed 1h http://erratasec.blogspot.com/feeds/posts/default define_category=infosec
 feed 1h http://www.securelist.com/en/rss/allupdates defined_category=infosec
 feed 1h https://forksec.wordpress.com/feed/ defined_category=forensics
+feed 1h http://www.xylibox.com/feeds/posts/default defined_category=malware
+feed 1h http://dominik.honnef.co/atom.xml defined_category=golang
+feed 1h http://az4n6.blogspot.com/feeds/posts/default defined_category=forensics
