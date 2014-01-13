@@ -14,13 +14,15 @@ STANDARD_INFORMATION attributes, FILENAME attributes, and resident
 directory index entries.  `list-mft` also attempts to recover inactive
 MFT entries and resolve orphan files.
 
+`list-mft` is a tool analogous to [AnalyzeMFT](http://integriography.wordpress.com).
+
 
 Download
 --------
 `list-mft` is a component of the [INDXParse suite](http://www.williballenthin.com/forensics/INDXParse)
 of tools used for NTFS analysis. All INDXParse tools are free and open source.
 The source for `list-mft` is hosted on Github 
-[here](https://github.com/williballenthin/INDXParse/blob/master/get_file_info.py).
+[here](https://github.com/williballenthin/INDXParse/blob/master/list_mft.py).
 
 
 Highlights

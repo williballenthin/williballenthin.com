@@ -50,7 +50,8 @@ tool useful to challenge or confirm artifact interpretations and
 recover evidence of deleted files.
 
 **Fuse driver**
-[fuse-mft] is a FUSE file system driver that exposes the file system tree
+[fuse-mft](http://www.williballenthin.com/forensics/mft/fuse_mft/)
+is a FUSE file system driver that exposes the file system tree
 defined by an MFT. This allows an investigator to use battle tested tools
 (such as `ls`, `cat`, or `tree`) to explore the files, directories, and 
 metadata using only the raw MFT (a relatively small file that compresses well).
