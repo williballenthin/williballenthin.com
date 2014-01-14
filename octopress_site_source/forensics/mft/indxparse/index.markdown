@@ -30,7 +30,7 @@ records, from INDX attributes. Investigators have often used this technique
 to recover metadata about previously deleted files.
 
 **Timelining**
-[list-mft](http://www.williballenthin.com/forensics/list_mft/) is a tool
+[list-mft](http://www.williballenthin.com/forensics/mft/list_mft/) is a tool
 that lists the files and directories present on a NTFS
 file system using only the MFT file. It is fairly performant, and uses a
 constant amount of memory --- `list-mft` easily processes an 8GB MFT.
@@ -56,12 +56,16 @@ defined by an MFT. This allows an investigator to use battle tested tools
 (such as `ls`, `cat`, or `tree`) to explore the files, directories, and 
 metadata using only the raw MFT (a relatively small file that compresses well).
 
+**Slack extractor**
+[extract-mft-record-slack] is a tool that extracts the record slack
+space from the end of each MFT record. Investigators inspect these
+buffers for evidence of previously deleted files.
+
 **Free** All INDXParse tools are free and 
 [open source](https://raw2.github.com/williballenthin/INDXParse/master/LICENSE). 
 Forensic practitioners drive the development by contributing ideas, bug reports, 
 and patches. Since the source is in the open and covered by a liberal licnse,
 you'll never have to worry about the tools disappearing. 
-
 
 **Reusable library**
 [mft.py] is the pure Python module that implements many of the features described 

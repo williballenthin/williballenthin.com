@@ -16,7 +16,7 @@ entries, and exposes a few virtual files to provide additional context.
 
 Download
 --------
-`fuse-mft` is a component of the [INDXParse suite](http://www.williballenthin.com/forensics/INDXParse)
+`fuse-mft` is a component of the [INDXParse suite](http://www.williballenthin.com/forensics/mft/indxparse)
 of tools used for NTFS analysis. All INDXParse tools are free and open source.
 The source for `fuse-mft` is hosted on Github 
 [here](https://github.com/williballenthin/INDXParse/blob/master/fuse-mft.py).
