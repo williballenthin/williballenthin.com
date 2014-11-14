@@ -394,7 +394,6 @@ feed 1h http://junkcharts.typepad.com/numbersruleyourworld/atom.xml define_categ
 feed 1h http://www.theusrus.de/blog/feed/ define_category=infoviz-stats
 feed 1h http://www.excelcharts.com/blog/feed/ define_category=infoviz-stats
 feed 1h http://www.perceptualedge.com/blog/?feed=rss2 define_category=infoviz-stats
-#feed 1h http://www.visualisingdata.com/index.php/feed/ define_category=infoviz-stats
 feed 1h http://labs.alienvault.com/labs/index.php/feed/ define_category=Tools
 feed 1h http://googleresearch.blogspot.com/feeds/posts/default define_category=Tools
 feed 1h http://feeds.feedburner.com/LightboxTechnologies define_category=Tools

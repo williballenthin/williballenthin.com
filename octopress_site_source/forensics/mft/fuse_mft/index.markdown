@@ -72,13 +72,13 @@ install these using `pip`, as described
 
   - [argparse](https://pypi.python.org/pypi/argparse)
   - [jinja2](http://jinja.pocoo.org/docs/)
-  - [python-progressbar](http://code.google.com/p/python-progressbar/)
-  - [fuse-python](http://sourceforge.net/apps/mediawiki/fuse/index.php)
+  - [progressbar](http://code.google.com/p/python-progressbar/)
+  - [fusepy](https://github.com/terencehonles/fusepy/)
 
 You can install them all in one go like this:
 
 {% codeblock lang:sh %}
-pip install argparse jinja2 python-progressbar fuse-python
+pip install argparse jinja2 python-progressbar fusepy
 {% endcodeblock %}
 
 

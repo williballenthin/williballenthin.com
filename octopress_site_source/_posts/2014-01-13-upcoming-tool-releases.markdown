@@ -25,4 +25,5 @@ Tool Release Posts
 ==================
 
   - [get-file-info](http://www.williballenthin.com/blog/2014/01/13/tool-release-get-file-info/)
-
+  - [list-mft](http://www.williballenthin.com/blog/2014/01/15/tool-release-list-mft/)
+  - [fuse-mft](http://www.williballenthin.com/blog/2014/01/16/tool-release-fuse-mft/)
