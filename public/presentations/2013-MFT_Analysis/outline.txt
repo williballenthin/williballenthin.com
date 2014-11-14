@@ -1,0 +1,130 @@
+Motivation
+  - New Technology File System used on most Windows machines
+  - Master File Table (MFT) contains most metadata for entire file system
+  - every active, and some deleted, file/directory has an entry
+    - filename
+    - 8 timestamps
+    - file size
+
+           <li>every active, and some deleted, file/directory has an entry <br />
+              <ul>
+                <li>filenames</li>
+                <li>8 timestamps</li>
+                <li>file size</li>
+              </ul>
+            </li>
+
+  - rather than rely on layers of technology, work with directly with the MFT great good
+    - MFT typically small (although dedicated 12.5% of volume), often under 100MB
+    - compress very well (90% ratio)
+    - answers 80% of the questions you have
+    - answers questions you might not have had - evidence recovery
+
+MFT Structures
+  - motivation: don't rely on a tool until you can do it manually
+
+  - variably sized single file allocated at start of a volume
+  - contents are records with fixed size: 1024 bytes
+  - (at least) one record for each file/directory
+  - indices into this array are called MFT references
+  - MFT references among the records forms the file system tree
+  
+  - record is statically sized
+  - within this, variably sized "attributes" stored contiguously
+    - DWORD attribute ID
+    - DWORD attribute size
+    - offset 0x72 and beyond: attribute specific data
+  - 17 defined attributes, extensible by user (encryption, etc.)
+    - 16d/0x10 - Standard Information ($SI)
+    - 48d/0x30 - Filename Information ($FN)
+    - 128d/0x80 - Data
+    - 144d/0x90 - Directory Index Root
+    - 160d/0xA0 - Directory Index Allocation
+  - thats a lot of attributes, can they all fit?   
+    - if not, overflowing data is stored outside the record, in the volume data "segment"
+    - therefore, small files --> stored directly in MFT
+
+  - Standard Information
+    - always resident
+    - only one per record
+    - explorer shows this, most forensic tools show this
+    - contains good stuff:
+      - MACB timestamps
+        - these are easy to fake (MSDN: SetFileTime)
+      - file hidden? system file? and other flags
+      - quota index
+      - journal reference
+      - not size
+      - not filename
+
+  - Filename Information
+    - not all forensic tools show this by default
+    - may be multiple per record (different filename namespaces: 8.3, Unicode, POSIX)
+    - at least one always resident
+    - contains good stuff:
+      - filename
+      - data size (at one time)
+      - parent directory MFT reference
+        - use this to recreate the file system tree
+      - MACB timestamps
+        - specific to MACB of filenames
+        - not subject to SetFileTime
+        - difficult to stomp. requires: unusual copy operation (SetMACE) or rootkit
+
+   timestamp comparison
+     filename vs standard info
+
+  - Source: Linux fs/Ntfs/Layout.h (LXR: http://www.cs.fsu.edu/~baker/devices/lxr/http/source/linux/fs/ntfs/layout.h)
+Tools
+  - MFTView
+  - list-mft
+  - INDXParse
+
+Advanced Topics
+  - MFT Record Slack Space
+    - motivation: can recover evidence from MFT record slack space
+    - NTFS does not zero out records, overwrites old data
+    - MFT record has fixed size, but content is variable
+    - inspect final bytes of a record for interesting strings, timestamps, etc.
+    - you don't get this with automated tools!
+  - Directory indices
+    - motivation: can recover metadata for deleted files from directory index slack
+    - B+ tree using page size 4096 (cluster size), key is $FN attribute, value entry reference
+    - enables fast lookup of entries in a directory
+    - attribute INDX_ROOT is always resident, usually contains about 4 entries
+    - attribute INDEX_ALLOCATION is always non-resident
+    - use INDXParse.py to recover stuff
+    - references: https://www.mandiant.com/blog/striking-gold-incident-response-ntfs-indx-buffers-part-1-extracting-indx/
+  - Alternate data streams
+    - motivation: programs may store "hidden" information in ADSs
+    - by convention, unnamed $DATA attribute contains file content
+    - NTFS supports extra named $DATA attributes also on a file
+    - examples:
+      - malware may store configuration file in ADS, doesn't show up in directory listing
+      - browsers use Zone.Identifier for files downloaded from internet
+    - references: http://www.hexacorn.com/blog/2012/03/26/good-alternate-data-streams-ads/
+  - File system tunneling
+    - delete file and create file with same name within 15 seconds, timestamps remain unchanged
+    - supports programs that during save, replace the destination file by delete/copy
+    - references: http://support.microsoft.com/kb/172190
+  - Rebuilding file system tree
+    - can parse tree like the NTFS driver does using directory index
+    - unfortunately, most INDX attributes non-resident, so they don't come with the MFT
+    - instead, use $FN parent MFT references to build from bottom up
+    - great time to memoize function, since nodes by root are used by all paths
+
+KBs
+  - Directory INDX ("INDX") records are not the only index
+    - there are indices for $SII (Security Hash), $Quota (SID), $ObjId (Object ID)
+    - there not all indices use filename collation, can also have binary, LONG, SID, security hash, multiple ULONGs
+    - NTFS supports multiple index views on the same data (at least Linux does)
+  - INDX records stored in B+ tree using *variable* sized keys
+  - ownership is hard to compute
+    - $SI -> index into $SII -> SID -> Registry/AD query -> Username
+  - references to data via runlists
+    - continuous runlist entries
+    - runlist entries are closely packed:
+      0x4 bits: number of bytes needed for offset
+      0x4 bits: number of bytes needed for length
+      $num_offset_bytes
+      $num_length_bytes

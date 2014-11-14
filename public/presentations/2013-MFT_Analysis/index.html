@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>MFT Analysis for Incident Responders</title>
+
+		<meta name="description" content="MFT Analysis for Incident Responders">
+		<meta name="author" content="Willi Ballenthin">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/willi.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+
+
+    <style>
+    @font-face {
+        font-family: 'Quicksand';
+        font-style: normal;
+        font-weight: 300;
+        src: local('Quicksand Light'), local('Quicksand-Light'), url(fonts/qhfoJiLu10kFjChCCTvGlHhCUOGz7vYGh680lGh-uXM.woff) format('woff');
+    }
+    @font-face {
+        font-family: 'Quicksand';
+        font-style: normal;
+        font-weight: 400;
+        src: local('Quicksand Regular'), local('Quicksand-Regular'), url(fonts/sKd0EMYPAh5PYCRKSryvWz8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
+    }
+    @font-face {
+        font-family: 'Quicksand';
+        font-style: normal;
+        font-weight: 700;
+        src: local('Quicksand Bold'), local('Quicksand-Bold'), url(fonts/32nyIRHyCu6iqEka_hbKsnhCUOGz7vYGh680lGh-uXM.woff) format('woff');
+    }
+    </style>
+	</head>
+
+  <script>
+
+  </script>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+				<section>
+					<h2>MFT Analysis</h2>
+          <h4>for Incident Responders</h4>
+					<p>
+						<small>By <a href="http://www.williballenthin.com">Willi Ballenthin</a> / 
+                      <a href="http://twitter.com/williballenthin">@willballenthin</a></small>
+					</p>
+				</section>
+
+        <section>
+          <h2>What's going on in here?</h2>
+          <ul>
+            <li>New Technology File System (NTFS) used on most Windows machines</li>
+            <li>Master File Table (MFT) contains most metadata for entire file system</li>
+            <li>found in <code>[filesystem root]/$MFT</code>, once per filesystem</li>
+            <li>rather than rely on layers of technology, work with directly with the MFT</li>
+          </ul>
+        </section>
+        
+
+        <section>
+          <section>
+            <h2>Direct MFT analysis for great good</h2>
+            <ul>
+              <li>MFT is typically small, (although dedicated 12.5% of volume), often under 100MB</li>
+              <li>compress well (usually ~90% ratio)</li>
+              <li>answer most questions you have</li>
+              <li>good for data recovery</li>
+              <li>flexible set of analysis tools</li>
+            </ul>
+          </section>
+          <section>
+            <img src="img/zip-mft.png"  />
+          </section>
+        </section>
+
+        <section>  <!-- content slide -->
+          <h3>Don't rely on a tool until you know what its doing.</h3>
+        </section>
+        
+        <section>  <!-- content slide -->
+          <h3><a href="http://www.cs.fsu.edu/~baker/devices/lxr/http/source/linux/fs/ntfs/layout.h?v=2.6.11.8">Structures</a></h3>
+          <ul>
+            <li>MFT is variably sized file</li>
+            <li>contents are fixed sized records: 1024 bytes</li>
+            <li>(at least) one record for each file/directory</li>
+            <li>MFT reference: index into the MFT array</li>
+            <li>references among records form FS tree</li>
+          </ul>
+        </section>
+
+        <section>
+          <section>  <!-- content slide -->
+            <h3>MFT Record</h3>
+            <ul>
+              <li>static size: 1024 bytes</li>
+              <li>small header</li>
+              <li>contiguous attributes, stored contiguously</li>
+            </ul>
+          </section>
+          <section>
+            <pre><code data-trim>
+ typedef struct {
+ /*Ofs*/
+ /*  0*/ NTFS_RECORD_TYPE magic;
+         le16 usa_ofs;          
+         le16 usa_count;        
+ /*  8*/ le64 lsn;             
+ /* 16*/ le16 sequence_number; 
+ /* 18*/ le16 link_count;      
+ /* 20*/ le16 attrs_offset;    
+ /* 22*/ MFT_RECORD_FLAGS flags;
+ /* 24*/ le32 bytes_in_use;     
+ /* 28*/ le32 bytes_allocated;  
+ /* 32*/ leMFT_REF base_mft_record;
+ /* 40*/ le16 next_attr_instance;
+ /* 42*/ le16 reserved;          
+ /* 44*/ le32 mft_record_number; 
+ /* sizeof() = 48 bytes */
+ } __attribute__ ((__packed__)) MFT_RECORD;
+</code></pre>
+          </section>
+
+          <section>
+            <img src="img/record_hexdump.png">
+          </section>
+
+          <section>
+            <img src="img/record_hexdump_overlaid.png">
+          </section>
+        </section>
+
+        <section>
+          <section>  <!-- content slide -->
+            <h2>Attributes</h2>
+            <ul>
+              <li>17 standard attributes, extensible by user
+                <ul>
+                  <li><>16d/0x10 - Standard Information ($SI)</li>
+                  <li>48d/0x30 - Filename Information ($FN)</li>
+                  <li>128d/0x80 - Data</li>
+                  <li>144d/0x90 - Directory Index Root</li>
+                  <li>160d/0xA0 - Directory Index Allocation</li>
+              </ul></li>
+              <li>common structure:
+                <ul>
+                  <li>DWORD attribute type</li>
+                  <li>DWORD attribute size</li>
+                  <li>offset 0x72, attribute specific data</li>
+              </ul></li>
+            </ul>
+          </section>
+
+          <section>
+            <img src="img/record_hexdump_fn_overview.png">
+          </section>
+
+          <section>
+            <img src="img/fn_hexdump_overlaid.png">
+          </section>
+        </section>
+
+        <section>
+          <section>  <!-- content slide -->
+            <h3>Residency</h3>
+            <ul>
+              <li>all attributes may not fit in static size</li>
+              <li>resident attribute: content stored inline</li>
+              <li>non-resident attribute: attribute points to external data runs</li>
+              <li>examples:
+                <ul>
+                  <li>small file: stored within MFT</li>
+                  <li>large file: fragmented across disk</li>
+                </ul>
+              </li>
+              <li>note: things get really complex for huge files</li>
+            </ul>
+          </section>
+          
+          <section>
+            <img src="img/record_resident_win_ini.png">
+          </section>
+        </section>
+
+        <section>  <!-- content slide -->
+          <h3>Standard Information</h3>
+          <ul>
+            <li>always resident, one per entry</li>
+            <li>contains good stuff:
+              <ul>
+                <li>MACB timestamps</li>
+                <li>hidden? system? other flags</li>
+                <li>quota info</li>
+                <li><i>not</i> size</li>
+                <li><i>not</i> filename</li>
+              </ul>
+            </li>
+          </ul>
+        </section>
+
+        <section>  <!-- content slide -->
+          <h3>Filename Information</h3>
+          <ul>
+            <li>maybe multiple per entry, at least one resident</li>
+            <li>types: 8.3, Unicode, POSIX</li>
+            <li>contains good stuff
+              <ul>
+                <li>filename</li>
+                <li>MACB timestamps <i>of filename</i></li>
+                <li>parent directory MFT reference</li>
+                <li>size <i>sorta</i></li>
+              </ul>
+            </li>
+          </ul>
+        </section>
+
+        <section>  <!-- content slide -->
+          <h3>Timestamps</h3>
+          <ul>
+            <li>At least eight (8) timestamps per entry</li>
+            <li>Standard Information
+              <ul>
+                <li>For: <u>file content</u></li>
+                <li>Shown by Explorer, most forensic tools</li>
+                <li>Easily modified via <code>SetFileTime</code> API</li>
+              </ul></li>
+            <li>Filename Information
+              <ul>
+                <li>For: <u>filenames</u></li>
+                <li>Difficult to stomp, need unusual copy operation (SetMACE) or kernel driver</li>
+              </ul></li>
+            </li>
+          </ul>
+        </section>
+
+
+        <section> <!-- title slide -->
+          <h1>Tools</h1>
+          <h3></h3>
+        </section>
+
+
+        <section>
+          <section>  <!-- content slide -->
+            <h3>Tool: MFTView</h3>
+            <ul>
+              <li>boring name, sorry</li>
+              <li>interactive inspection of MFT with tree view</li>
+              <li>some features:
+                <ul>
+                  <li>strings, hex view</li>
+                  <li>integrated INDX root parsing</li>
+                  <li>data extraction & cluster run calculation</li>
+                </ul>
+              </li>
+              <li><a href="https://github.com/williballenthin/INDXParse/blob/master/MFTView.py">source</a></li>
+            </ul>
+          </section>
+          <section>
+            <img src="img/load-mftview.png">
+          </section>
+          <section>
+            <img src="img/mftview-hexview.png">
+          </section>
+          <section>
+            <img src="img/mftview-metadata-view.png">
+          </section>
+          <section>
+            <img src="img/mftview-strings-view.png">
+          </section>
+          <section>
+            <img src="img/mftview-indx-view.png">
+          </section>
+          <section>
+            <img src="img/mftview-data-view-resident.png">
+          </section>
+          <section>
+            <img src="img/mftview-data-view-nonresident.png">
+          </section>
+
+        </section>
+
+        <section>
+          <section>  <!-- content slide -->
+            <h3>Tool: list-mft</h3>
+            <ul>
+              <li>compare with: AnalyzeMFT</li>
+              <li>offers better memory usage, speed</li>
+              <li>supports:
+                <ul>
+                  <li>standard information</li>
+                  <li>multiple filename information</li>
+                  <li>INDX root</li>
+                </ul>
+              </li>
+              <li>renamed from MFTINDX.py</li>
+              <li><a href="https://github.com/williballenthin/INDXParse/blob/master/list_mft.py">source</a></li>
+            </ul>
+          </section>
+          <section>
+            <img src="img/mftlist-output.png">
+          </section>
+        </section>
+
+        <section>
+          <section>  <!-- content slide -->
+            <h3>Tool: get_file_info</h3>
+            <ul>
+              <li>manual MFT record inspection</li>
+              <li>timeline all embedded timestamps</li>
+              <li>extract strings from allocated/slack space</li>
+              <li><a href="https://github.com/williballenthin/INDXParse/blob/master/get_file_info.py">source</a></li>
+            </ul>
+          </section>
+          <section>
+            <img src="img/mftgetinfo-page1.png">          
+          </section>
+          <section>
+            <img src="img/mftgetinfo-page2.png">          
+          </section>
+        </section>
+
+        <section>
+          <section>  <!-- content slide -->
+            <h3>Tool: fuse-mft</h3>
+            <ul>
+              <li>FUSE driver for MFTs</li>
+              <li>mount an MFT and explore using favorite CLI/GUI tools</li>
+              <li>read from resident files, all metadata mirrors MFT entries</li>
+              <li>check <code>/path/to/file::meta</code> for goodies</li>
+              <li><a href="https://github.com/williballenthin/INDXParse/blob/master/fuse-mft.py">source</a></li>
+            </ul>
+          </section>
+          <section>
+            <img src="img/nautilus.png">          
+          </section>
+          <section>
+            <img src="img/cat_resident.png">          
+          </section>
+          <section>
+            <img src="img/cat_meta_1.png">          
+          </section>
+          <section>
+            <img src="img/cat_meta_2.png">          
+          </section>
+        </section>
+
+        <section> <!-- title slide -->
+          <h1>Advanced Topics</h1>
+          <h3></h3>
+        </section>
+
+
+        <section>
+          <section>  <!-- content slide -->
+            <h3>Record Slack Space</h3>
+            <ul>
+              <li><u>NTFS doesn't zero out records, overwrites old data</u></li>
+              <li>new record content often smaller, often recoverable artifacts</li>
+              <li>inspect final bytes for:
+                <ul>
+                  <li>UTF-16LE strings</li>
+                  <li>timestamps</li>
+              </ul></li>
+              <li>DO THIS! automated tools don't do this for you</li>
+            </ul>
+          </section>
+          
+          <section>
+            <img src="img/mftview-slack-index-hexview.png">
+          </section>
+
+          <section>
+            <img src="img/mftview-slack-index-hexview-hightlight-slack.png">
+          </section>
+
+          <section>
+            <img src="img/mftview-slack-index-hexview-slack-highlight-hits.png">
+          </section>
+        </section>
+        
+        <section> 
+          <h3>Directory Indices</h3>
+          <ul>
+            <li>commonly called <a href="https://www.mandiant.com/blog/striking-gold-incident-response-ntfs-indx-buffers-part-1-extracting-indx/">INDX buffers</a></li>
+            <li>B+ tree for fast lookup of filenames (usually)
+              <ul>
+                <li>page size is 4096 bytes (== cluster size)</li>
+                <li>key is $FN attribute</li>
+                <li>value is MFT reference</li>
+              </ul></li>
+            <li>attribute <code>INDX_ROOT</code> always resident, usually ~4 entries</li>
+            <li>attribute <code>INDX_ALLOCATION</code> always non-resident</li>
+            <li>use <a href="https://github.com/williballenthin/INDXParse/blob/master/INDXParse.py">INDXParse.py</a> to recover file metadata</li>
+          </ul>
+        </section>
+
+        <section>  <!-- content slide -->
+          <h3>Alternate Data Streams</h3>
+          <ul>
+            <li>programs may store "hidden" data in ADSs</li>
+            <li>unnamed $DATA attribute is a file's content</li>
+            <li>NTFS supports extra named $DATA attributes</li>
+            <li><code>file_basename:ads_name</code></li>
+            <li>examples:
+              <ul>
+                <li>malware stores configuration in ADS</li>
+                <li>browsers mark downloaded files with <a href="http://www.hexacorn.com/blog/2012/03/26/good-alternate-data-streams-ads/">:Zone.Identifier</a></li>
+              </ul>
+            </li>
+            <li>use <a href="http://technet.microsoft.com/en-us/sysinternals/bb897440.aspx">SysInternals streams.exe</a></li>
+          </ul>
+        </section>
+
+        <section>  <!-- content slide -->
+          <h3>File System Tunneling</h3>
+          <ul>
+            <li>file created within 15 secs of deleted file <a href="http://support.microsoft.com/kb/172190">inherits metadata</a></li>
+            <li>supports programs that copy/replace file during a save operation</li>
+            <li>includes, but <a href="http://blogs.msdn.com/b/oldnewthing/archive/2005/07/15/439261.aspx">not limited to</a>, timestamps</li>
+            <li>research topic: extract/carve "quarks" from metadata cache</li>
+          </ul>
+        </section>
+
+        <section>  <!-- content slide -->
+          <h3>Rebuilding FS Tree</h3>
+          <ul>
+            <li>top down parsing of FS is fast, but requires non-resident directory indices</li>
+            <li>bottom up reconstruction is self-contained in MFT</li>
+            <li>walk all $FN parent references</li>
+            <li>shortcut: cache common subtree roots</li>
+          </ul>
+        </section>
+
+
+        <section> <!-- title slide -->
+          <h1>KBOTD(s)</h1>
+          <h3></h3>
+        </section>
+
+        <section>
+          <h3>Directory Indices are not Unique</h3>
+          <ul>
+            <li>Also indices for <code>$SII</code>, <code>$Quota</code>, <code>$ObjId</code></li>
+            <li>NTFS supports multiple index views over same data(!)</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>B+ indices support <i>variable</i> sized keys</h3>
+        </section>
+
+        <section>
+          <h3>Ownership is complex to compute</h3>
+          <p>$SI &rarr; $SII &rarr; SID &rarr; Registry/AD &rarr; Username</p>
+        </section>
+
+				<section>
+					<h1>THE END</h1>
+					<h3>BY Willi Ballenthin</h3>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'linear', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
