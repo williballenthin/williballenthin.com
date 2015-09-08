@@ -429,3 +429,4 @@ feed 1h http://www.xylibox.com/feeds/posts/default define_category=malware
 feed 1h http://dominik.honnef.co/atom.xml define_category=golang
 feed 1h http://az4n6.blogspot.com/feeds/posts/default define_category=forensics
 feed 1h http://dustymabe.com/feed/ define_category=linux
+feed 1h https://richardbrath.wordpress.com/feed/ define_category=typography
