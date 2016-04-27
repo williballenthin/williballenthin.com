@@ -18,7 +18,7 @@ def html_header(text):
     r = ""
     for t in text:
         r += t
-    return html_tag("header", r + """<script type="text/javascript"> 
+    return html_tag("head", r + """<script type="text/javascript"> 
  
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-23141359-1']);
