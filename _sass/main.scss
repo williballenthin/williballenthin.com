@@ -31,6 +31,10 @@ a {
     margin: 30px 0;
   }
 }
+a.projects-link {
+  text-decoration-style: dotted;
+  border-bottom: 1px dashed;
+}
 mark {
   background: #fffc76;
   padding: 0 5px;
@@ -389,3 +393,5 @@ section {
     -webkit-transform: none;
   }
 }
+
+
