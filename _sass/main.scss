@@ -212,18 +212,10 @@ time {
 }
 code,
 pre {
-  //font-family: Consolas, monospace, x;
-  //font-family: 'Fira Mono', monospace;
   font-family: 'Inconsolata', monospace;
 }
 code {
   color: #5c5c5c;
-
-  //background: #eee;
-  //padding: 2px 6px;
-
-  // fix up font-sizing for slabos vs. consolas specifically
-  font-size: 0.8em;
 }
 pre {
   display: block;
