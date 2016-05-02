@@ -10,11 +10,11 @@ footer: true
 Introduction <a id="introduction"></a>
 ------------
 
-python-registry was originally written by [Willi Ballenthin](), a forensic analyst who wanted
-to access the contents of the Windows Registry from his Linux laptop.
-python-registry currently provides read-only access to Windows Registry
-files, such as `NTUSER.DAT`, `userdiff`, and `SOFTWARE`. The interface is
-two-fold: a high-level interface suitable for most tasks, and a low
+python-registry is a pure Python module for accessing data in Windows Registry hives, such as `NTUSER.DAT`.
+It does not use the Microsoft API to fetch data; rather, it manually parses the raw files.
+python-registry is read-only.
+
+The interface is two-fold: a high-level interface suitable for most tasks, and a low
 level set of parsing objects and methods which may be used for advanced
 study of the Windows Registry. python-registry is written in pure
 Python, making it portable across all major platforms.
@@ -56,7 +56,7 @@ reg = Registry.Registry(sys.argv[1])
 {% highlight python %}
 def rec(key, depth=0):
     print "\t" * depth + key.path()
-    
+
     for subkey in key.subkeys():
         rec(subkey, depth + 1)
 
@@ -107,16 +107,15 @@ of two sources:
 Copies of these resources are included in the `documentation/` directory
 of the python-registry source.
 
-
 Samples <a id="samples"></a>
 ------
 
 The source directory for python-registry contains a `samples/` subdirectory
 that contains small programs that use python-registry. For example,
 `regview.py` is a read-only clone of Microsoft Window's Regedit,
-implemented in a few hundred lines. 
+implemented in a few hundred lines.
 
-![Screenshot of regview.py](regview-thumb.png) 
+![Screenshot of regview.py](regview-thumb.png)
 
 
 License <a id="license"></a>
