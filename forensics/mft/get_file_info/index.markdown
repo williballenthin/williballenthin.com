@@ -55,9 +55,9 @@ together. To acquire INDXParse, download the latest ZIP archive from
 [here](https://github.com/williballenthin/INDXParse/archive/master.zip) or use
 `git` to clone the source repository:
 
-{% codeblock lang:sh %}
+{% highlight sh %}
 git clone https://github.com/williballenthin/INDXParse.git
-{% endcodeblock %}
+{% endhighlight %}
 
 `get-file-info` depends on a few freely available Python modules. You should
 install these using `pip`, as described 
@@ -70,9 +70,9 @@ install these using `pip`, as described
 
 You can install them all in one go like this:
 
-{% codeblock lang:sh %}
+{% highlight sh %}
 pip install argparse jinja2 python-progressbar
-{% endcodeblock %}
+{% endhighlight %}
 
 Usage
 -----
@@ -96,24 +96,24 @@ identifier often takes between five and 30 seconds.
 Here's an example of a user inspecting the MFT record zero 
 (the record for the MFT itself):
 
-{% codeblock lang:sh %}
+{% highlight sh %}
 python get_file_info.py /evidence/case001/CMFT 0
-{% endcodeblock %}
+{% endhighlight %}
 
 Here's an example of a user inspecting the MFT record for the path 
 `C:\WINDOWS\Temp`. Note, the does not know the volume name, so the prefix "C:" is
 not provided.
 
-{% codeblock lang:sh %}
+{% highlight sh %}
 python get_file_info.py /evidence/case001/CMFT "\WINDOWS\Temp"
-{% endcodeblock %}
+{% endhighlight %}
 
 Sample Output
 -------------
 Here's a sample listing of the tool executed against the MFT record
 associated with a system's "%TEMP%" directory:
 
-{% codeblock lang:sh %}
+{% highlight sh %}
 Git/INDXParse - [master●] » python get_file_info.py MFT.copy0 72
 MFT Record: 72
 Path: \.\WINDOWS\Temp
@@ -203,5 +203,5 @@ Unicode strings:
   $I30
   $I30?
   ~DFF2A7.tmp
-{% endcodeblock %}
+{% endhighlight %}
 

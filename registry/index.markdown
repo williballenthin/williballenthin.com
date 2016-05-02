@@ -44,16 +44,16 @@ major datatypes, such as `RegSZ`, `RegDWord`, and `RegBin`.
 
 Its this easy:
 
-{% codeblock lang:python %}
+{% highlight python %}
 import sys
 from Registry import Registry
 
 reg = Registry.Registry(sys.argv[1])
-{% endcodeblock %}
+{% endhighlight %}
 
 ### Print all keys in a Registry
 
-{% codeblock lang:python %}
+{% highlight python %}
 def rec(key, depth=0):
     print "\t" * depth + key.path()
     
@@ -61,11 +61,11 @@ def rec(key, depth=0):
         rec(subkey, depth + 1)
 
 rec(reg.root())
-{% endcodeblock %}
+{% endhighlight %}
 
 ### Find a key and print all string values
 
-{% codeblock lang:python %}
+{% highlight python %}
 try:
     key = reg.open("SOFTWARE\\Microsoft\\Windows\\Current Version\\Run")
 except Registry.RegistryKeyNotFoundException:
@@ -76,18 +76,11 @@ for value in [v for v key.values() \
                    if v.value_type() == Registry.RegSZ or \
                       v.value_type() == Registry.RegExpandSZ]:
     print "%s: %s" % (value.name(), value.value())
-{% endcodeblock %}
+{% endhighlight %}
 
 Advanced users who wish to study the structure of the Windows Registry
 may find the `Registry.RegistryParse` module useful. This module
 implements all known structures of the Windows Registry.
-
-
-Documentation <a id="documentation"></a>
--------------
-
-Static API documentation for python-registry can be found here:
-[Documentation](doc/Registry.html).
 
 
 Testing <a id="testing"></a>

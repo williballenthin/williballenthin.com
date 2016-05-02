@@ -42,20 +42,16 @@ Provided with the parsing module `Evtx` are three scripts that mimic the tools d
 
 Note the length of the `evtxdump.py` script: its only 20 lines.  Now, review the contents and notice the complete implementation of the logic:
 
-{% codeblock lang:python %}
+{% highlight python %}
 print "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\" ?>"
 print "<Events>"
 for chunk in fh.chunks():
     for record in chunk.records():
         print record.root().xml([])
 print "</Events>"            
-{% endcodeblock %}
+{% endhighlight %}
 
 Working with python-evtx is really easy!
-
-Documentation
--------------
-You can browse HTML documentation for the module [here](./doc/index.html).  These [epydoc](http://epydoc.sourceforge.net/) generated documents include complete class listings and hyperlinked source code. 
 
 Installation
 ------------

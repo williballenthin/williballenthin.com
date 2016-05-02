@@ -61,9 +61,9 @@ together. To acquire INDXParse, download the latest ZIP archive from
 [here](https://github.com/williballenthin/INDXParse/archive/master.zip) or use
 `git` to clone the source repository:
 
-{% codeblock lang:sh %}
+{% highlight sh %}
 git clone https://github.com/williballenthin/INDXParse.git
-{% endcodeblock %}
+{% endhighlight %}
 
 
 Usage
@@ -87,23 +87,23 @@ name.
 
 Here's an example of a user listing an MFT using the default settings:
 
-{% codeblock lang:sh %}
+{% highlight sh %}
 python list_mft.py /evidence/case001/CMFT
-{% endcodeblock %}
+{% endhighlight %}
 
 Here's an example of a user listing an MFT using a larger cache and
 volume prefix "C:\":
 
-{% codeblock lang:sh %}
+{% highlight sh %}
 python list_mft.py -c 2048 -p "C:" /evidence/case001/CMFT
-{% endcodeblock %}
+{% endhighlight %}
 
 Sample Output
 -------------
 Here's an excerpt of a listing of the tool executed against an MFT
 file:
 
-{% codeblock lang:sh %}
+{% highlight sh %}
 Git/INDXParse - [master●] » time python list_mft.py -c 32 MFT.copy0 | head -n 50
 0|\.\\$MFT|0|0|256|0|97353728|1292499684|1292499684|1292499684|1292499684
 0|\.\\$MFT (filename)|0|0|256|0|97353728|1292499684|1292499684|1292499684|1292499684
@@ -153,12 +153,12 @@ Git/INDXParse - [master●] » time python list_mft.py -c 32 MFT.copy0 | head -n
 0|\.\\WINDOWS\system|32|0|278|0|0|1341514356|1292499973|1292499973|1292499693
 0|\.\\WINDOWS\system (filename)|32|0|278|0|0|1292499693|1292499693|1292499693|1292499693
 0|\.\\WINDOWS\system32\ras|33|0|278|0|0|1341531396|1292499745|1292499745|1292499693
-{% endcodeblock %}
+{% endhighlight %}
 
 And here's the resulting timeline when passed through
 [mactime](http://wiki.sleuthkit.org/index.php?title=Mactime):
 
-{% codeblock lang:sh %}
+{% highlight sh %}
 Git/INDXParse - [master●] » time python list_mft.py -c 32 MFT.copy0 | head -n 50 | mactime -b -
 Thu Dec 16 2010 06:41:24 97353728 macb 0 256      0        0        \.\\$MFT
                          97353728 macb 0 256      0        0        \.\\$MFT (filename)
@@ -228,5 +228,5 @@ Thu Jul 05 2012 19:24:16 1610612736 mac. 0 814      0        27       \.\\pagefi
 Thu Jul 05 2012 19:24:17        0 .a.. 0 257      0        26       \.\\$Extend\$Reparse
 Thu Jul 05 2012 19:24:52 281474976714305 .a.. 0 0        0        211      \.\\boot.ini (indx)
 Thu Jul 05 2012 19:36:36        0 .a.. 0 278      0        33       \.\\WINDOWS\system32\ras
-{% endcodeblock %}
+{% endhighlight %}
 

@@ -36,7 +36,7 @@ I will first include an [example](#example) Analog cache file as a reference so 
 Example Analog 6.0 Cache File <a id="example"></a>
 -----------------------------
 
-{% codeblock %}
+{% highlight sh %}
     CACHE type 5 produced by analog 6.0/Unix. Do not modify or delete!
     T       0       0       123456  12345   1234    1234    1234567890
     D       12345678        12345678
@@ -61,7 +61,7 @@ Example Analog 6.0 Cache File <a id="example"></a>
     c       405     12      12345678
     c       500     1       12345678
     p       ???     ???     ???      ???    ???   ???
-{% endcodeblock %}    
+{% endhighlight %}    
 
 Analog 6.0 Cache Format <a id="format"></a>
 -----------------------
@@ -70,39 +70,39 @@ Analog 6.0 Cache Format <a id="format"></a>
 
 The first line of the file will be the header: 
 
-{% codeblock %}
+{% highlight sh %}
     CACHE type 5 produced by analog 6.0/Unix. Do not modify or delete!
-{% endcodeblock %}
+{% endhighlight %}
 
 The following code generates the header: 
 
-{% codeblock lang:c %}
+{% highlight c %}
     /* src/cache.c line 61 */
     fprintf(outf,
             "CACHE type 5 produced by analog %s. Do not modify or delete!n",
             VERSION);
-{% endcodeblock %}
+{% endhighlight %}
 
     
 ### Summary 
 
 The second line contains a summary of all requests processed by Analog. The first character of the line will be the character 'T'.
 
-{% codeblock %}
+{% highlight sh %}
     KEY   UNKNOWN  INFO   SUCCESSES PAGES REDIRECTS FAILURES  BYTES
     |       |       |         |       |      |       |         |
     V       V       V         V       V      V       V         V
     T       0       0       123456  12345   1234    1234    1234567890
-{% endcodeblock %}
+{% endhighlight %}
 
 The following code generates the summary: 
 
-{% codeblock lang:c %}
+{% highlight c %}
     /* src/cache.c line 65 */
     fprintf(outf, "Tt%lut%lut%lut%lut%lut%lut%.0fn",
             data[LOGDATA_UNKNOWN], data[LOGDATA_INFO], data[LOGDATA_SUCC],
             data[LOGDATA_PAGES], data[LOGDATA_REDIR], data[LOGDATA_FAIL], bys);
-{% endcodeblock %}
+{% endhighlight %}
 
 
 ### Date Information 
@@ -121,7 +121,7 @@ The following lines describe the activity over time. I do not have a good unders
  -  Pages (Integer)
  -  Bytes Transferred (Integer)
 
-{% codeblock %}
+{% highlight sh %}
     KEY     FIRSTTIME       LASTTIME
     |          |               |
     V          V               V
@@ -133,11 +133,11 @@ The following lines describe the activity over time. I do not have a good unders
     12345   123     1       0       12345
     12345   124     1       0       12345
     12345   125     1       0       12345
-{% endcodeblock %}
+{% endhighlight %}
 
 The following code generates the date information: 
 
-{% codeblock lang:c %}
+{% highlight c %}
     /* src/cache.c line 70 */
     if (dman->firsttime == LAST_TIME && dman->lasttime == FIRST_TIME)
       fprintf(outf, "Dt%lut%lun", dman->lasttime, dman->firsttime);
@@ -150,7 +150,7 @@ The following code generates the date information:
                  dp->pages[i], dp->bytes[i]);
       }
     }
-{% endcodeblock %}    
+{% endhighlight %}    
 
 
 ### HTTP Item Summaries 
@@ -179,7 +179,7 @@ For each line, there are a number columns separated by tabs. Important columns a
  -  Bytes transferred (Integer)
  -  Name (String)
 
-{% codeblock %}
+{% highlight sh %}
     TYPE   COUNT  SUCC    REDIR   ERRORS    LAST DATE      ???     ???    FIRST DATE?      ???     ???       BYTES   NAME
     |        |      |       |       |           |           |       |          |            |       |          |      |
     V        V      V       V       V           V           V       V          V            V       V          V      V
@@ -187,11 +187,11 @@ For each line, there are a number columns separated by tabs. Important columns a
     3       100     75     10       15      12345678        0       0       12345678        0       0       123456  http://www.google.com?q=lolcats
     4       100     75     10       15      12345678        0       0       12345678        0       0       123456  Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0;)
     5       100     75     10       15      12345678        0       0       12345678        0       0       123456  127.0.0.1
-{% endcodeblock %}
+{% endhighlight %}
 
-The following code generates the item summaries: 
+The following code generates the item summaries:
 
-{% codeblock lang:c %}
+{% highlight c %}
     /* src/anlghea3.h line 581 */
     /* Counts then dates collected about each item, and then other floor/sort
        criteria: order otherwise insignificant. See also methodname in globals.c
@@ -199,7 +199,7 @@ The following code generates the item summaries:
     enum {REQUESTS, REQUESTS7, PAGES, PAGES7, REDIR, REDIR7, FAIL, FAIL7, SUCCDATE,
           REDIRDATE, FAILDATE, SUCCFIRSTD, REDIRFIRSTD, FAILFIRSTD, BYTES, BYTES7,
           ALPHABETICAL, RANDOM, METHOD_NUMBER};
-    
+
     /* src/cache.c line 83 */
       /* output the items */
       for (i = 0; i own != NULL && (p->own->data[data2cols[i][REQUESTS]] != 0 ||
@@ -211,7 +211,7 @@ The following code generates the item summaries:
           }
         }
       }
-{% endcodeblock %}
+{% endhighlight %}
 
 
 ### More Summaries 
@@ -229,17 +229,17 @@ I conjecture the items described by each row are time periods because there is i
 
 Note, Analog does not print all entries it processes. It only records entries that fall within a given range (perhaps the top *X*). 
 
-{% codeblock %}
+{% highlight sh %}
     KEY   INDEX     REQS    PAGES    DATE           BYTES
     |       |        |       |        |             |
     V       V        V       V        V             V
     z       0       12345   1234    12345678        1
     z       1       123     1       12345678        1234
-{% endcodeblock %}
+{% endhighlight %}
 
 The following code generates the summary information: 
 
-{% codeblock lang:c %}
+{% highlight c %}
     /* src/cache.c line 97 */
       /* output the arraydata. For historical reasons, these all differ slightly */
       /* the sizes */
@@ -251,7 +251,7 @@ The following code generates the summary information:
     	      arraydata[REP_SIZE - FIRST_ARRAYREP][i].lastdate,
     	      arraydata[REP_SIZE - FIRST_ARRAYREP][i].bytes);
         if (arraydata[REP_SIZE - FIRST_ARRAYREP][i].threshold 
-{% endcodeblock %}    
+{% endhighlight %}    
 
     
 ### Status Codes
@@ -265,7 +265,7 @@ columns.  The columns are:
  -  Count (Integer)
  -  Last Encountered (Date)
 
-{% codeblock %}
+{% highlight sh %}
     KEY    STATUS   COUNT   DATE
     |        |       |       |
     V        V       V       V
@@ -280,11 +280,11 @@ columns.  The columns are:
     c       404     1234    12345678
     c       405     12      12345678
     c       500     1       12345678
-{% endcodeblock %}
+{% endhighlight %}
 
 The following code generates the status summary: 
 
-{% codeblock lang:c %}
+{% highlight c %}
     /* src/cache.c line 110 */
       /* the status codes */
       for (i = 0, done = FALSE; !done; i%2B%2B) {
@@ -294,7 +294,7 @@ The following code generates the status summary:
     	      arraydata[REP_CODE - FIRST_ARRAYREP][i].reqs,
     	      arraydata[REP_CODE - FIRST_ARRAYREP][i].lastdate);
         if (arraydata[REP_CODE - FIRST_ARRAYREP][i].threshold 
-{% endcodeblock %}   
+{% endhighlight %}   
  
 
 ### Processing Times
@@ -304,20 +304,20 @@ to process various requests at various times.  I do not have sample data
 for this section.  Each line begins with the character 'p' and has seven 
 tab-separated columns. 
 
-{% codeblock %}    
+{% highlight sh %}
     p       ???     ???     ???      ???    ???   ???
-{% endcodeblock %}
+{% endhighlight %}
 
 The following code generates the processing time summary: 
     
-{% codeblock lang:c %}
+{% highlight c %}
         /* src/cache.c line 121 */
           /* the processing times */
           for (i = 0, done = FALSE; !done; i%2B%2B) {
             if (arraydata[REP_PROCTIME - FIRST_ARRAYREP][i].reqs > 0)
               fprintf(outf, "Pt%lut%lut%lut%lut%.0fn",
         	      (arraydata[REP_PROCTIME - FIRST_ARRAYREP][i].threshold 
-{% endcodeblock %}
+{% endhighlight %}
 
 Analog Date Decoder <a id="decoder"></a>
 --------------------------------------
@@ -325,7 +325,7 @@ Analog Date Decoder <a id="decoder"></a>
 The Analog tool tracks dates in an uncommon format: minutes since the Unix epoch.
 The following C program accepts one command line parameter and prints a human readable representation of the date.
 
-{% codeblock lang:c %}        
+{% highlight c %}        
     /***             analog 6.0             http://www.analog.cx/             ***/
     /*** This program is copyright (c) Stephen R. E. Turner 1995 - 2004 except as
      *** stated otherwise.
@@ -394,4 +394,4 @@ The following C program accepts one command line parameter and prints a human re
     
       printf("%d-%d-%dT%d:%d:%d\n", y, m, d, h, mi, s);
     }
-{% endcodeblock %}
+{% endhighlight %}

@@ -13,7 +13,7 @@ The refs.sys driver uses the following definitions in memory to manipulate a ReF
 
 #### SmsIndexRoot & SmsIndexBucket
 
-{% codeblock lang:c %}
+{% highlight c %}
 
 typedef struct _SmsIndexRoot {  // sizeof() == 0x28
     uint32         dwIndexHeaderOffset;
@@ -28,11 +28,11 @@ typedef struct _SmsIndexBucket {  // sizeof() == 0x28
     SmsIndexHeader indexHeader; 
 } SmsIndexBucket;
 
-{% endcodeblock %}    
+{% endhighlight %}    
 
 #### SmsIndexHeader
 
-{% codeblock lang:c %}
+{% highlight c %}
 
 enum INDEX_IH_FLAGS {
     INDEX_IH_DIRECTOR = 1
@@ -50,11 +50,11 @@ typedef struct _SmsIndexHeader {  //  sizeof() == 0x20
     uint32   padding2;
 } SmsIndexHeader;
 
-{% endcodeblock %}    
+{% endhighlight %}    
 
 #### SmsIndexEntry
 
-{% codeblock lang:c %}
+{% highlight c %}
 
 enum INDEX_IE_FLAGS {
     INDEX_IE_ENTRY_END  = 2,
@@ -70,13 +70,13 @@ typedef struct _SmsIndexEntry {  // sizeof() == 0x10
     uint16 wDataLength;
 } SmsIndexEntry;
 
-{% endcodeblock %}    
+{% endhighlight %}    
 
 #### REFS_NODE_TYPE
 
 ReFS passes about `Node`s that are buffers that begin with a DWORD tag/type that identifies its structure. `REFS_NODE_TYPE` defines the possible tags for  thesestructures.
 
-{% codeblock lang:c %}
+{% highlight c %}
 
 enum REFS_NODE_TYPE {
     REFS_NTC_VCB             = 0x701,
@@ -94,7 +94,7 @@ typedef struct _Node {
     uint8 data[???];
 } Node;
 
-{% endcodeblock %}
+{% endhighlight %}
 
 
 ### Enums
@@ -103,7 +103,7 @@ typedef struct _Node {
 
 ReFS uses the `REFS_LCB_STATE_FLAG` values as flags that may be set within the `Lcb->dwState` bitfield.
 
-{% codeblock lang:c %}
+{% highlight c %}
 
 enum REFS_LCB_STATE_FLAG {
     LCB_STATE_DELETE_ON_CLOSE      = 0x1,   // potentially 0x2
@@ -114,26 +114,26 @@ enum REFS_LCB_STATE_FLAG {
     LCB_STATE_VALID_HASH_VALUE     = 0x20
 };
 
-{% endcodeblock %}
+{% endhighlight %}
 
 #### REFS_VCB_STATE_FLAG
 
 ReFS uses the `REFS_VCB_STATE_FLAG` values as flags that may be set within the `Vcb->dwState` bitfield.
 
-{% codeblock lang:c %}
+{% highlight c %}
 
 enum REFS_VCB_STATE_FLAG {
     VCB_STATE_DELETE_UNDERWAY  = 0x2000,
     VCB_STATE_MOUNT_COMPLETED  = 0x10000000
 };
 
-{% endcodeblock %}
+{% endhighlight %}
 
 #### REFS_FCB_STATE_FLAG
 
 ReFS uses the `REFS_FCB_STATE_FLAG` values as flags that may be set within the `Fcb->dwState` bitfield.
 
-{% codeblock lang:c %}
+{% highlight c %}
 
 enum REFS_FCB_STATE_FLAG {
     FCB_STATE_FILE_DELETED               = 0x1,
@@ -142,50 +142,50 @@ enum REFS_FCB_STATE_FLAG {
     FCB_STATE_TABLE_CACHING_INITIALIZED  = 0x10000
 };
 
-{% endcodeblock %}
+{% endhighlight %}
 
 #### REFS_FCB_FLAG
 
 ReFS uses the `REFS_FCB_FLAG`  values as flags that may be set within the `Fcb->bFlags` bitfield.
 
-{% codeblock lang:c %}
+{% highlight c %}
 
 enum REFS_FCB_FLAG {
     FCB_FLAG_SHARED_FCB  = 1
 };
 
-{% endcodeblock %}
+{% endhighlight %}
 
 #### REFS_SCB_STATE_FLAG
 
 ReFS uses the `REFS_SCB_STATE_FLAG` values as flags that may be set within the `Scb->dwState` bitfield.
 
-{% codeblock lang:c %}
+{% highlight c %}
 
 enum REFS_SCB_STATE_FLAG {
     SCB_STATE_UNNAMED_DATA  = 0x10,
     SCB_STATE_OWNS_FILE_CACHE  = 0x400
 };
 
-{% endcodeblock %}
+{% endhighlight %}
 
 #### REFS_FCB_INFO_FLAGS
 
 ReFS uses the `REFS_FCB_INFO_FLAGS` values as flags that may be set within the `Fcb->dwInfo` bitfield.
 
-{% codeblock lang:c %}
+{% highlight c %}
 
 enum REFS_FCB_INFO_FLAGS {
     FCB_INFO_DIRECTORY  = 0x10000000
 };
 
-{% endcodeblock %}
+{% endhighlight %}
 
 #### REFS_OBJECT_ID
 
 ReFS uses 64bit object IDs to refer to objects such as files and directories. There are a few object IDs with hardcoded meaning. Object ID 0x600 is an example of this that refers to the root directory of the file system.
 
-{% codeblock lang:c %}
+{% highlight c %}
 
 enum REFS_OBJECT_ID {
     REFS_OBJECT_UNKNOWN_1   = 0x500,
@@ -194,18 +194,18 @@ enum REFS_OBJECT_ID {
     REFS_OBJECT_UNKNOWN_3   = 0x700   // 0x700 and above are system object IDs?
 };
 
-{% endcodeblock %}
+{% endhighlight %}
 
 ####
 
-{% codeblock lang:c %}
+{% highlight c %}
 
-{% endcodeblock %}
+{% endhighlight %}
 
 ####
 
-{% codeblock lang:c %}
+{% highlight c %}
 
-{% endcodeblock %}
+{% endhighlight %}
 
 

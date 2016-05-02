@@ -180,17 +180,17 @@ File system metadata is spread throughout a ReFS formatted partition. This is in
 
 A ReFS metadata block is 0x4000 bytes in size. The first DWORD of a ReFS metadata block equals the 0x4000 byte cluster number of the block. For example, in Physical Image 5, the root metadata block is located at volume offset 0x7:8000. In terms of 0x4000 byte clusters, this is offset 0x1E. Note that the first DWORD of this metadata structure is 0x1E:
 
-{% codeblock %}
+{% highlight sh %}
 208:8000h: 1E 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................ 
 208:8010h: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................ 
 208:8020h: 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................ 
-{% endcodeblock %}    
+{% endhighlight %}    
 
 ### File Contents
 
 Contents of small files in a ReFS volume may be stored at offsets mod 0x1:0000 (for example, 0x1:0000, 0x2:0000, etc.). The contents of a file begin at the first byte in a ReFS data cluster. Small files are not stored "resident" in a metadata structure. In Physical Image 5, the contents of "desktop.ini" are located at volume offset 0x221:0000 (0x4000 cluster 0x84):
 
-{% codeblock %}
+{% highlight sh %}
 222:0000h: 5B 2E 53 68 65 6C 6C 43 6C 61 73 73 49 6E 66 6F  [.ShellClassInfo 
 222:0010h: 5D 0D 0A 43 4C 53 49 44 3D 7B 36 34 35 46 46 30  ]..CLSID={645FF0 
 222:0020h: 34 30 2D 35 30 38 31 2D 31 30 31 42 2D 39 46 30  40-5081-101B-9F0 
@@ -199,13 +199,13 @@ Contents of small files in a ReFS volume may be stored at offsets mod 0x1:0000 (
 222:0050h: 63 65 4E 61 6D 65 3D 40 25 53 79 73 74 65 6D 52  ceName=@%SystemR 
 222:0060h: 6F 6F 74 25 5C 73 79 73 74 65 6D 33 32 5C 73 68  oot%system32sh 
 222:0070h: 65 6C 6C 33 32 2E 64 6C 6C 2C 2D 38 39 36 34 0D  ell32.dll,-8964. 
-{% endcodeblock %}
+{% endhighlight %}
 
 ### Upcase table
 
 In Physical Image 1, volume offsets 19:0000h through 1B:0000h (0x4000 clusters 0x64 through 0x6B) list many WORD values that generally increase. Jeff Hamm suggests this may be an Upcase table similar to that found in NTFS and exFAT. For example, at volume offset 19:0060h:
 
-{% codeblock %}
+{% highlight sh %}
 21A:0060h: 00 30 00 31 00 32 00 33 00 34 00 35 00 36 00 37  .0.1.2.3.4.5.6.7 
 21A:0070h: 00 38 00 39 00 3A 00 3B 00 3C 00 3D 00 3E 00 3F  .8.9.:.;..? 
 21A:0080h: 00 40 00 41 00 42 00 43 00 44 00 45 00 46 00 47  .@.A.B.C.D.E.F.G 
@@ -216,7 +216,7 @@ In Physical Image 1, volume offsets 19:0000h through 1B:0000h (0x4000 clusters 0
 21A:00D0h: 00 48 00 49 00 4A 00 4B 00 4C 00 4D 00 4E 00 4F  .H.I.J.K.L.M.N.O 
 21A:00E0h: 00 50 00 51 00 52 00 53 00 54 00 55 00 56 00 57  .P.Q.R.S.T.U.V.W 
 21A:00F0h: 00 58 00 59 00 5A 00 7B 00 7C 00 7D 00 7E 00 7F  .X.Y.Z.{.|.}.~. 
-{% endcodeblock %}
+{% endhighlight %}
 
 ### Misc. and Tidbits
 
@@ -225,7 +225,7 @@ In Physical Image 1, volume offsets 19:0000h through 1B:0000h (0x4000 clusters 0
 
 Given that ReFS metadata blocks begin with their 0x4000 cluster number and that ReFS data blocks begin with content, the following script identifies ReFS structures: 
 
-{% codeblock lang:python %}
+{% highlight python %}
 # ReFS 0x4000 Cluster Usage Mapper
 # By Willi Ballenthin  2012-03-25
 import sys, struct
@@ -252,12 +252,12 @@ def main(args):
 
 if __name__ == '__main__':
     main(sys.argv)
-{% endcodeblock %}
+{% endhighlight %}
 
 Running the script against Physical Image 5 yields the following layout.
 Note that I've annotated the 0x4000 clusters with comments that begin with `#`.
 
-{% codeblock %}
+{% highlight sh %}
 Non-null cluster 0x0 (0x2010000) # VBR
 Metadata cluster 0x1e (0x2088000) # Root ReFS metadata cluster
 Metadata cluster 0x20 (0x2090000)
@@ -318,5 +318,5 @@ Metadata cluster 0x167 (0x25ac000)
 Metadata cluster 0xf7c (0x5e00000)
 Metadata cluster 0x7ffd (0x22004000)
 Metadata cluster 0x7ffe (0x22008000)
-{% endcodeblock %}
+{% endhighlight %}
 

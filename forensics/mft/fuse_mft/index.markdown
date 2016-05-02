@@ -57,9 +57,9 @@ together. To acquire INDXParse, download the latest ZIP archive from
 [here](https://github.com/williballenthin/INDXParse/archive/master.zip) or use
 `git` to clone the source repository:
 
-{% codeblock lang:sh %}
+{% highlight sh %}
 git clone https://github.com/williballenthin/INDXParse.git
-{% endcodeblock %}
+{% endhighlight %}
 
 `fuse-mft` depends on a few freely available external packages. Firstly,
 the FUSE framework must be installed. On a Debian based system, this mean
@@ -77,9 +77,9 @@ install these using `pip`, as described
 
 You can install them all in one go like this:
 
-{% codeblock lang:sh %}
+{% highlight sh %}
 pip install argparse jinja2 python-progressbar fusepy
-{% endcodeblock %}
+{% endhighlight %}
 
 
 Usage
@@ -102,10 +102,10 @@ To confirm `fuse-mft` has exposed a file system, check
 the mount table for an entry named "MFTFuseOperations". The following
 shows an MFT mounted at "/tmp/mounted_mft":
 
-{% codeblock lang:sh %}
+{% highlight sh %}
 Git/INDXParse - [master●] » mount | grep MFTFuseOperations
 MFTFuseOperations on /tmp/mounted_mft type fuse (rw,nosuid,nodev,user=willi)
-{% endcodeblock %}
+{% endhighlight %}
 
 Exploring
 =========
@@ -126,7 +126,7 @@ for a full description of the report contents.
 Here's an example showing the analyst reviewing the contents of the "win.ini"
 file, as well as its MFT record report:
 
-{% codeblock lang:sh %}
+{% highlight sh %}
 mounted_mft/WINDOWS  » cat win.ini | head
 ; for 16-bit app support
 [fonts]
@@ -151,7 +151,7 @@ Metadata:
   $SI Accessed: 2012-03-19 11:04:37.933453
   $SI Changed: 2012-02-03 11:18:58.315498
   $SI Birthed: 2004-08-04 12:00:00
-{% endcodeblock %}
+{% endhighlight %}
 
 Unmounting
 ==========
@@ -159,9 +159,9 @@ To unmount a `fuse-mft` file system, use your system's `umount` command
 as you would another file system. The command I use typically looks something
 like this:
 
-{% codeblock lang:sh %}
+{% highlight sh %}
 sudo umount /path/to/mountpoint
-{% endcodeblock %}
+{% endhighlight %}
 
 I recommend against killing the `fuse-mft` process to avoid leaving the system
 in an unstable state.

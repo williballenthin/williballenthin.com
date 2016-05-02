@@ -79,7 +79,7 @@ on my Windows 7 system, the Registry key
 has 12 values that record various configurations. This set includes the
 value `ItemPos1427x820(1)` that has type `REG_BIN` with length 0x120:
 
-{% codeblock %}
+{% highlight sh %}
 0000   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00    ................
 0010   15 00 00 00 51 00 00 00 14 00 1F 60 40 F0 5F 64    ....Q......`@._d
 0020   81 50 1B 10 9F 08 00 AA 00 2F 95 4E 15 00 00 00    .P......./.N....
@@ -98,7 +98,7 @@ value `ItemPos1427x820(1)` that has type `REG_BIN` with length 0x120:
 00F0   10 00 4D 49 52 00 1E 00 03 00 04 00 EF BE 10 3D    ..MIR..........=
 0100   B0 80 10 3D A7 8C 14 00 00 00 4D 00 49 00 52 00    ...=......M.I.R.
 0110   00 00 12 00 41 01 00 00 51 00 00 00 00 00 00 00    ....A...Q.......
-{% endcodeblock %}
+{% endhighlight %}
 
 With no tools beyond Regedit (or
 [Regview.py](https://github.com/williballenthin/python-registry/blob/master/samples/regview.py)),
@@ -119,7 +119,7 @@ should be skipped. The valid `SHITEM_FILEENTRY` items have the following
 structure (in pseudo-C / [010 Editor
 template](http://www.sweetscape.com/010editor/) format):
 
-{% codeblock lang:c %}
+{% highlight c %}
 typedef struct SHITEM_FILEENTRY {
     UINT16  size;
     UINT16  flags;
@@ -174,7 +174,7 @@ typedef struct SHITEM_FILEENTRY {
     
     UINT8 padding[size - (offset() - offset(size)];
 } SHITEM_FILEENTRY;
-{% endcodeblock %}
+{% endhighlight %}
 
 `FILEREFERENCE` is a 64bit MFT file reference structure (48 bits file
 MFT record number, 16 bits MFT sequence number). `FILEATTRS` is a 16 bit
@@ -341,7 +341,7 @@ format and enjoy!
 The following code block lists the algorithm in a Pythonish language for
 the programmers in the room.
 
-{% codeblock lang:python %}
+{% highlight python %}
 def get_shellbags():
     shellbags  = []
     bagmru_key = shell_key.subkey("BagMRU")
@@ -390,7 +390,7 @@ def get_shellbags():
                  "", 
                  "")
     return shellbags
-{% endcodeblock %}
+{% endhighlight %}
 
 
 Shellbags.py
@@ -414,7 +414,7 @@ the Bodyfile specification by default. The following block lists a
 demonstration of me running shellbags.py against a Windows XP
 `NTUSER.dat` Registry hive.
 
-{% codeblock lang:python %}
+{% highlight python %}
 $ python shellbags.py ~/projects/registry-files/willi/xp/NTUSER.DAT.copy0
 
 ...
@@ -432,13 +432,13 @@ $ python shellbags.py ~/projects/registry-files/willi/xp/NTUSER.DAT.copy0
 0|\My Documents\My Dropbox\Tools\Windows\Bitpim (Shellbag)|0|0|0|0|0|1281994656|1284668784|18000|1281989140
 
 ...
-{% endcodeblock %}
+{% endhighlight %}
 
 To improve readability, I ran the output through the mactime utility to
 generate a timeline of activity. The following block lists a portion of
 this sample.
 
-{% codeblock %}
+{% highlight sh %}
 ...
 
 Fri Jun 10 2011 14:09:02        0 m... 0 0        0        0        \My Documents\My Dropbox\Tools\Windows\Mandiant Highlighter (Shellbag)
@@ -452,7 +452,7 @@ Fri Jun 10 2011 22:43:14        0 m... 0 0        0        0        \My Computer
 Fri Jun 10 2011 22:52:02        0 m... 0 0        0        0        \My Documents\My Dropbox\Tools\Windows\FTK (Shellbag)
 
 ...
-{% endcodeblock %}
+{% endhighlight %}
 
 
 ### Help
@@ -460,7 +460,7 @@ Fri Jun 10 2011 22:52:02        0 m... 0 0        0        0        \My Document
 For reference, the following code block lists the command line
 parameters accepted by shellbags.py. Now get going and try it out!
 
-{% codeblock %}
+{% highlight sh %}
 usage: shellbags.py [-h] [-v] [-p] file [file ...]
 Parse Shellbag entries from a Windows Registry.
 
@@ -472,4 +472,4 @@ optional arguments:
   -v          Print debugging information while parsing
   -p          If debugging messages are enabled, augment the formatting with
               ANSI color codes
-{% endcodeblock %}
+{% endhighlight %}

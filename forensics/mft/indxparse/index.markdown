@@ -79,9 +79,9 @@ together. To acquire INDXParse, download the latest ZIP archive from
 [here](https://github.com/williballenthin/INDXParse/archive/master.zip) or use
 `git` to clone the source repository:
 
-{% codeblock lang:sh %}
+{% highlight sh %}
 git clone https://github.com/williballenthin/INDXParse.git
-{% endcodeblock %}
+{% endhighlight %}
 
 Some of the individual tools have dependencies on other freely available
 Python modules. You should install these using `pip`, as described

@@ -32,9 +32,9 @@ writes the slack space to the standard output stream. The following example
 demonstrates an analyst searching for attacker tool names in the slack space
 of an MFT:
 
-{% codeblock lang:sh %}
+{% highlight sh %}
 python extract_mft_record_slack.py /evidence/case00/CMFT | grep -a "bad.exe"
-{% endcodeblock %}
+{% endhighlight %}
 
 
 Specifically, the 
@@ -44,7 +44,7 @@ and the original MFT, and therefore, you can easily trace back to the
 source MFT record. The following hex dump demonstrates the padding
 produced by `extract-mft-record-slack`:
 
-{% codeblock %}
+{% highlight sh %}
 0000800: 0000 0000 0000 0000 0000 0000 0000 0000  ................\
 0000810: 0000 0000 0000 0000 0000 0000 0000 0000  ................ \
 0000820: 0000 0000 0000 0000 0000 0000 0000 0000  ................  |
@@ -109,7 +109,7 @@ produced by `extract-mft-record-slack`:
 0000bd0: b89e 0000 c292 0000 deb5 0000 0000 0100  ................
 0000be0: f89e 0000 fc92 0000 dfb5 0000 0000 0100  ................
 0000bf0: 389f 0000 3693 0000 e0b5 0000 0000 ed00  8...6...........
-{% endcodeblock %}
+{% endhighlight %}
 
 
 Installation
@@ -119,7 +119,7 @@ together. To acquire INDXParse, download the latest ZIP archive from
 [here](https://github.com/williballenthin/INDXParse/archive/master.zip) or use
 `git` to clone the source repository:
 
-{% codeblock lang:sh %}
+{% highlight sh %}
 git clone https://github.com/williballenthin/INDXParse.git
-{% endcodeblock %}
+{% endhighlight %}
 
