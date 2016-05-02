@@ -12,7 +12,7 @@ Here's a short list of things I've worked on recently:
 
   - [vstruct](https://github.com/williballenthin/python-pyqt5-vstructui) In support of the WMI project, I've become familiar with the `vstruct` Python module. This is a great library for parsing binary data in a structured way. It is both Pythonic and declarative, which encourages the maintainability of parsing code (still not an easy feat). To help debug these parsers, I've developed the `vstructui` module for PyQt5 that displays an hex editor and interactive structure explorer, similar to the [010 Editor](http://www.sweetscape.com/010editor/). Notably, its also pure-Python (beyond the PyQt dependency), which means its easy to invoke on all major operating systems. Here's a screenshot of the widget in action:
 
-    ![screenshot of vstructui](http://www.williballenthin.com/img/vstructui.png)
+    ![screenshot of vstructui](/img/vstructui.png)
 
   - [SDB Forensics](https://github.com/williballenthin/python-sdb) There are some really neat tricks attackers can play to hide executable code using the Application Compatibility Infrastructure. [Sean Pierce](http://sdb.tools/about.html), [Jon Erickson](https://www.blackhat.com/docs/asia-14/materials/Erickson/Asia-14-Erickson-Persist-It-Using-And-Abusing-Microsofts-Fix-It-Patches.pdf), and others have presented great research on some of these techniques. A key strategy is to embed executable code within a "shim database" (.sdb file) that is subsequently loaded by the Windows PE loader. Since this file format was previously undocumented, I reverse-engineered it and published a pure-Python library.
 

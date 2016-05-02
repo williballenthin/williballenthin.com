@@ -9,7 +9,7 @@ footer: true
 
 INDXParse is a suite of tools forensic investigators can use to 
 inspect NTFS artifacts. Although INDXParse was once a 
-[single tool](http://www.williballenthin.com/forensics/indx/)
+[single tool](/forensics/indx/)
 for working with directory index entries, the project now includes
 many more capabilities. These includes file enumeration, metadata
 extraction, logical tree browser GUI, and more.
@@ -24,13 +24,13 @@ Highlights
 ----------
 
 **INDX parsing**
-[INDXParse.py](http://www.williballenthin.com/forensics/indx/)
+[INDXParse.py](/forensics/indx/)
 is a tool that parses NTFS directory index entries, or INDEX
 records, from INDX attributes. Investigators have often used this technique
 to recover metadata about previously deleted files.
 
 **Timelining**
-[list-mft](http://www.williballenthin.com/forensics/mft/list_mft/) is a tool
+[list-mft](/forensics/mft/list_mft/) is a tool
 that lists the files and directories present on a NTFS
 file system using only the MFT file. It is fairly performant, and uses a
 constant amount of memory --- `list-mft` easily processes an 8GB MFT.
@@ -42,7 +42,7 @@ file system using only the MFT file. It also enables an investigator to
 manually inspect each record and review parsed attributes.
 
 **Record inspector**
-[get-file-info](http://www.williballenthin.com/forensics/mft/get_file_info/)
+[get-file-info](/forensics/mft/get_file_info/)
 is a tool for inspecting individual NTFS MFT records.
 An analyst can use it to review the metadata associated with a file path,
 including timestamps, attributes, and data runs. You'll find the
@@ -50,7 +50,7 @@ tool useful to challenge or confirm artifact interpretations and
 recover evidence of deleted files.
 
 **Fuse driver**
-[fuse-mft](http://www.williballenthin.com/forensics/mft/fuse_mft/)
+[fuse-mft](/forensics/mft/fuse_mft/)
 is a FUSE file system driver that exposes the file system tree
 defined by an MFT. This allows an investigator to use battle tested tools
 (such as `ls`, `cat`, or `tree`) to explore the files, directories, and 
@@ -85,6 +85,6 @@ git clone https://github.com/williballenthin/INDXParse.git
 
 Some of the individual tools have dependencies on other freely available
 Python modules. You should install these using `pip`, as described
-[here](http://www.williballenthin.com/blog/2014/01/11/how-to-install-the-python-package-manager/).
+[here](/blog/2014/01/11/how-to-install-the-python-package-manager/).
 
 

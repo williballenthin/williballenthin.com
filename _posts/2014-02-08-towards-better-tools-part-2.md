@@ -9,7 +9,7 @@ categories: forensics, tools
 TL; DR: *Organize tools in layers, and support user defined output 
 formatting.*
 
-In [yesterday's post](http://www.williballenthin.com/blog/2014/02/07/towards-better-tools-part-1/), 
+In [yesterday's post](/blog/2014/02/07/towards-better-tools-part-1/), 
 I hypothesized the ways in which forensic tools 
 are commonly used.  Today, I'll suggest how tools might be structured 
 to maximize their usefulness. The goal is to encourage wider thought 
@@ -32,7 +32,7 @@ discuss it further!
 All scripts implement their functionality in modular components, 
 and each functional tool is a simple wrapper around a lower-level 
 function or class. For instance, the implementation of 
-[list-mft](http://www.williballenthin.com/forensics/mft/list_mft/) 
+[list-mft](/forensics/mft/list_mft/) 
 is basically `for each entry in mft.mft_enumerator(): print(entry)`, 
 and the interesting stuff is found in 
 [MFT.py](https://github.com/williballenthin/INDXParse/blob/master/MFT.py). 
@@ -113,7 +113,7 @@ They can do this either directly on the command line, or in an
 additional text file. Clearly, when any bugs are ironed out, 
 the user can share the format with their friends and collaborate.
 
-[This](http://www.williballenthin.com/blog/2014/02/08/list-mft-user-formatting/)
+[This](/blog/2014/02/08/list-mft-user-formatting/)
 followup post demonstrations additional formats and sample output.
 If you have a clever idea for an output format, send it this way
 and I'll post it, too.

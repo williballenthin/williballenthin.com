@@ -8,8 +8,8 @@ categories: forensics, tools, mft
 
 
 As mentioned in the 
-[previous post](http://www.williballenthin.com/blog/2014/02/08/towards-better-tools-part-2/), 
-[list-mft](http://www.williballenthin.com/forensics/mft/list_mft/)
+[previous post](/blog/2014/02/08/towards-better-tools-part-2/), 
+[list-mft](/forensics/mft/list_mft/)
 supports user defined formatting.
 That is, the user can provide a description of how they'd like each record
 to look, and the tool will render them as requested. These formats can be

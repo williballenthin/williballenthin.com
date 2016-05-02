@@ -13,7 +13,7 @@ categories: python, mft, forensics
 > (such as at OSDFC, or in my MFT analysis presentation, 
 > many of the tools have never received a formal introduction or release. 
 > These posts change that.
-[ref](http://www.williballenthin.com/2014/01/13/upcoming-tool-releases/)
+[ref](/2014/01/13/upcoming-tool-releases/)
 
 `fuse-mft` is a [FUSE](http://fuse.sourceforge.org) file system driver for MFT files. It allows an analyst
 to mount the file system tree defined by an MFT on their analysis machine.
@@ -22,5 +22,5 @@ contents. `fuse-mft` uses the metadata found within the MFT to populate the
 entries, and exposes a few virtual files to provide additional context.  
 
 For more information, please visit the tool page 
-[here](http://www.williballenthin.com/forensics/mft/fuse_mft/).
+[here](/forensics/mft/fuse_mft/).
 

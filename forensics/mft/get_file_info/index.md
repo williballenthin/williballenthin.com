@@ -15,7 +15,7 @@ recover evidence of deleted files.
 
 Download
 --------
-`get-file-info` is a component of the [INDXParse suite](http://www.williballenthin.com/forensics/mft/indxparse)
+`get-file-info` is a component of the [INDXParse suite](/forensics/mft/indxparse)
 of tools used for NTFS analysis. All INDXParse tools are free and open source.
 The source for `get-file-info` is hosted on Github [here](https://github.com/williballenthin/INDXParse/blob/master/get_file_info.py).
 
@@ -61,7 +61,7 @@ git clone https://github.com/williballenthin/INDXParse.git
 
 `get-file-info` depends on a few freely available Python modules. You should
 install these using `pip`, as described 
-[here](http://www.williballenthin.com/blog/2014/01/11/how-to-install-the-python-package-manager/).
+[here](/blog/2014/01/11/how-to-install-the-python-package-manager/).
  The modules are:
 
   - [argparse](https://pypi.python.org/pypi/argparse)

@@ -19,7 +19,7 @@ MFT entries and resolve orphan files.
 
 Download
 --------
-`list-mft` is a component of the [INDXParse suite](http://www.williballenthin.com/forensics/mft/indxparse)
+`list-mft` is a component of the [INDXParse suite](/forensics/mft/indxparse)
 of tools used for NTFS analysis. All INDXParse tools are free and open source.
 The source for `list-mft` is hosted on Github 
 [here](https://github.com/williballenthin/INDXParse/blob/master/list_mft.py).

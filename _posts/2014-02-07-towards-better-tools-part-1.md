@@ -11,7 +11,7 @@ integrate into all workflows. What would you change, and how?*
 
 There are various classes of tools I use during a computer forensic 
 investigation. Some tools *produce data*, such as
-[list-mft](http://www.williballenthin.com/blog/2014/01/15/tool-release-list-mft)
+[list-mft](/blog/2014/01/15/tool-release-list-mft)
 or [RegRipper](http://regripper.wordpress.com). 
 Others, like sed, awk, grep, and 
 [pyp](http://code.google.com/p/pyp), *transform data* into a useful format.

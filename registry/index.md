@@ -10,7 +10,7 @@ footer: true
 Introduction <a id="introduction"></a>
 ------------
 
-python-registry was originally written by [Willi Ballenthin](http://www.williballenthin.com), a forensic analyst who wanted
+python-registry was originally written by [Willi Ballenthin](), a forensic analyst who wanted
 to access the contents of the Windows Registry from his Linux laptop.
 python-registry currently provides read-only access to Windows Registry
 files, such as `NTUSER.DAT`, `userdiff`, and `SOFTWARE`. The interface is

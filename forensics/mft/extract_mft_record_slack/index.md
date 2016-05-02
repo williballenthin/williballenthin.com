@@ -16,7 +16,7 @@ record slack for known keywords or structures relevant to an investigation.
 Download
 --------
 `extract-mft-record-slack` is a component of the 
-[INDXParse suite](http://www.williballenthin.com/forensics/mft/indxparse)
+[INDXParse suite](/forensics/mft/indxparse)
 of tools used for NTFS analysis. All INDXParse tools are free and open source.
 The source for `fuse-mft` is hosted on Github 
 [here](https://github.com/williballenthin/INDXParse/blob/master/fuse-mft.py).

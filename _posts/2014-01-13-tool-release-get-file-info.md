@@ -14,7 +14,7 @@ categories: python, forensics, mft
 > (such as at OSDFC, or in my MFT analysis presentation, 
 > many of the tools have never received a formal introduction or release. 
 > These posts change that.
-[ref](http://www.williballenthin.com/2014/01/13/upcoming-tool-releases/)
+[ref](/2014/01/13/upcoming-tool-releases/)
 
 `get-file-info` is a tool for inspecting NTFS MFT records.
 An analyst can use it to review the metadata associated with a file path,
@@ -23,5 +23,5 @@ tool useful to challenge or confirm artifact interpretations and
 recover evidence of deleted files.
 
 For more information, please visit the tool page 
-[here](http://www.williballenthin.com/forensics/mft/get_file_info/).
+[here](/forensics/mft/get_file_info/).
 
