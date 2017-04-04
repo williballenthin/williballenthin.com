@@ -1,0 +1,76 @@
+==================================================================
+https://keybase.io/williballenthin
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://www.williballenthin.com
+  * I am williballenthin (https://keybase.io/williballenthin) on keybase.
+  * I have a public key with fingerprint 5EE1 D88E 60EA 91EF B8B1  906D 017C BAD6 4143 BB1D
+
+To do so, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "eldest_kid": "0101f86194031535519390384620f1271cfc192ecbc4a78069f8a5a23d54881567860a",
+            "fingerprint": "5ee1d88e60ea91efb8b1906d017cbad64143bb1d",
+            "host": "keybase.io",
+            "key_id": "017cbad64143bb1d",
+            "kid": "0101f86194031535519390384620f1271cfc192ecbc4a78069f8a5a23d54881567860a",
+            "uid": "6c4ce386deacc6ec8d9928c01ddfc219",
+            "username": "williballenthin"
+        },
+        "revoke": {
+            "sig_ids": [
+                "2776817a8977d43ce0f60b2e702b9d5026cd157b15a75e5dd5e71fccbfd7080f0f"
+            ]
+        },
+        "service": {
+            "hostname": "www.williballenthin.com",
+            "protocol": "http:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "ctime": 1491324578,
+    "expire_in": 157680000,
+    "prev": "905d78fe1c20b43a27dfa63e2f0bd69a1aa29b8a3eb33371d2b3290139ad7e89",
+    "seqno": 5,
+    "tag": "signature"
+}
+
+which yields the signature:
+
+-----BEGIN PGP MESSAGE-----
+Version: Keybase OpenPGP v2.0.68
+Comment: https://keybase.io/crypto
+
+yMJ5AnicrZJbaFxFGMc3sU1orLiKWtQo9nitbJeZOWduh1YaKjalpYoUvERd53aS
+4+6es549uRlXmhdBaGt9sKaWVlGLorZSiSK0UI3Sh2glQR+Kt65IoKiQ1n1QqTbO
+Ce2Lvjovwwz/7//95j/fZ5ddkutqM7tmH7jzyKmRts+nlgzmHvzpy9fGHBnrUccf
+c8pmcTMVbeppqRxqx3cABDBgBHIPuBC7GEPucuAyjyAQQEShChTkyCipPEEZIDxg
+AgvkauwxBjGhjADhFJwgjPpNUkvCKLW22BioGTMEGMGhCSSTkAOiAaRKCk086LlS
+Qm0LB+J6VmHhpKibYhjbO3soXcD7j/5/5h5ctCPKU8ZlRBuhFDGKac4RUwBqHSgE
+eSasmyQSVWPVw2GlEkpRqZgoHQgjp1FwEjMUl00Wbz3st+x1x+9zEKWEQSoYp1R7
+rjIgIEAiQwGSXGOAiNIQUwmxoNhgrbGhMFBKBpoCBgIQOI9ab9t4KFSL5llYFyGG
+h4v/AimquGpJa0mcxiquWNFAmtb8jC8drS0WGVm6YFeSYaTtp9mCIZPUwzhyfGiV
+Kg0zf+hx6CIPU1ZwzEgtTEwpzBTYPgnYlbUxQ9aSA6wpCwxUCEjPFYjqQBDXoABI
+TbiAQiAumXCNdF2XQo2kiziALheaGpZFWzdPRrHjY4sp+q2ljTAS6WBinMbUx48s
+ybV15TqWtmfDnOtalr844i+f7FyIx155eP6rbxZ+mOjJ3/bJE734gwO/vbpl6sq+
+55tbblm3fOf6zY3c/DtXn3jm2DWT55LHoxfLo9H7vc3tO1pNdeju/O7zl84121dU
+56fJXzt33fPRxBWF7vEzh1e15mbenlg6ufbmnpVfnysXb+p+dtuN/lP86OQNv35x
+pHH7j/nLv39drjz897vjO/5ctwH6y84Ubp3fXTy5dbpVWzh0+pe7tq4/GJQ/1Pv3
+nB+f3TfbUW1G1917Nv395zUdDz3Wt0d9+9Jk/9zq4537pz9dsemP595rHrxv28jG
+03fMdLfI9h5/1XfVjSei43s3DW+49q0Xjt6/Ju9df/aY05p5eqC3/c031u490Hlq
+81WrxxvL/wGdFWUZ
+=X6LQ
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/williballenthin
+
+==================================================================
+
