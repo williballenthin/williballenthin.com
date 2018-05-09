@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>flare-emu</title>
+        <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+
+        <link href="https://unpkg.com/normalize.css@^7.0.0" rel="stylesheet" />
+        <link href="https://unpkg.com/@blueprintjs/core@^2.0.0/lib/css/blueprint.css" rel="stylesheet" />
+        <link href="https://unpkg.com/@blueprintjs/icons@^2.0.0/lib/css/blueprint-icons.css" rel="stylesheet" />
+
+        <script src="https://unpkg.com/react-ace@5.10.0/dist/react-ace.min.js"></script>
+
+        <script src="js/capstone-x86.min.js"></script>
+        <script src="js/keystone-x86.min.js"></script>
+        <script src="js/unicorn-x86.min.js"></script>
+        <style>
+         html,
+         body,
+         #app,
+         .app {
+             height: 100%;
+         }
+         .hoverable {
+             opacity: 0.3;
+         }
+         .hoverable:hover {
+             opacity: 0.7;
+         }
+         .mono {
+            font-family: 'Roboto Mono', monospace;
+         }
+
+        </style>
+    </head>
+    <body>
+        <script src="https://unpkg.com/classnames@^2.2"></script>
+        <script src="https://unpkg.com/dom4@^1.8"></script>
+        <script src="https://unpkg.com/react@^16.2.0/umd/react.production.min.js"></script>
+        <script src="https://unpkg.com/react-dom@^16.2.0/umd/react-dom.production.min.js"></script>
+        <script src="https://unpkg.com/react-transition-group@^2.2.1/dist/react-transition-group.min.js"></script>
+        <script src="https://unpkg.com/popper.js@^1.12.6/dist/umd/popper.js"></script>
+        <script src="https://unpkg.com/react-popper@~0.7.4/dist/react-popper.min.js"></script>
+        <script src="https://unpkg.com/@blueprintjs/core@^2.0.0"></script>
+        <script src="https://unpkg.com/@blueprintjs/icons@^2.0.0"></script>
+
+        <div id="app"></div>
+        <script src="js/main.js"></script>
+        <script>
+            window.onload = function () {
+                flare_emu.core.main();
+            }
+        </script>
+    </body>
+</html>
+
