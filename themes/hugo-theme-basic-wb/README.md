@@ -1,3 +1,7 @@
+this is snapshot from here: https://github.com/siegerts/hugo-theme-basic/commit/a8549e31cd7e439b5e348d5148fb07da7d5f1c93
+changes:
+ - add layout for index.html
+
 # hugo-theme-basic
 
 Basic personal site theme styled with minimal tachyons, syntax highlighting, and blog series configuration.
