@@ -17,6 +17,11 @@ jobs:
         hugo-version: '0.60.1'
     - name: build
       run: hugo --minify --theme hugo-theme-basic
+    - name: cleanup
+      run: |
+        mv public /tmp/
+        rm *
+        mv /tmp/public/* .
     - name: deploy
       uses: peter-evans/s3-backup@v1.0.0
       env:
