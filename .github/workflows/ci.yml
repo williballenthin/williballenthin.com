@@ -20,7 +20,7 @@ jobs:
     - name: cleanup
       run: |
         mv public /tmp/
-        rm *
+        rm -rf *
         mv /tmp/public/* .
     - name: deploy
       uses: peter-evans/s3-backup@v1.0.0
