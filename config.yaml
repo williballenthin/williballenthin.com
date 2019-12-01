@@ -3,6 +3,8 @@ disablePathToLower: true
 languageCode: en-us
 title: Willi Ballenthin
 
+googleAnalytics: UA-23141359-1
+
 markup:
  goldmark:
    renderer:
