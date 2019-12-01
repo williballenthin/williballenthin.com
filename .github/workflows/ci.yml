@@ -3,8 +3,8 @@ on: [push, pull_request]
 name: CI
 
 jobs:
-  build:
-    name: build
+  deploy:
+    name: deploy
     runs-on: [ubuntu-latest]
     steps:
     - name: checkout
@@ -17,3 +17,11 @@ jobs:
         hugo-version: '0.60.1'
     - name: build
       run: hugo --minify
+    - name: deploy
+      uses: peter-evans/s3-backup@v1.0.0
+      env:
+        ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+        SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+        MIRROR_TARGET: www.williballenthin.com
+      with:
+        args: --overwrite --remove
