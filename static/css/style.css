@@ -1,0 +1,13 @@
+a {
+	color: black;
+        text-decoration: underline grey;
+}
+
+a:hover {
+	color: blue;
+        text-decoration: underline blue;
+}
+
+a.no-underline {
+	text-decoration: none;
+}
