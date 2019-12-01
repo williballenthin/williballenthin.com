@@ -16,7 +16,7 @@ jobs:
       with:
         hugo-version: '0.60.1'
     - name: build
-      run: hugo --theme hugo-theme-basic
+      run: hugo --theme hugo-theme-basic-wb
     - name: cleanup
       run: |
         mv public /tmp/

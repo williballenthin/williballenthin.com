@@ -1,5 +1,6 @@
 ---
 title: ""
+layout: home
 ---
 
 ![logo](http://www.gravatar.com/avatar/677f6ada59932964b9150aba814fedd6?s=100&d=identicon)
