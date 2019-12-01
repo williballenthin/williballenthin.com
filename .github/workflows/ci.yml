@@ -16,7 +16,7 @@ jobs:
       with:
         hugo-version: '0.60.1'
     - name: build
-      run: hugo --minify
+      run: hugo --minify --theme hugo-theme-basic
     - name: deploy
       uses: peter-evans/s3-backup@v1.0.0
       env:
