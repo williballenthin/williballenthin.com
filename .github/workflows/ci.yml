@@ -20,7 +20,7 @@ jobs:
     - name: cleanup
       run: |
         mv public /tmp/
-        rm -rf *
+        rm -rf * .git .github .gitignore .gitmodules
         mv /tmp/public/* .
     - name: deploy
       uses: peter-evans/s3-backup@v1.0.0
