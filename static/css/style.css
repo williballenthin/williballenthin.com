@@ -11,3 +11,7 @@ a:hover {
 a.no-underline {
 	text-decoration: none;
 }
+
+div.highlight pre code {
+	border: 1px solid #CCCCCC;
+}
