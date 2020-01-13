@@ -15,3 +15,8 @@ a.no-underline {
 div.highlight pre code {
 	border: 1px solid #CCCCCC;
 }
+
+
+code {
+	color: #2b6372;
+}
