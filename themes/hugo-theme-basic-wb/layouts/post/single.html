@@ -1,13 +1,13 @@
 {{ partial "header.html" . }}
 
 <body lang="{{ .Site.LanguageCode }}" class="sans-serif w-90 w-80-m w-60-ns center mv2 mv5-ns aa" itemscope
-  itemtype="http://schema.org/Article">
+  itemtype="http://schema.org/Article" style="max-width: 800px">
 
 
   <span class="b">/ </span>
   <a href="{{ .Site.BaseURL  }}" class="b bb bw1 pb1 no-underline black">{{ .Site.Title }}</a>
   <span class="b"> / </span>
-  <a href="/posts/" class="b bb bw1 pb1 no-underline black">blog</a>
+  <a href="/post/" class="b bb bw1 pb1 no-underline black">blog</a>
 
   <section id="main" class="mt5">
     <h1 itemprop="name" id="title">{{ .Title }}</h1>
