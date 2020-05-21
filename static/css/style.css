@@ -16,7 +16,11 @@ div.highlight pre code {
 	border: 1px solid #CCCCCC;
 }
 
-
 code {
 	color: #2b6372;
+}
+
+blockquote {
+	border-left: 4px solid #CCC;
+	padding-left: 1em;
 }
