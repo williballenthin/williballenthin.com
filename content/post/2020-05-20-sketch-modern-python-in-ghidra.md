@@ -18,7 +18,9 @@ I think it would be cool to also support [Ghidra](https://ghidra-sre.org/) becau
 *But*, Ghidra only supports Jython - a Python 2.7 interpreter implemented in Java that has no planned support for Python 3.
 Unfortunately, there are [further restrictions](https://github.com/yaml/pyyaml/issues/369) around Jython, too.
 
-I would like to develop scripts in modern Python (e.g. 3.8) for Ghidra.
+What I'd really like is to develop scripts in modern Python (e.g. 3.8) for Ghidra.
+This way, we can use our existing Python-based logic and reporting engines on the Ghidra platform.
+It would be the best of both worlds.
 
 
 ## research goal: is it feasible to extend Ghidra with Python 3.8?
@@ -39,7 +41,7 @@ I have at least one idea, so let's get that on paper below.
 
 ## strategy: pass JNI environment to a Python interpreter
 
-### first, Ghidra should support JNI
+### first, Ghidra supports JNI
 
 Ghidra runs on the JVM, which supports JNI, a standardized interop layer.
 
@@ -105,22 +107,61 @@ Java_JNIExample_toInteger (JNIEnv *env, jobject thisObj, jint number) {
 
 
 The takeaway: Ghidra extensions can load native libraries that implement some/all of the functionality.
-So, what do I want to do with that?
+
+Note, I'm not the first to think of this:
+in [this issue](https://github.com/NationalSecurityAgency/ghidra/issues/175), the Ghidra developers explain why they discourage the use of JNI:
+
+> We advise against using JNI when developing extensions for a couple of reasons.
+> First, if there is a problem in an extension's native code, we don't want it to bring down the entire Ghidra process.
+> Second, Ghidra discovers extensions at runtime and adds them to the classpath,
+>  but it cannot add native libraries to the process's library search path at runtime for all supported platforms.
+> That would require a custom launch script which would be tough to distribute generically.
+>
+> The decompiler and other native executables also benefit from the process isolation I mentioned above,
+> at hopefully a lost cost in resources on modern hardware.
+
+We need to ensure these tradeoffs are understood and acceptable.
+The key points seem to be:
+  - isolation, and
+  - ease of distribution
 
 
 ### second, JNI native library can link against modern Python
 
-This is straightforward: native libraries can link against (either statically or dynamically) `python38.so|dll` and host a modern Python interpreter.
+Native libraries can link against (either statically or dynamically) `python38.so|dll` and host a modern Python interpreter.
+This is well documented on [the Python website](https://docs.python.org/3/extending/embedding.html).
 
-The native library can do the follow steps:
+The native library would typically do the following steps:
 
   1. create an interpreter
   2. configure the interpreter (set limits, install directory, etc.)
   3. inject any callbacks available to python-land (e.g. `idc` in IDAPython)
   4. invoke Python code, either via:
-    a. eval a string, or
-    b. run a file
+      - eval a string, or
+      - run a file
   5. and then: the Python code may call back into the native library via a callback, or finish and exit
+
+Here's the Hello World example from [python.org](https://docs.python.org/3/extending/embedding.html):
+
+```c
+#define PY_SSIZE_T_CLEAN
+#include <Python.h>
+
+int
+main(int argc, char *argv[])
+{
+    Py_Initialize();
+
+    PyRun_SimpleString("from time import time,ctime\n"
+                       "print('Today is', ctime(time()))\n");
+
+    if (Py_FinalizeEx() < 0) {
+        exit(120);
+    }
+
+    return 0;
+}
+```
 
 The takeaway: Ghidra extensions can load native libraries that run a modern Python interpreter.
 But, how can Python reach into Ghidra?
