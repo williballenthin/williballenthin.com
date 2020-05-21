@@ -221,14 +221,14 @@ For example:
 ```
 [source](https://github.com/karpierz/jni/blob/master/tests/python/test_jni.py)
 
-Fetching data from Ghidra via JNI & ctypes probably wouldn't look pretty, as there would be lots of reflection.
+Fetching data from Ghidra via JNI & `ctypes` probably wouldn't look pretty, as there would be lots of reflection.
 But, its feasible to build up wrappers that hide the reflection calls.
 Jython does something like this.
 
 
-### jeb
+### easy mode: Jep?
 
-[A colleague](https://twitter.com/mehunhoff) points out the [ninia/jep](https://github.com/ninia/jep) project that may provide a lot of the necessary infrastructure:
+A [colleague](https://twitter.com/mehunhoff) points out the [ninia/jep](https://github.com/ninia/jep) project that may provide a lot of the necessary infrastructure:
 
 > Jep embeds CPython in Java through JNI.
 >
@@ -238,5 +238,10 @@ Jython does something like this.
 >  - Supports multiple, simultaneous, mostly sandboxed sub-interpreters or shared interpreters
 >  - Numpy support for Java primitive arrays
 
+This sounds like points one and two above.
+
 I think we could use the JARs provided via Maven in the Ghidra extension to create the Python interpreter and invoke scripts.
-JEP even provides [object wrappers](https://github.com/ninia/jep/wiki/How-Jep-Works#objects) that should make it easy to manipulate Java objects.
+Jep even provides [object wrappers](https://github.com/ninia/jep/wiki/How-Jep-Works#objects) that should make it easy to manipulate Java objects.
+
+Primary difficulty here is probably how to build and distribute the plugin;
+however, this is something we'd have to do anyways, so by using Jep, we can jump right to that step.
