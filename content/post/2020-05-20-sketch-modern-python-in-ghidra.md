@@ -187,6 +187,56 @@ Code within the interpreter uses `ctypes` to access appropriate fields of the JN
 
 This would enable Python scripts to fetch data from Ghidra's analysis.
 
-It probably wouldn't look pretty, as there would be lots of reflection.
+The [karpierz/jni](https://github.com/karpierz/jni/blob/master/src/jni/ctypes/__init__.py) project demonstrates how to use `ctypes` to interact via JNI.
+For example:
+
+```python
+    def test_string_method(self):
+        """A Java string can be created, and the content returned"""
+
+        # This string contains unicode characters
+        s = "Woop"
+        java_string = self.jenv.NewStringUTF(s.encode("utf-8"))
+
+        Example = self.jenv.FindClass(b"org/jt/jni/test/Example")
+        self.assertTrue(Example)
+
+        # Find the default constructor
+        Example__init = self.jenv.GetMethodID(Example, b"<init>", b"()V")
+        self.assertTrue(Example__init)
+
+        # Find the Example.duplicate_string() method on Example
+        Example__duplicate_string = self.jenv.GetMethodID(Example, b"duplicate_string", b"(Ljava/lang/String;)Ljava/lang/String;")
+        self.assertTrue(Example__duplicate_string)
+
+        # Create an instance of org.jt.jni.test.Example using the default constructor
+        obj1 = self.jenv.NewObject(Example, Example__init)
+        self.assertTrue(obj1)
+
+        # Invoke the string duplication method
+        jargs = jni.new_array(jni.jvalue, 1)
+        jargs[0].l = java_string
+        result = self.jenv.CallObjectMethod(obj1, Example__duplicate_string, jargs)
+        self.assertEqual(self.jstring2unicode(jni.cast(result, jni.jstring)), "WoopWoop")
+```
+[source](https://github.com/karpierz/jni/blob/master/tests/python/test_jni.py)
+
+Fetching data from Ghidra via JNI & ctypes probably wouldn't look pretty, as there would be lots of reflection.
 But, its feasible to build up wrappers that hide the reflection calls.
 Jython does something like this.
+
+
+### jeb
+
+[A colleague](https://twitter.com/mehunhoff) points out the [ninia/jep](https://github.com/ninia/jep) project that may provide a lot of the necessary infrastructure:
+
+> Jep embeds CPython in Java through JNI.
+>
+> Notable features
+>
+>  - Interactive Jep console much like Python's interactive console
+>  - Supports multiple, simultaneous, mostly sandboxed sub-interpreters or shared interpreters
+>  - Numpy support for Java primitive arrays
+
+I think we could use the JARs provided via Maven in the Ghidra extension to create the Python interpreter and invoke scripts.
+JEP even provides [object wrappers](https://github.com/ninia/jep/wiki/How-Jep-Works#objects) that should make it easy to manipulate Java objects.
