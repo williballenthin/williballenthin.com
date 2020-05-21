@@ -28,3 +28,8 @@ code {
   -webkit-font-smoothings: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+blockquote {
+  border-left: 4px solid #CCC;
+  padding-left: 1em;
+}
