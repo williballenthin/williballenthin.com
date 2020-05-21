@@ -191,33 +191,33 @@ The [karpierz/jni](https://github.com/karpierz/jni/blob/master/src/jni/ctypes/__
 For example:
 
 ```python
-    def test_string_method(self):
-        """A Java string can be created, and the content returned"""
+def test_string_method(self):
+    """A Java string can be created, and the content returned"""
 
-        # This string contains unicode characters
-        s = "Woop"
-        java_string = self.jenv.NewStringUTF(s.encode("utf-8"))
+    # This string contains unicode characters
+    s = "Woop"
+    java_string = self.jenv.NewStringUTF(s.encode("utf-8"))
 
-        Example = self.jenv.FindClass(b"org/jt/jni/test/Example")
-        self.assertTrue(Example)
+    Example = self.jenv.FindClass(b"org/jt/jni/test/Example")
+    self.assertTrue(Example)
 
-        # Find the default constructor
-        Example__init = self.jenv.GetMethodID(Example, b"<init>", b"()V")
-        self.assertTrue(Example__init)
+    # Find the default constructor
+    Example__init = self.jenv.GetMethodID(Example, b"<init>", b"()V")
+    self.assertTrue(Example__init)
 
-        # Find the Example.duplicate_string() method on Example
-        Example__duplicate_string = self.jenv.GetMethodID(Example, b"duplicate_string", b"(Ljava/lang/String;)Ljava/lang/String;")
-        self.assertTrue(Example__duplicate_string)
+    # Find the Example.duplicate_string() method on Example
+    Example__duplicate_string = self.jenv.GetMethodID(Example, b"duplicate_string", b"(Ljava/lang/String;)Ljava/lang/String;")
+    self.assertTrue(Example__duplicate_string)
 
-        # Create an instance of org.jt.jni.test.Example using the default constructor
-        obj1 = self.jenv.NewObject(Example, Example__init)
-        self.assertTrue(obj1)
+    # Create an instance of org.jt.jni.test.Example using the default constructor
+    obj1 = self.jenv.NewObject(Example, Example__init)
+    self.assertTrue(obj1)
 
-        # Invoke the string duplication method
-        jargs = jni.new_array(jni.jvalue, 1)
-        jargs[0].l = java_string
-        result = self.jenv.CallObjectMethod(obj1, Example__duplicate_string, jargs)
-        self.assertEqual(self.jstring2unicode(jni.cast(result, jni.jstring)), "WoopWoop")
+    # Invoke the string duplication method
+    jargs = jni.new_array(jni.jvalue, 1)
+    jargs[0].l = java_string
+    result = self.jenv.CallObjectMethod(obj1, Example__duplicate_string, jargs)
+    self.assertEqual(self.jstring2unicode(jni.cast(result, jni.jstring)), "WoopWoop")
 ```
 [source](https://github.com/karpierz/jni/blob/master/tests/python/test_jni.py)
 
