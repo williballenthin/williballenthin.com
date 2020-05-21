@@ -184,7 +184,6 @@ A Ghidra extension can load a native library that hosts a modern Python interpre
 
 The native library must pass the JNI environment pointer into the Python interpreter.
 Code within the interpreter uses `ctypes` to access appropriate fields of the JNI environment.
-
 This would enable Python scripts to fetch data from Ghidra's analysis.
 
 The [karpierz/jni](https://github.com/karpierz/jni/blob/master/src/jni/ctypes/__init__.py) project demonstrates how to use `ctypes` to interact via JNI.
