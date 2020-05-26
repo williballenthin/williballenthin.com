@@ -4,7 +4,10 @@ date: 2020-05-26T00:00:00-07:00
 draft: false
 ---
 
-Braindump on changing the Java native library search path at runtime on OpenJDK 14.
+Braindump on changing the Java native library search path (typically set via `java.library.path`) at runtime on OpenJDK 14.
+The JRE parses and initializes the configuration once upon startup, so subsequent calls to `System.setProperty("java.library.path", ...)` have no effect.
+As a workaround, we can use reflection to update the internal datastructures with our extended search path.
+
 Internet comments suggest this should work for JDK 12 and 13.
 For Java 8 and earlier, you can try [this techinque](https://stackoverflow.com/a/49226657/87207).
 
