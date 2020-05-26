@@ -14,6 +14,8 @@ For Java 8 and earlier, you can try [this techinque](https://stackoverflow.com/a
 This approach will not work in JDK 15, as the internal data structures have changed.
 Also, the reflection tricks happening here [will probably be rejected](http://mail.openjdk.java.net/pipermail/jigsaw-dev/2017-May/012673.html) in future Java releases.
 
+The *right* way to do this is to set the path at JVM startup.
+
 References:
   - http://fahdshariff.blogspot.com/2011/08/changing-java-library-path-at-runtime.html
   - https://stackoverflow.com/a/59468135/87207
