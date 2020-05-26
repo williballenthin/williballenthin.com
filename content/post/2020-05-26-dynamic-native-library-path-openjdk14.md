@@ -5,6 +5,11 @@ draft: false
 ---
 
 Braindump on changing the Java native library search path at runtime on OpenJDK 14.
+Internet comments suggest this should work for JDK 12 and 13.
+For Java 8 and earlier, you can try [this techinque](https://stackoverflow.com/a/49226657/87207).
+
+This approach will not work in JDK 15, as the internal data structures have changed.
+Also, the reflection tricks happening here [will probably be rejected](http://mail.openjdk.java.net/pipermail/jigsaw-dev/2017-May/012673.html) in future Java releases.
 
 References:
   - http://fahdshariff.blogspot.com/2011/08/changing-java-library-path-at-runtime.html
