@@ -9,7 +9,9 @@ layout: home
 
 # [projects](https://github.com/williballenthin/) <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" height="40px" style="position: relative;top: 10px;"></img>
 
-  - ## [FLOSS](https://github.com/fireeye/flare-floss)
+  - ## [capa](https://github.com/mandiant/capa)
+    Identify capabilities in executable files.
+  - ## [FLOSS](https://github.com/mandiant/flare-floss)
     Automatically extract obfuscated strings from malware. 
   - ## [python-idb](https://github.com/williballenthin/python-idb)
     Pure Python parser and analyzer for IDA Pro database files (.idb). 
@@ -19,7 +21,7 @@ layout: home
     Pure Python parser for modern Windows Event Log files (.evtx).
   - ## [python-evt](https://github.com/williballenthin/LfLe)
     Recover event log entries from an image by heurisitically looking for record structures. 
-  - ## [python-cim](https://github.com/fireeye/flare-wmi/tree/master/python-cim) (WMI)
+  - ## [python-cim](https://github.com/mandiant/flare-wmi/tree/master/python-cim) (WMI)
     Pure Python parser for the Microsoft Windows CIM (WMI) repository database.<br />
     This database is found in the files `OBJECTS.DATA`, `INDEX.BTR`, and `MAPPING[1-3].MAP`.
   - ## [python-sdb](https://github.com/williballenthin/python-sdb)
