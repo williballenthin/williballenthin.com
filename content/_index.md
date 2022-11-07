@@ -30,3 +30,8 @@ layout: home
     Tool suite for inspecting NTFS artifacts.
   - ## [EVTXtract](https://github.com/williballenthin/EVTXtract)
     Recover and reconstruct fragments of EVTX log files from raw binary data, including unallocated space and memory images.
+    
+# profiles
+  - <a rel="me" href="https://mastodon.social/@williballenthin">Mastodon</a>
+  - <a rel="me" href="https://github.com/williballenthin">GitHub</a>
+  - <a rel="me" href="https://twitter.com/williballenthin">Twitter</a>
