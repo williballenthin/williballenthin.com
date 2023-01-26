@@ -1,5 +1,6 @@
 ---
 title: Parsing Binary Data with `vstruct`
+slug: 2015-09-08-parsing-binary-data-with-`vstruct`
 date: "2015-09-08T00:00:00Z"
 tags:
   - python

@@ -6,6 +6,10 @@ theme = 'wb'
 
 googleAnalytics = 'G-354515685'
 
+[permalinks]
+  # use old post path to keep existing links working
+  posts = "post/:slug"
+
 [sitemap]
   changefreq = 'monthly'
   filename = 'sitemap.xml'

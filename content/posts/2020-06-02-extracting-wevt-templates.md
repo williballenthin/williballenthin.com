@@ -1,5 +1,6 @@
 ---
 title: "Extracting WEVT_TEMPLATES from PE files"
+slug: 2020-06-02-extracting-wevt-templates
 date: 2020-06-01T00:00:00-07:00
 tags:
   - forensics

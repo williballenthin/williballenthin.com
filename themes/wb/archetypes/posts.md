@@ -1,12 +1,7 @@
 +++ 
-draft = true
-date = {{ .Date }}
 title = ""
-description = ""
 slug = ""
-authors = []
+description = ""
 tags = []
-categories = []
-externalLink = ""
-series = []
+date = {{ .Date }}
 +++

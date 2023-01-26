@@ -1,5 +1,6 @@
 ---
 title: "Dynamic native library search path on OpenJDK14"
+slug: 2020-05-26-dynamic-native-library-path-openjdk14
 date: 2020-05-26T00:00:00-07:00
 tags:
   - java

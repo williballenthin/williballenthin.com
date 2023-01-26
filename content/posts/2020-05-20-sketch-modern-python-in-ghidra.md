@@ -1,5 +1,6 @@
 ---
 title: "Sketch: Modern Python in Ghidra"
+slug: 2020-05-20-sketch-modern-python-in-ghidra
 date: 2020-05-20T00:00:00-07:00
 tags:
   - reverse-engineering
