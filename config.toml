@@ -4,6 +4,8 @@ title = 'Willi Ballenthin'
 
 theme = 'wb'
 
+googleAnalytics = 'G-354515685'
+
 [sitemap]
   changefreq = 'monthly'
   filename = 'sitemap.xml'
