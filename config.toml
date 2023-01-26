@@ -8,3 +8,7 @@ theme = 'wb'
   changefreq = 'monthly'
   filename = 'sitemap.xml'
   priority = 0.5
+
+[markup.goldmark.renderer]
+  # so that we can use raw <a> links with rel=me in homepage
+  unsafe = true
