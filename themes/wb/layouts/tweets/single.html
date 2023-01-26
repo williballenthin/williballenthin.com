@@ -1,0 +1,58 @@
+{{ partial "header.html" . }}
+
+<body lang="{{ .Site.LanguageCode }}" class="sans-serif w-90 w-80-m w-60-ns center mv2 mv5-ns aa" itemscope
+  itemtype="http://schema.org/Article" style="max-width: 800px">
+
+
+  <span class="b">/ </span>
+  <a href="{{ .Site.BaseURL  }}" class="b bb bw1 pb1 no-underline black">{{ .Site.Title }}</a>
+  <span class="b">/ </span>
+  <span class="b bw1 bb pb1 no-underline black">tweets</span>
+  <span class="b">/ </span>
+  <span class="b bw1 bb pb1 no-underline black">{{ .Slug }} </span>
+
+  <section id="main" class="mt5">
+    <span class="f6 gray">
+        <span class="post-date">
+            <a href="https://twitter.com/williballenthin/status/{{ .Slug }}" style="text-decoration: none; color: grey; ">
+                {{ .Date.Format "January 2, 2006" }}
+            </a>
+        </span>
+
+        &nbsp;
+        &nbsp;
+
+        <span class="tweet-tags">
+            {{ range (.GetTerms "tags") }}
+                <span class="tweet-tag">
+                    <a href="{{ .Permalink }}" style="color: gray;">
+                        #{{ .LinkTitle }}
+                    </a>
+                </span>
+                &nbsp;
+            {{ end }}
+        </span>
+    </span>
+
+    <article itemprop="articleBody" id="content" class="w-90 lh-copy">
+        <blockquote style="margin: 0;">
+          {{ .Content }}
+
+          {{ range $.Params.images }}
+              <img src="/img/tweets/{{ . }}" width="100%">
+          {{ end }}
+        </blockquote>
+
+
+        <div class="f6 gray" style="float: right;">
+            <i>
+                @williballenthin
+            </i>
+        </div>
+    </article>
+  </section>
+
+  {{ partial "footer.html" . }}
+</body>
+
+</html>

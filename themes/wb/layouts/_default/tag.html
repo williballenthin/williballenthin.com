@@ -9,13 +9,6 @@
     class="b bw1 bb pb1 no-underline black"
     >{{ .Site.Title  }}</a>
   <span class="b">/ </span>
-  {{ with .Site.GetPage "/posts" }}
-  <a
-    href="{{ .RelPermalink  }}"
-    class="b bw1 bb pb1 no-underline black"
-    >blog</a>
-  {{ end }}
-  <span class="b">/ </span>
   <a
     href="{{ .RelPermalink  }}"
     class="b bw1 bb pb1 no-underline black"
