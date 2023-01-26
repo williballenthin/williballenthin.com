@@ -1,0 +1,10 @@
+baseURL = 'http://www.williballenthin.com'
+languageCode = 'en-us'
+title = 'Willi Ballenthin'
+
+theme = 'wb'
+
+[sitemap]
+  changefreq = 'monthly'
+  filename = 'sitemap.xml'
+  priority = 0.5

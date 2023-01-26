@@ -1,10 +1,13 @@
 ---
-categories: forensics
-comments: true
-date: "2013-04-01T00:00:00Z"
 title: 'April Fool''s: TSK and the Registry'
+date: "2013-04-01T00:00:00Z"
+tags:
+  - forensics
+  - sleuthkit
+  - tsk
+  - registry
+  - file-system
 ---
-
 
 I'm glad to announce the immediate availability of the `registryfs` branch of the [Sleuthkit](http://www.sleuthkit.org/).  This patch brings support to the top file system forensic toolkit for navigating, exploring, and extracting raw Windows Registry hives.  There are striking similarities between the organization of a file system and the Registry.  In particular, they are both persistent databases organized into tree structures that typically store binary values at the leaf nodes.  If you've come to be familiar with TSK, you may find it natural to script Registry access using the `registryfs` branch.
 

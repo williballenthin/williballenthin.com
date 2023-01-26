@@ -1,8 +1,9 @@
 ---
-categories: forensics, tools
-comments: true
-date: "2014-02-07T00:00:00Z"
 title: 'Towards better tools: Part 1'
+date: "2014-02-07T00:00:00Z"
+tags:
+  - forensics
+  - tools
 ---
 
 TL; DR: *Not enough effort goes into how tools might be used, so its hard to 

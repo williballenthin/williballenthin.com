@@ -5,7 +5,7 @@ layout: home
 
 ![logo](http://www.gravatar.com/avatar/677f6ada59932964b9150aba814fedd6?s=100&d=identicon)
 
-# [blog](./post/)
+# [blog](./posts/)
 
 # [projects](https://github.com/williballenthin/) <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" height="40px" style="position: relative;top: 10px;"></img>
 

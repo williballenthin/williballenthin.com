@@ -1,7 +1,8 @@
 ---
 title: "Dynamic native library search path on OpenJDK14"
 date: 2020-05-26T00:00:00-07:00
-draft: false
+tags:
+  - java
 ---
 
 Braindump on changing the Java native library search path (typically set via `java.library.path`) at runtime on OpenJDK 14.

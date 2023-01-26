@@ -1,0 +1,16 @@
+name = "wb"
+license = "MIT"
+description = "Theme for https://github.com/williballenthin/williballenthin.com"
+homepage =  "https://github.com/williballenthin/williballenthin.com"
+tags = []
+features = []
+min_version = "0.41.0"
+
+[author]
+  name = "Willi Ballenthin"
+  homepage = "https://github.com/williballenthin/williballenthin.com"
+
+[original]
+  name = "Basic"
+  homepage = "https://github.com/siegerts/hugo-theme-basic"
+  repo = "https://github.com/siegerts/hugo-theme-basic"

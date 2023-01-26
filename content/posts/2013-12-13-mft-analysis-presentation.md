@@ -1,8 +1,11 @@
 ---
-categories: forensics, MFT, presentation
-comments: true
-date: "2013-12-13T00:00:00Z"
 title: MFT Analysis Presentation
+date: "2013-12-13T00:00:00Z"
+tags:
+  - forensics
+  - MFT 
+  - file-system
+  - presentation
 ---
 
 

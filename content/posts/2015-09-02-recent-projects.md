@@ -1,8 +1,14 @@
 ---
-categories: null
-comments: false
-date: "2015-09-02T00:00:00Z"
 title: Recent projects
+date: "2015-09-02T00:00:00Z"
+tags:
+  - python
+  - forensics
+  - wmi
+  - sdb
+  - vivisect
+  - vstruct
+  - reverse-engineering
 ---
 
 Here's a short list of things I've worked on recently:

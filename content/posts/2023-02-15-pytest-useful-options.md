@@ -1,7 +1,10 @@
 ---
 title: "pytest: useful options"
 date: 2023-02-15T00:00:00-07:00
-draft: false
+tags:
+  - python
+  - ipython
+  - pytest
 ---
 
 When invoking pytest, here are a couple useful configurations:

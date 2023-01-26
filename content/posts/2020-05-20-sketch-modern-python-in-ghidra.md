@@ -1,7 +1,10 @@
 ---
 title: "Sketch: Modern Python in Ghidra"
 date: 2020-05-20T00:00:00-07:00
-draft: false
+tags:
+  - reverse-engineering
+  - ghidra
+  - python
 ---
 
 This is a set of notes as I brainstorm.

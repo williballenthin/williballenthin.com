@@ -1,8 +1,9 @@
 ---
-categories: forensics, tools
-comments: true
-date: "2014-02-08T00:00:00Z"
 title: 'Towards better tools: Part 2'
+date: "2014-02-08T00:00:00Z"
+tags:
+  - forensics
+  - tools
 ---
 
 TL; DR: *Organize tools in layers, and support user defined output 

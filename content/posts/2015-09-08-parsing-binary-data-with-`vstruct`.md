@@ -1,8 +1,11 @@
 ---
-categories: python
-comments: false
-date: "2015-09-08T00:00:00Z"
 title: Parsing Binary Data with `vstruct`
+date: "2015-09-08T00:00:00Z"
+tags:
+  - python
+  - reverse-engineering
+  - vivisect
+  - vstruct
 ---
 
 `vstruct` is a pure Python module for parsing and serializing

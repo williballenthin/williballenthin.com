@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html class="" lang="{{ .Site.LanguageCode }}" prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
+
+<head>
+  <meta charset="utf-8" />
+
+  {{ partial "meta.html" . }}
+
+  <title>{{ .Site.Title }}</title>
+  <link rel="canonical" href="{{ .Permalink }}" />
+  {{ $sitetitle := .Site.Title }}
+  {{ with .OutputFormats.Get "RSS" }}
+  <link href="{{ .RelPermalink }}" rel="alternate" type="application/rss+xml" title="{{ $sitetitle }}" />
+  {{ end }}
+  {{ partial "head_includes.html" . }}
+</head>
+
+<body lang="{{ .Site.LanguageCode }}" class="sans-serif w-90 w-60-ns center center-ns mv2 mv5-ns">
+  <section id="main">
+    <div>
+      <h1 id="title" class="f3">
+        {{ .Site.Title }} {{ .Site.Params.TitleEmoji | emojify }}
+      </h1>
+
+      <article itemprop="articleBody" id="content" class="w-90 lh-copy">
+        {{ .Content }}
+      </article>
+    </div>
+  </section>
+
+  {{ partial "footer.html" . }}
+</body>
+
+</html>
