@@ -14,7 +14,7 @@ jobs:
     - name: hugo
       uses: peaceiris/actions-hugo@v2
       with:
-        hugo-version: '0.60.1'
+        hugo-version: '0.110.0'
     - name: build
       run: hugo --theme hugo-theme-basic-wb
     - name: cleanup
