@@ -552,7 +552,7 @@ for hash_name, symbols in sorted(hashes.items()):
 
 `sll1AddHash32`
   - `CreateRemoteThread`: 0x33CD714
-  - `VirtualAlloc`: 0xE3142
+  - `VirtualAlloc`: 0xE3142 (note: only 20 bits used here)
   - `VirtualProtect`: 0x38D13C
   - `WriteProcessMemory`: 0x3980F62
   - `(content: { 14D73C03 } and content: { 42310E00 } and content: { 3CD13800 } and content: { 620F9803 }) and size:100kb- and (tag:pedll or tag:peexe)`
@@ -1800,32 +1800,7 @@ rule sc_hash_shr2Shl5XorHash32
     condition:
         3 of them
 }
-        
 
-rule sc_hash_sll1AddHash32
-{
-    meta:
-        description = "search for shellcode hash sll1AddHash32"
-
-    strings:
-        $CreateRemoteThread = { 14D73C03 }
-        $GetProcAddress = { FA8B3400 }
-        $GetVersion = { 90490300 }
-        $InternetOpenA = { 02F01A00 }
-        $InternetOpenW = { 2EF01A00 }
-        $LoadLibraryA = { 86570D00 }
-        $LoadLibraryW = { B2570D00 }
-        $Sleep = { BC1A0000 }
-        $VirtualAlloc = { 42310E00 }
-        $VirtualProtect = { 3CD13800 }
-        $WSAStartup = { 14930300 }
-        $WriteProcessMemory = { 620F9803 }
-        $socket = { A4360000 }
-
-    condition:
-        3 of them
-}
-        
 
 rule sc_hash_xorRol9Hash32
 {
