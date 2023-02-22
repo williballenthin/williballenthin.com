@@ -26,7 +26,20 @@ TL;DR:
   - `hash_Carbanak`: 1
   - `ror13AddHash32`: 1
 
-Using the [flare-ida](https://github.com/mandiant/flare-ida) [shellcode hashes database](https://github.com/mandiant/flare-ida/tree/master/shellcode_hashes) `sc_hashes.db`, we can generate VirusTotal queries to search for PE files with interesting hashes:
+Using the [flare-ida](https://github.com/mandiant/flare-ida) [shellcode hashes database](https://github.com/mandiant/flare-ida/tree/master/shellcode_hashes) `sc_hashes.db`, we can generate VirusTotal queries to search for PE files with interesting hashes like this:
+
+`add1505Shl5Hash32`
+  - `CreateRemoteThread`: 0xAA30775D
+  - `VirtualAlloc`: 0x382C0F97
+  - `VirtualProtect`: 0x844FF18D
+  - `WriteProcessMemory`: 0x6F22E8C8
+  - `(content: { 5D7730AA } and content: { 970F2C38 } and content: { 8DF14F84 } and content: { C8E8226F }) and size:100kb- and (tag:pedll or tag:peexe)`
+  - [search](https://www.virustotal.com/gui/search/%28content%3A%20%7B%205D7730AA%20%7D%20and%20content%3A%20%7B%20970F2C38%20%7D%20and%20content%3A%20%7B%208DF14F84%20%7D%20and%20content%3A%20%7B%20C8E8226F%20%7D%29%20and%20size%3A100kb-%20and%20%28tag%3Apedll%20or%20tag%3Apeexe%29/files)
+  - count: 1
+
+
+<details>
+<summary>Python code to generate VT queries</summary>
 
 ```py
 import urllib
@@ -76,7 +89,10 @@ for hash_name, symbols in sorted(hashes.items()):
     print()
 ```
 
-results:
+</details>
+
+<details>
+<summary>complete VT search results</summary>
 
 `add1505Shl5Hash32`
   - `CreateRemoteThread`: 0xAA30775D
@@ -510,3 +526,1303 @@ results:
   - [search](https://www.virustotal.com/gui/search/%28content%3A%20%7B%20B79111DA%20%7D%20and%20content%3A%20%7B%203F54A77E%20%7D%20and%20content%3A%20%7B%2056683AD0%20%7D%20and%20content%3A%20%7B%204F9AB05B%20%7D%29%20and%20size%3A100kb-%20and%20%28tag%3Apedll%20or%20tag%3Apeexe%29/files)
   - count: 0
 
+</details>
+
+We can also generate yara rules for a retrohunt that match a collection of hashes. These rules benefit from the `3 or more` clauses that are a bit more flexible and requiring *all* hash values to be present:
+
+```javascript
+rule sc_hash_add1505Shl5Hash32
+{
+    meta:
+        description = "search for shellcode hash add1505Shl5Hash32"
+
+    strings:
+        $CreateRemoteThread = { 5D7730AA }
+        $GetProcAddress = { 1FBB31CF }
+        $GetVersion = { 8B618227 }
+        $InternetOpenA = { A170ADF4 }
+        $InternetOpenW = { B770ADF4 }
+        $LoadLibraryA = { FBF0BF5F }
+        $LoadLibraryW = { 11F1BF5F }
+        $Sleep = { FEE5190E }
+        $VirtualAlloc = { 970F2C38 }
+        $VirtualProtect = { 8DF14F84 }
+        $WSAStartup = { 83C62861 }
+        $WriteProcessMemory = { C8E8226F }
+        $socket = { 2E03311C }
+
+    condition:
+        3 of them
+}
+```
+
+<details>
+<summary>Python code to generate yara rules</summary>
+
+```py
+import urllib
+import sqlite3
+import binascii
+import textwrap
+import collections
+
+db = sqlite3.connect("./shellcode_hashes/sc_hashes.db")
+conn = db.cursor()
+cursor = conn.execute('''
+  SELECT symbol_name, hash_name, hash_size, hash_val 
+  FROM symbol_hashes
+  INNER JOIN hash_types ON symbol_hashes.hash_type = hash_types.hash_type
+  WHERE symbol_name IN (
+    "LoadLibraryA", 
+    "LoadLibraryW", 
+    "GetProcAddress", 
+    "VirtualAlloc", 
+    "VirtualProtect", 
+    "CreateRemoteThread", 
+    "WriteProcessMemory",
+    "socket",
+    "InternetOpenA",
+    "InternetOpenW",
+    "GetVersion",
+    "WSAStartup",
+    "Sleep"
+  )
+  ORDER BY symbol_name, hash_name;
+''')
+
+hashes = collections.defaultdict(dict)
+for symbol_name, hash_name, hash_size, hash_val in cursor.fetchall():
+    assert hash_size == 32
+    hashes[hash_name][symbol_name] = hash_val
+    
+for hash_name, symbols in sorted(hashes.items()):
+    strings = []
+    for symbol_name, hash_val in sorted(symbols.items()):
+        content = binascii.hexlify(hash_val.to_bytes(4, "little")).decode("ascii").upper()
+        strings.append(f'${symbol_name} = {{ {content} }}')
+        
+    rule = """
+rule sc_hash_{hash_name}
+{{
+    meta:
+        description = "search for shellcode hash {hash_name}"
+
+    strings:
+{strings}
+
+    condition:
+        3 of them
+}}
+        """.format(hash_name=hash_name, strings="\n".join(strings))
+    
+    # re-align the strings section
+    rule = rule.replace("$", "        $")
+        
+    print(rule)
+```
+</details>
+
+<details>
+<summary>complete yara rule listing</summary>
+
+```py
+rule sc_hash_add1505Shl5Hash32
+{
+    meta:
+        description = "search for shellcode hash add1505Shl5Hash32"
+
+    strings:
+        $CreateRemoteThread = { 5D7730AA }
+        $GetProcAddress = { 1FBB31CF }
+        $GetVersion = { 8B618227 }
+        $InternetOpenA = { A170ADF4 }
+        $InternetOpenW = { B770ADF4 }
+        $LoadLibraryA = { FBF0BF5F }
+        $LoadLibraryW = { 11F1BF5F }
+        $Sleep = { FEE5190E }
+        $VirtualAlloc = { 970F2C38 }
+        $VirtualProtect = { 8DF14F84 }
+        $WSAStartup = { 83C62861 }
+        $WriteProcessMemory = { C8E8226F }
+        $socket = { 2E03311C }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_addRol5HashOncemore32
+{
+    meta:
+        description = "search for shellcode hash addRol5HashOncemore32"
+
+    strings:
+        $CreateRemoteThread = { C8B1D1C7 }
+        $GetProcAddress = { 67425625 }
+        $GetVersion = { 4511EC91 }
+        $InternetOpenA = { D83FDE1A }
+        $InternetOpenW = { D897DE1A }
+        $LoadLibraryA = { CC70776B }
+        $LoadLibraryW = { CCC8776B }
+        $Sleep = { 1540849E }
+        $VirtualAlloc = { 2311D8E9 }
+        $VirtualProtect = { D8EE972A }
+        $WSAStartup = { B9B65058 }
+        $WriteProcessMemory = { 9AF6E499 }
+        $socket = { B453E48C }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_addRor13Hash32
+{
+    meta:
+        description = "search for shellcode hash addRor13Hash32"
+
+    strings:
+        $CreateRemoteThread = { EC95EBE6 }
+        $GetProcAddress = { 6FE053E5 }
+        $GetVersion = { CC7E0E0B }
+        $InternetOpenA = { 42BF4A21 }
+        $InternetOpenW = { 42BFFA21 }
+        $LoadLibraryA = { 72607774 }
+        $LoadLibraryW = { 72602775 }
+        $Sleep = { 6AD9864D }
+        $VirtualAlloc = { 7E8DA452 }
+        $VirtualProtect = { 36CADB30 }
+        $WSAStartup = { E7DF596E }
+        $WriteProcessMemory = { EBC10E55 }
+        $socket = { 7849725B }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_addRor13HashOncemore32
+{
+    meta:
+        description = "search for shellcode hash addRor13HashOncemore32"
+
+    strings:
+        $CreateRemoteThread = { 5C3767AF }
+        $GetProcAddress = { 9F2A7F03 }
+        $GetVersion = { 735860F6 }
+        $InternetOpenA = { 550A11FA }
+        $InternetOpenW = { D50F11FA }
+        $LoadLibraryA = { BBA39303 }
+        $LoadLibraryW = { 3BA99303 }
+        $Sleep = { 366C52CB }
+        $VirtualAlloc = { 2495F26B }
+        $VirtualProtect = { DE86B151 }
+        $WSAStartup = { CE723BFF }
+        $WriteProcessMemory = { 76A85A0F }
+        $socket = { 92DBC24B }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_addRor4WithNullHash32
+{
+    meta:
+        description = "search for shellcode hash addRor4WithNullHash32"
+
+    strings:
+        $CreateRemoteThread = { 5309D7D6 }
+        $GetProcAddress = { F7331321 }
+        $GetVersion = { ADA8D00E }
+        $InternetOpenA = { AC6F07A0 }
+        $InternetOpenW = { AC6F07B6 }
+        $LoadLibraryA = { 8E488B63 }
+        $LoadLibraryW = { 8E488B79 }
+        $Sleep = { 0013BC76 }
+        $VirtualAlloc = { 2868E125 }
+        $VirtualProtect = { D73458A2 }
+        $WSAStartup = { 97883BD0 }
+        $WriteProcessMemory = { 05B0AC23 }
+        $socket = { 30A6C17A }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_adler32_666
+{
+    meta:
+        description = "search for shellcode hash adler32_666"
+
+    strings:
+        $CreateRemoteThread = { D2078C60 }
+        $GetProcAddress = { B4060543 }
+        $GetVersion = { A0057C2A }
+        $InternetOpenA = { 7606213D }
+        $InternetOpenW = { 8C06373D }
+        $LoadLibraryA = { 10068D35 }
+        $LoadLibraryW = { 2606A335 }
+        $Sleep = { 13047A11 }
+        $VirtualAlloc = { 2C06FC36 }
+        $VirtualProtect = { E206E444 }
+        $WSAStartup = { B8051D2B }
+        $WriteProcessMemory = { 1D082063 }
+        $socket = { 6304E415 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_chAddRol8Hash32
+{
+    meta:
+        description = "search for shellcode hash chAddRol8Hash32"
+
+    strings:
+        $CreateRemoteThread = { 6012764D }
+        $GetProcAddress = { 11783228 }
+        $GetVersion = { 3E571C4D }
+        $InternetOpenA = { 5146335E }
+        $InternetOpenW = { 5146255E }
+        $LoadLibraryA = { 415F5935 }
+        $LoadLibraryW = { 415F4F35 }
+        $Sleep = { 5A3F2365 }
+        $VirtualAlloc = { 436B7E0A }
+        $VirtualProtect = { 375E3B07 }
+        $WSAStartup = { 05672040 }
+        $WriteProcessMemory = { 673A7972 }
+        $socket = { 147F6816 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_crc32
+{
+    meta:
+        description = "search for shellcode hash crc32"
+
+    strings:
+        $CreateRemoteThread = { 108C80FF }
+        $GetProcAddress = { FF1F7CC9 }
+        $GetVersion = { 0F1ACF4C }
+        $InternetOpenA = { 3DA816DA }
+        $InternetOpenW = { 6C1DC22E }
+        $LoadLibraryA = { 8DBDC13F }
+        $LoadLibraryW = { DC0815CB }
+        $Sleep = { A8EDF2CE }
+        $VirtualAlloc = { 4A0DCE09 }
+        $VirtualProtect = { 2F6F0610 }
+        $WSAStartup = { 93FCF5A0 }
+        $WriteProcessMemory = { 2E97584F }
+        $socket = { BB68E505 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_crc32Xor0xca9d4d4e
+{
+    meta:
+        description = "search for shellcode hash crc32Xor0xca9d4d4e"
+
+    strings:
+        $CreateRemoteThread = { 5EC11D35 }
+        $GetProcAddress = { B152E103 }
+        $GetVersion = { 41575286 }
+        $InternetOpenA = { 73E58B10 }
+        $InternetOpenW = { 22505FE4 }
+        $LoadLibraryA = { C3F05CF5 }
+        $LoadLibraryW = { 92458801 }
+        $Sleep = { E6A06F04 }
+        $VirtualAlloc = { 044053C3 }
+        $VirtualProtect = { 61229BDA }
+        $WSAStartup = { DDB1686A }
+        $WriteProcessMemory = { 60DAC585 }
+        $socket = { F52578CF }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_crc32bzip2lower
+{
+    meta:
+        description = "search for shellcode hash crc32bzip2lower"
+
+    strings:
+        $CreateRemoteThread = { A06C72DC }
+        $GetProcAddress = { 28F4DF5C }
+        $GetVersion = { A3ED4E26 }
+        $InternetOpenA = { 47AE9414 }
+        $InternetOpenW = { 85380342 }
+        $LoadLibraryA = { CA082543 }
+        $LoadLibraryW = { 089EB215 }
+        $Sleep = { E1EA8806 }
+        $VirtualAlloc = { 3CE91D9A }
+        $VirtualProtect = { 0D63E81E }
+        $WSAStartup = { 746F3CA8 }
+        $WriteProcessMemory = { 8167E170 }
+        $socket = { C5BFA946 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_dualaccModFFF1Hash
+{
+    meta:
+        description = "search for shellcode hash dualaccModFFF1Hash"
+
+    strings:
+        $CreateRemoteThread = { 1907AA42 }
+        $GetProcAddress = { 7B05C727 }
+        $GetVersion = { 07044215 }
+        $InternetOpenA = { 1D055C24 }
+        $InternetOpenW = { 33057224 }
+        $LoadLibraryA = { 9704811D }
+        $LoadLibraryW = { AD04971D }
+        $Sleep = { FA01BD05 }
+        $VirtualAlloc = { D304701F }
+        $VirtualProtect = { C905062B }
+        $WSAStartup = { DF03C313 }
+        $WriteProcessMemory = { 64071E45 }
+        $socket = { 8A02EE08 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_fnv1Xor67f
+{
+    meta:
+        description = "search for shellcode hash fnv1Xor67f"
+
+    strings:
+        $CreateRemoteThread = { 1CC298C3 }
+        $GetProcAddress = { 5A51F4F8 }
+        $GetVersion = { E6512F3A }
+        $InternetOpenA = { 98903BE2 }
+        $InternetOpenW = { EE7C3BD0 }
+        $LoadLibraryA = { 7001B253 }
+        $LoadLibraryW = { C6ECB141 }
+        $Sleep = { D72AA62F }
+        $VirtualAlloc = { 7E532803 }
+        $VirtualProtect = { 8C270682 }
+        $WSAStartup = { 205A1220 }
+        $WriteProcessMemory = { 958808C0 }
+        $socket = { 13701290 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_hash_Carbanak
+{
+    meta:
+        description = "search for shellcode hash hash_Carbanak"
+
+    strings:
+        $CreateRemoteThread = { 74158B04 }
+        $GetProcAddress = { 031D3C0B }
+        $GetVersion = { CE44CD0C }
+        $InternetOpenA = { 31A3EC0C }
+        $InternetOpenW = { 27A3EC0C }
+        $LoadLibraryA = { F1F0AD0A }
+        $LoadLibraryW = { C7F0AD0A }
+        $Sleep = { C02B5A00 }
+        $VirtualAlloc = { E3CAD803 }
+        $VirtualProtect = { 64182D07 }
+        $WSAStartup = { A05CAD0A }
+        $WriteProcessMemory = { 99B04806 }
+        $socket = { C4A1A507 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_hash_ror13AddUpperDllnameHash32
+{
+    meta:
+        description = "search for shellcode hash hash_ror13AddUpperDllnameHash32"
+
+    strings:
+        $CreateRemoteThread = { F466E9E0 }
+        $GetProcAddress = { C1C639EA }
+        $GetVersion = { 784B053E }
+        $InternetOpenA = { CDE68745 }
+        $InternetOpenW = { E3E68745 }
+        $LoadLibraryA = { A5183A5A }
+        $LoadLibraryW = { BB183A5A }
+        $Sleep = { C7135949 }
+        $VirtualAlloc = { 6B94DBFF }
+        $VirtualProtect = { 329072E7 }
+        $WSAStartup = { A6BF8E2A }
+        $WriteProcessMemory = { B8346946 }
+        $socket = { 49DDC037 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_imul21hAddHash32
+{
+    meta:
+        description = "search for shellcode hash imul21hAddHash32"
+
+    strings:
+        $CreateRemoteThread = { 7D152B25 }
+        $GetProcAddress = { BFC1CFDE }
+        $GetVersion = { 8B68BFC2 }
+        $InternetOpenA = { 617791A7 }
+        $InternetOpenW = { 777791A7 }
+        $LoadLibraryA = { DB2F07B7 }
+        $LoadLibraryW = { F12F07B7 }
+        $Sleep = { 7ECD070E }
+        $VirtualAlloc = { 57C27B09 }
+        $VirtualProtect = { 0D5057E8 }
+        $WSAStartup = { C3892E14 }
+        $WriteProcessMemory = { E80A93B7 }
+        $socket = { 6EC636CF }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_imul83hAdd
+{
+    meta:
+        description = "search for shellcode hash imul83hAdd"
+
+    strings:
+        $CreateRemoteThread = { 9C9C4671 }
+        $GetProcAddress = { 54B8B99A }
+        $GetVersion = { DA23448E }
+        $InternetOpenA = { 42B6C408 }
+        $InternetOpenW = { 58B6C408 }
+        $LoadLibraryA = { 781F207F }
+        $LoadLibraryW = { 8E1F207F }
+        $Sleep = { 538085BF }
+        $VirtualAlloc = { 623489DE }
+        $VirtualProtect = { 04C46E6C }
+        $WSAStartup = { 342652B3 }
+        $WriteProcessMemory = { 85EA1BA1 }
+        $socket = { 9F2D40A6 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_mult21AddHash32
+{
+    meta:
+        description = "search for shellcode hash mult21AddHash32"
+
+    strings:
+        $CreateRemoteThread = { 1823894B }
+        $GetProcAddress = { 5AC1CBC2 }
+        $GetVersion = { 4682D4F1 }
+        $InternetOpenA = { 7C1BB287 }
+        $InternetOpenW = { 921BB287 }
+        $LoadLibraryA = { 762C1D07 }
+        $LoadLibraryW = { 8C2C1D07 }
+        $Sleep = { D9E51A06 }
+        $VirtualAlloc = { 124B89DF }
+        $VirtualProtect = { C8F7E977 }
+        $WSAStartup = { 3EE77A2B }
+        $WriteProcessMemory = { 83947B10 }
+        $socket = { 69FE5114 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_or21hXorRor11Hash32
+{
+    meta:
+        description = "search for shellcode hash or21hXorRor11Hash32"
+
+    strings:
+        $CreateRemoteThread = { B46984DF }
+        $GetProcAddress = { 77CD6633 }
+        $GetVersion = { 6E6A5357 }
+        $InternetOpenA = { 767C65A9 }
+        $InternetOpenW = { 76CC65A9 }
+        $LoadLibraryA = { 927CD094 }
+        $LoadLibraryW = { 92CCD094 }
+        $Sleep = { CA58C520 }
+        $VirtualAlloc = { B62D558C }
+        $VirtualProtect = { 3F1D6374 }
+        $WSAStartup = { A61AD74C }
+        $WriteProcessMemory = { 102E028F }
+        $socket = { 1A99C52E }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_or23hXorRor17Hash32
+{
+    meta:
+        description = "search for shellcode hash or23hXorRor17Hash32"
+
+    strings:
+        $CreateRemoteThread = { A420E6BA }
+        $GetProcAddress = { 3300A198 }
+        $GetVersion = { 4CF467F8 }
+        $InternetOpenA = { 42189903 }
+        $InternetOpenW = { 4218B103 }
+        $LoadLibraryA = { 1F0CB98E }
+        $LoadLibraryW = { 1F0C918E }
+        $Sleep = { 6C07BE0D }
+        $VirtualAlloc = { 8FD75888 }
+        $VirtualProtect = { 3259AD29 }
+        $WSAStartup = { 2CA4BFD0 }
+        $WriteProcessMemory = { 2C134661 }
+        $socket = { 6C1B560E }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_playWith0xe8677835Hash
+{
+    meta:
+        description = "search for shellcode hash playWith0xe8677835Hash"
+
+    strings:
+        $CreateRemoteThread = { 232763D4 }
+        $GetProcAddress = { 54EF20A1 }
+        $GetVersion = { 23CFB093 }
+        $InternetOpenA = { F7BD34F1 }
+        $InternetOpenW = { 26D506F4 }
+        $LoadLibraryA = { D118ACA7 }
+        $LoadLibraryW = { 00709EA2 }
+        $Sleep = { 1AE4C3E4 }
+        $VirtualAlloc = { F1FD63E7 }
+        $VirtualProtect = { 5F901FB4 }
+        $WSAStartup = { 0AE6AFC2 }
+        $WriteProcessMemory = { BF8A12B2 }
+        $socket = { E9DAC1F4 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_poisonIvyHash
+{
+    meta:
+        description = "search for shellcode hash poisonIvyHash"
+
+    strings:
+        $CreateRemoteThread = { 657F4ACF }
+        $GetProcAddress = { 1F7CC9FF }
+        $GetVersion = { 063DF142 }
+        $InternetOpenA = { 34B5B08A }
+        $InternetOpenW = { E3002896 }
+        $LoadLibraryA = { ADD13441 }
+        $LoadLibraryW = { 7A64AC5D }
+        $Sleep = { BA36C10A }
+        $VirtualAlloc = { 0E890244 }
+        $VirtualProtect = { BBD4C379 }
+        $WSAStartup = { 8FD8A4BB }
+        $WriteProcessMemory = { D5BA9B0E }
+        $socket = { E160B48E }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_rol3XorEax
+{
+    meta:
+        description = "search for shellcode hash rol3XorEax"
+
+    strings:
+        $CreateRemoteThread = { E2F9A7DB }
+        $GetProcAddress = { 08EE319C }
+        $GetVersion = { 415790C0 }
+        $InternetOpenA = { 74969982 }
+        $InternetOpenW = { C4969982 }
+        $LoadLibraryA = { FB328CAE }
+        $LoadLibraryW = { 4B328CAE }
+        $Sleep = { A0EAF51B }
+        $VirtualAlloc = { DEC3E3FF }
+        $VirtualProtect = { EBA99CA9 }
+        $WSAStartup = { 05945D86 }
+        $WriteProcessMemory = { 660643EF }
+        $socket = { 2207CA13 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_rol3XorHash32
+{
+    meta:
+        description = "search for shellcode hash rol3XorHash32"
+
+    strings:
+        $CreateRemoteThread = { C2665F4A }
+        $GetProcAddress = { 849B50F2 }
+        $GetVersion = { 545FED52 }
+        $InternetOpenA = { 230E6A56 }
+        $InternetOpenW = { 350E6A56 }
+        $LoadLibraryA = { 89FD12A4 }
+        $LoadLibraryW = { 9FFD12A4 }
+        $Sleep = { 18F20500 }
+        $VirtualAlloc = { AED016AB }
+        $VirtualProtect = { 462FFFC5 }
+        $WSAStartup = { DAEA50E2 }
+        $WriteProcessMemory = { 55D54AB0 }
+        $socket = { 9CAF3F00 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_rol5AddHash32
+{
+    meta:
+        description = "search for shellcode hash rol5AddHash32"
+
+    strings:
+        $CreateRemoteThread = { 6CF43172 }
+        $GetProcAddress = { 9055C999 }
+        $GetVersion = { 047B6451 }
+        $InternetOpenA = { 8FB706F6 }
+        $InternetOpenW = { A5B706F6 }
+        $LoadLibraryA = { DCDD1A33 }
+        $LoadLibraryW = { F2DD1A33 }
+        $Sleep = { 10A16705 }
+        $VirtualAlloc = { 0476FA48 }
+        $VirtualProtect = { FBA50AB6 }
+        $WSAStartup = { 2D1456AE }
+        $WriteProcessMemory = { 3D79A6A6 }
+        $socket = { 143923ED }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_rol5XorHash32
+{
+    meta:
+        description = "search for shellcode hash rol5XorHash32"
+
+    strings:
+        $CreateRemoteThread = { 536430CA }
+        $GetProcAddress = { DBB6B6E5 }
+        $GetVersion = { 33AF144D }
+        $InternetOpenA = { CE481508 }
+        $InternetOpenW = { D8481508 }
+        $LoadLibraryA = { 3B00A1B4 }
+        $LoadLibraryW = { 2D00A1B4 }
+        $Sleep = { D0980707 }
+        $VirtualAlloc = { 338A8DA4 }
+        $VirtualProtect = { 825A154A }
+        $WSAStartup = { C44E262E }
+        $WriteProcessMemory = { 7061462A }
+        $socket = { D420C0E0 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_rol7AddHash32
+{
+    meta:
+        description = "search for shellcode hash rol7AddHash32"
+
+    strings:
+        $CreateRemoteThread = { 892C9046 }
+        $GetProcAddress = { 54157FFC }
+        $GetVersion = { 41D36314 }
+        $InternetOpenA = { 18EC94F5 }
+        $InternetOpenW = { 2EEC94F5 }
+        $LoadLibraryA = { C9FFDF10 }
+        $LoadLibraryW = { DFFFDF10 }
+        $Sleep = { F572993D }
+        $VirtualAlloc = { C0999192 }
+        $VirtualProtect = { C8121197 }
+        $WSAStartup = { C18AE0F1 }
+        $WriteProcessMemory = { ACF7A49C }
+        $socket = { 92F67AFC }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_rol7AddXor2Hash32
+{
+    meta:
+        description = "search for shellcode hash rol7AddXor2Hash32"
+
+    strings:
+        $CreateRemoteThread = { 247A7273 }
+        $GetProcAddress = { E2DC5B0A }
+        $GetVersion = { 4D4A28F6 }
+        $InternetOpenA = { AB33F1D3 }
+        $InternetOpenW = { BD33F1D3 }
+        $LoadLibraryA = { 3BC823F3 }
+        $LoadLibraryW = { 4DC823F3 }
+        $Sleep = { F7F3D91D }
+        $VirtualAlloc = { 4DE1D5B4 }
+        $VirtualProtect = { 3B5A7569 }
+        $WSAStartup = { D303A50F }
+        $WriteProcessMemory = { 4532FECD }
+        $socket = { 84773ADC }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_rol7XorHash32
+{
+    meta:
+        description = "search for shellcode hash rol7XorHash32"
+
+    strings:
+        $CreateRemoteThread = { B37418E6 }
+        $GetProcAddress = { EEEAC01F }
+        $GetVersion = { E22C93CB }
+        $InternetOpenA = { D73D5908 }
+        $InternetOpenW = { C13D5908 }
+        $LoadLibraryA = { 2680ACC8 }
+        $LoadLibraryW = { 3080ACC8 }
+        $Sleep = { F572993D }
+        $VirtualAlloc = { FE6A7A69 }
+        $VirtualProtect = { 5A6FDEA9 }
+        $WSAStartup = { 7D75DECD }
+        $WriteProcessMemory = { 35BFA0BE }
+        $socket = { 6AF17AFC }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_rol8Xor0xB0D4D06Hash32
+{
+    meta:
+        description = "search for shellcode hash rol8Xor0xB0D4D06Hash32"
+
+    strings:
+        $CreateRemoteThread = { 41764230 }
+        $GetProcAddress = { 8E70D917 }
+        $GetVersion = { 78676316 }
+        $InternetOpenA = { 71C10B33 }
+        $InternetOpenW = { 8BD70B33 }
+        $LoadLibraryA = { B663331E }
+        $LoadLibraryW = { C075331E }
+        $Sleep = { 69850D02 }
+        $VirtualAlloc = { 496D1EC6 }
+        $VirtualProtect = { 59122F19 }
+        $WSAStartup = { 57730A3A }
+        $WriteProcessMemory = { 9E66B430 }
+        $socket = { 6678D603 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_rol9AddHash32
+{
+    meta:
+        description = "search for shellcode hash rol9AddHash32"
+
+    strings:
+        $CreateRemoteThread = { 4C3DB214 }
+        $GetProcAddress = { 892FAC6B }
+        $GetVersion = { CBEABFAF }
+        $InternetOpenA = { DD66B26B }
+        $InternetOpenW = { F366B26B }
+        $LoadLibraryA = { EB9FD7E0 }
+        $LoadLibraryW = { 01A0D7E0 }
+        $Sleep = { A3CF9461 }
+        $VirtualAlloc = { 62D9E29E }
+        $VirtualProtect = { 2F025491 }
+        $WSAStartup = { A4C34D27 }
+        $WriteProcessMemory = { 3528647E }
+        $socket = { 6731BB19 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_rol9XorHash32
+{
+    meta:
+        description = "search for shellcode hash rol9XorHash32"
+
+    strings:
+        $CreateRemoteThread = { D44BF0D4 }
+        $GetProcAddress = { A05CDA49 }
+        $GetVersion = { 771CA68C }
+        $InternetOpenA = { F4B91448 }
+        $InternetOpenW = { E2B91448 }
+        $LoadLibraryA = { 25D346AF }
+        $LoadLibraryW = { 33D346AF }
+        $Sleep = { 43CF9461 }
+        $VirtualAlloc = { FB2C195D }
+        $VirtualProtect = { 2072B66F }
+        $WSAStartup = { 433FB005 }
+        $WriteProcessMemory = { 1F1064EB }
+        $socket = { 87ACA219 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_ror11AddHash32
+{
+    meta:
+        description = "search for shellcode hash ror11AddHash32"
+
+    strings:
+        $CreateRemoteThread = { 6DF53071 }
+        $GetProcAddress = { D00589E9 }
+        $GetVersion = { C5D3A2F8 }
+        $InternetOpenA = { A325F387 }
+        $InternetOpenW = { B925F387 }
+        $LoadLibraryA = { 97165FFA }
+        $LoadLibraryW = { AD165FFA }
+        $Sleep = { A694D111 }
+        $VirtualAlloc = { BF273F97 }
+        $VirtualProtect = { D7122F49 }
+        $WSAStartup = { C80BBBB6 }
+        $WriteProcessMemory = { C11C2303 }
+        $socket = { A5929293 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_ror13AddHash32
+{
+    meta:
+        description = "search for shellcode hash ror13AddHash32"
+
+    strings:
+        $CreateRemoteThread = { DD9CBD72 }
+        $GetProcAddress = { AAFC0D7C }
+        $GetVersion = { 6181D9CF }
+        $InternetOpenA = { 2944E857 }
+        $InternetOpenW = { 3F44E857 }
+        $LoadLibraryA = { 8E4E0EEC }
+        $LoadLibraryW = { A44E0EEC }
+        $Sleep = { B0492DDB }
+        $VirtualAlloc = { 54CAAF91 }
+        $VirtualProtect = { 1BC64679 }
+        $WSAStartup = { CBEDFC3B }
+        $WriteProcessMemory = { A16A3DD8 }
+        $socket = { 6E0B2F49 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_ror13AddHash32AddDll
+{
+    meta:
+        description = "search for shellcode hash ror13AddHash32AddDll"
+
+    strings:
+        $CreateRemoteThread = { C6AC9A79 }
+        $GetProcAddress = { 49F70278 }
+        $GetVersion = { A695BD9D }
+        $InternetOpenA = { 3A5679A7 }
+        $InternetOpenW = { 3A5629A8 }
+        $LoadLibraryA = { 4C772607 }
+        $LoadLibraryW = { 4C77D607 }
+        $Sleep = { 44F035E0 }
+        $VirtualAlloc = { 58A453E5 }
+        $VirtualProtect = { 10E18AC3 }
+        $WSAStartup = { AF78498B }
+        $WriteProcessMemory = { C5D8BDE7 }
+        $socket = { 40E26178 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_ror13AddHash32DllSimple
+{
+    meta:
+        description = "search for shellcode hash ror13AddHash32DllSimple"
+
+    strings:
+        $CreateRemoteThread = { F466E9E0 }
+        $GetProcAddress = { C1C639EA }
+        $GetVersion = { 784B053E }
+        $InternetOpenA = { CDE68745 }
+        $InternetOpenW = { E3E68745 }
+        $LoadLibraryA = { A5183A5A }
+        $LoadLibraryW = { BB183A5A }
+        $Sleep = { C7135949 }
+        $VirtualAlloc = { 6B94DBFF }
+        $VirtualProtect = { 329072E7 }
+        $WSAStartup = { A6BF8E2A }
+        $WriteProcessMemory = { B8346946 }
+        $socket = { 49DDC037 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_ror13AddHash32Sub1
+{
+    meta:
+        description = "search for shellcode hash ror13AddHash32Sub1"
+
+    strings:
+        $CreateRemoteThread = { DC9CBD72 }
+        $GetProcAddress = { A9FC0D7C }
+        $GetVersion = { 6081D9CF }
+        $InternetOpenA = { 2844E857 }
+        $InternetOpenW = { 3E44E857 }
+        $LoadLibraryA = { 8D4E0EEC }
+        $LoadLibraryW = { A34E0EEC }
+        $Sleep = { AF492DDB }
+        $VirtualAlloc = { 53CAAF91 }
+        $VirtualProtect = { 1AC64679 }
+        $WSAStartup = { CAEDFC3B }
+        $WriteProcessMemory = { A06A3DD8 }
+        $socket = { 6D0B2F49 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_ror13AddHash32Sub20h
+{
+    meta:
+        description = "search for shellcode hash ror13AddHash32Sub20h"
+
+    strings:
+        $CreateRemoteThread = { B10E1A01 }
+        $GetProcAddress = { 7AEECA1A }
+        $GetVersion = { 3175D76E }
+        $InternetOpenA = { 103827F6 }
+        $InternetOpenW = { 263827F6 }
+        $LoadLibraryA = { 76468B8A }
+        $LoadLibraryW = { 8C468B8A }
+        $Sleep = { 90412D9A }
+        $VirtualAlloc = { 1CBE2E30 }
+        $VirtualProtect = { E3B70318 }
+        $WSAStartup = { 9AE5FAFA }
+        $WriteProcessMemory = { 75DE5966 }
+        $socket = { 3E032D08 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_ror13AddWithNullHash32
+{
+    meta:
+        description = "search for shellcode hash ror13AddWithNullHash32"
+
+    strings:
+        $CreateRemoteThread = { EC95EBE6 }
+        $GetProcAddress = { 6FE053E5 }
+        $GetVersion = { CC7E0E0B }
+        $InternetOpenA = { 42BF4A21 }
+        $InternetOpenW = { 42BFFA21 }
+        $LoadLibraryA = { 72607774 }
+        $LoadLibraryW = { 72602775 }
+        $Sleep = { 6AD9864D }
+        $VirtualAlloc = { 7E8DA452 }
+        $VirtualProtect = { 36CADB30 }
+        $WSAStartup = { E7DF596E }
+        $WriteProcessMemory = { EBC10E55 }
+        $socket = { 7849725B }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_ror7AddHash32
+{
+    meta:
+        description = "search for shellcode hash ror7AddHash32"
+
+    strings:
+        $CreateRemoteThread = { 63EB9A66 }
+        $GetProcAddress = { 85DFAFBB }
+        $GetVersion = { 29056295 }
+        $InternetOpenA = { 0C88834A }
+        $InternetOpenW = { 2288834A }
+        $LoadLibraryA = { 3274910C }
+        $LoadLibraryW = { 4874910C }
+        $Sleep = { A06597CB }
+        $VirtualAlloc = { 6759DE1E }
+        $VirtualProtect = { 1EA464EF }
+        $WSAStartup = { 3D6AB480 }
+        $WriteProcessMemory = { 580F4197 }
+        $socket = { 731FAF2B }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_ror9AddHash32
+{
+    meta:
+        description = "search for shellcode hash ror9AddHash32"
+
+    strings:
+        $CreateRemoteThread = { E23F3733 }
+        $GetProcAddress = { 8E9F4572 }
+        $GetVersion = { BD27E7BF }
+        $InternetOpenA = { 30807D61 }
+        $InternetOpenW = { 46807D61 }
+        $LoadLibraryA = { CACCDE43 }
+        $LoadLibraryW = { E0CCDE43 }
+        $Sleep = { F54D9962 }
+        $VirtualAlloc = { 1CAD357F }
+        $VirtualProtect = { E1DCF7CC }
+        $WSAStartup = { 38DB69A1 }
+        $WriteProcessMemory = { 258C2C08 }
+        $socket = { DBCC3226 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_shift0x82F63B78
+{
+    meta:
+        description = "search for shellcode hash shift0x82F63B78"
+
+    strings:
+        $CreateRemoteThread = { 71043BB4 }
+        $GetProcAddress = { F5F8EA17 }
+        $GetVersion = { BEFA8EB6 }
+        $InternetOpenA = { 574290D6 }
+        $InternetOpenW = { D0626FE0 }
+        $LoadLibraryA = { A6844C12 }
+        $LoadLibraryW = { 21A4B324 }
+        $Sleep = { 12D29FAB }
+        $VirtualAlloc = { CB793E4B }
+        $VirtualProtect = { F6E3CC17 }
+        $WSAStartup = { C4976C23 }
+        $WriteProcessMemory = { 92B910EE }
+        $socket = { 8334E1BF }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_shl7Shr19AddHash32
+{
+    meta:
+        description = "search for shellcode hash shl7Shr19AddHash32"
+
+    strings:
+        $CreateRemoteThread = { 892C9046 }
+        $GetProcAddress = { 54157FFC }
+        $GetVersion = { 41D36314 }
+        $InternetOpenA = { 18EC94F5 }
+        $InternetOpenW = { 2EEC94F5 }
+        $LoadLibraryA = { C9FFDF10 }
+        $LoadLibraryW = { DFFFDF10 }
+        $Sleep = { F572993D }
+        $VirtualAlloc = { C0999192 }
+        $VirtualProtect = { C8121197 }
+        $WSAStartup = { C18AE0F1 }
+        $WriteProcessMemory = { ACF7A49C }
+        $socket = { 92F67AFC }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_shl7Shr19XorHash32
+{
+    meta:
+        description = "search for shellcode hash shl7Shr19XorHash32"
+
+    strings:
+        $CreateRemoteThread = { 458FE598 }
+        $GetProcAddress = { C8FAC81B }
+        $GetVersion = { C381C560 }
+        $InternetOpenA = { F62D51AC }
+        $InternetOpenW = { E02D51AC }
+        $LoadLibraryA = { 0790E463 }
+        $LoadLibraryW = { 1190E463 }
+        $Sleep = { 0E082463 }
+        $VirtualAlloc = { DF7A32C2 }
+        $VirtualProtect = { 7C7FD6AD }
+        $WSAStartup = { 5CD88866 }
+        $WriteProcessMemory = { C3445DC0 }
+        $socket = { 318CC7A2 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_shl7SubHash32DoublePulser
+{
+    meta:
+        description = "search for shellcode hash shl7SubHash32DoublePulser"
+
+    strings:
+        $CreateRemoteThread = { D471A7D5 }
+        $GetProcAddress = { B8F8FD0A }
+        $GetVersion = { FEAD30CF }
+        $InternetOpenA = { 8A0990F6 }
+        $InternetOpenW = { 741490F6 }
+        $LoadLibraryA = { 54BE4801 }
+        $LoadLibraryW = { 3EC94801 }
+        $Sleep = { A961000E }
+        $VirtualAlloc = { 36382900 }
+        $VirtualProtect = { 1C7CFD88 }
+        $WSAStartup = { 88C48BC1 }
+        $WriteProcessMemory = { CF5DCFFD }
+        $socket = { EDAB1698 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_shr2Shl5XorHash32
+{
+    meta:
+        description = "search for shellcode hash shr2Shl5XorHash32"
+
+    strings:
+        $CreateRemoteThread = { 69C48C7E }
+        $GetProcAddress = { AF345093 }
+        $GetVersion = { 1A9D12FA }
+        $InternetOpenA = { 51E3D63D }
+        $InternetOpenW = { 4BE3D63D }
+        $LoadLibraryA = { 5B758AF0 }
+        $LoadLibraryW = { 65758AF0 }
+        $Sleep = { CD110265 }
+        $VirtualAlloc = { 2202BF8A }
+        $VirtualProtect = { 37069CBD }
+        $WSAStartup = { C4141D4B }
+        $WriteProcessMemory = { 847B1ED5 }
+        $socket = { 677ED77F }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_sll1AddHash32
+{
+    meta:
+        description = "search for shellcode hash sll1AddHash32"
+
+    strings:
+        $CreateRemoteThread = { 14D73C03 }
+        $GetProcAddress = { FA8B3400 }
+        $GetVersion = { 90490300 }
+        $InternetOpenA = { 02F01A00 }
+        $InternetOpenW = { 2EF01A00 }
+        $LoadLibraryA = { 86570D00 }
+        $LoadLibraryW = { B2570D00 }
+        $Sleep = { BC1A0000 }
+        $VirtualAlloc = { 42310E00 }
+        $VirtualProtect = { 3CD13800 }
+        $WSAStartup = { 14930300 }
+        $WriteProcessMemory = { 620F9803 }
+        $socket = { A4360000 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_xorRol9Hash32
+{
+    meta:
+        description = "search for shellcode hash xorRol9Hash32"
+
+    strings:
+        $CreateRemoteThread = { A9A997E0 }
+        $GetProcAddress = { 9340B9B4 }
+        $GetVersion = { 19EF384C }
+        $InternetOpenA = { 90E87329 }
+        $InternetOpenW = { 90C47329 }
+        $LoadLibraryA = { 5E4BA68D }
+        $LoadLibraryW = { 5E67A68D }
+        $Sleep = { C3869E29 }
+        $VirtualAlloc = { BAF65932 }
+        $VirtualProtect = { DF40E46C }
+        $WSAStartup = { 0B867E60 }
+        $WriteProcessMemory = { D63F20C8 }
+        $socket = { 330E5945 }
+
+    condition:
+        3 of them
+}
+        
+
+rule sc_hash_xorShr8Hash32
+{
+    meta:
+        description = "search for shellcode hash xorShr8Hash32"
+
+    strings:
+        $CreateRemoteThread = { B79111DA }
+        $GetProcAddress = { E552D88D }
+        $GetVersion = { 2507D698 }
+        $InternetOpenA = { 1908B9E1 }
+        $InternetOpenW = { D9601EF4 }
+        $LoadLibraryA = { 317EEE06 }
+        $LoadLibraryW = { 27A80284 }
+        $Sleep = { 3EDDEF6C }
+        $VirtualAlloc = { 3F54A77E }
+        $VirtualProtect = { 56683AD0 }
+        $WSAStartup = { 32885EE7 }
+        $WriteProcessMemory = { 4F9AB05B }
+        $socket = { 87FDA3FF }
+
+    condition:
+        3 of them
+}
+```
+</details>
