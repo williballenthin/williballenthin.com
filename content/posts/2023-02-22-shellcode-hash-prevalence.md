@@ -676,7 +676,7 @@ rule sc_hash_{hash_name}
 <details>
 <summary>complete yara rule listing</summary>
 
-```py
+```yara
 rule sc_hash_add1505Shl5Hash32
 {
     meta:
