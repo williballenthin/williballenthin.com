@@ -14,17 +14,54 @@ In [capa-rules#175](https://github.com/mandiant/capa-rules/issues/175) we want t
 
 TL;DR:
 
-  - `crc32`: 20+
-  - `poisonIvyHash`: 9
-  - `rol7XorHash32`: 5
-  - `addRor13Hash32`: 4
-  - `ror13AddWithNullHash32`: 4
-  - `chAddRol8Hash32`: 2
-  - `ror7AddHash32`: 2
-  - `sll1AddHash32`: 2
-  - `add1505Shl5Hash32`: 1
-  - `hash_Carbanak`: 1
-  - `ror13AddHash32`: 1
+```
+   9162 sll1AddHash32
+    391 ror13AddHash32
+     95 crc32
+     75 ror13AddHash32AddDll
+     59 rol5XorHash32
+     27 poisonIvyHash
+     23 shr2Shl5XorHash32
+     16 rol7XorHash32
+     16 imul83hAdd
+     13 or21hXorRor11Hash32
+     12 fnv1Xor67f
+      9 xorShr8Hash32
+      7 ror9AddHash32
+      7 ror13AddHash32Sub20h
+      5 ror13AddWithNullHash32
+      5 crc32Xor0xca9d4d4e
+      5 addRor4WithNullHash32
+      5 addRor13Hash32
+      5 addRol5HashOncemore32
+      5 add1505Shl5Hash32
+      4 shl7Shr19AddHash32
+      4 ror7AddHash32
+      4 rol7AddHash32
+      4 chAddRol8Hash32
+      3 xorRol9Hash32
+      3 ror13AddHash32Sub1
+      3 ror11AddHash32
+      3 rol9XorHash32
+      3 rol9AddHash32
+      3 rol3XorHash32
+      3 playWith0xe8677835Hash
+      3 hash_Carbanak
+      2 rol3XorEax
+      2 mult21AddHash32
+      2 imul21hAddHash32
+      2 addRor13HashOncemore32
+      1 shl7SubHash32DoublePulser
+      1 shift0x82F63B78
+      1 ror13AddHash32DllSimple
+      1 rol8Xor0xB0D4D06Hash32
+      1 rol7AddXor2Hash32
+      1 rol5AddHash32
+      1 hash_ror13AddUpperDllnameHash32
+      1 dualaccModFFF1Hash
+      1 crc32bzip2lower
+      1 adler32_666
+```
 
 Using the [flare-ida](https://github.com/mandiant/flare-ida) [shellcode hashes database](https://github.com/mandiant/flare-ida/tree/master/shellcode_hashes) `sc_hashes.db`, we can generate VirusTotal queries to search for PE files with interesting hashes like this:
 
@@ -36,6 +73,20 @@ Using the [flare-ida](https://github.com/mandiant/flare-ida) [shellcode hashes d
   - `(content: { 5D7730AA } and content: { 970F2C38 } and content: { 8DF14F84 } and content: { C8E8226F }) and size:100kb- and (tag:pedll or tag:peexe)`
   - [search](https://www.virustotal.com/gui/search/%28content%3A%20%7B%205D7730AA%20%7D%20and%20content%3A%20%7B%20970F2C38%20%7D%20and%20content%3A%20%7B%208DF14F84%20%7D%20and%20content%3A%20%7B%20C8E8226F%20%7D%29%20and%20size%3A100kb-%20and%20%28tag%3Apedll%20or%20tag%3Apeexe%29/files)
   - count: 1
+
+And the key results look like this:
+
+  - `crc32`: 20+
+  - `poisonIvyHash`: 9
+  - `rol7XorHash32`: 5
+  - `addRor13Hash32`: 4
+  - `ror13AddWithNullHash32`: 4
+  - `chAddRol8Hash32`: 2
+  - `ror7AddHash32`: 2
+  - `sll1AddHash32`: 2
+  - `add1505Shl5Hash32`: 1
+  - `hash_Carbanak`: 1
+  - `ror13AddHash32`: 1
 
 
 <details>
@@ -530,7 +581,7 @@ for hash_name, symbols in sorted(hashes.items()):
 
 We can also generate yara rules for a retrohunt that match a collection of hashes. These rules benefit from the `3 or more` clauses that are a bit more flexible and requiring *all* hash values to be present:
 
-```javascript
+```yara
 rule sc_hash_add1505Shl5Hash32
 {
     meta:
@@ -1826,3 +1877,54 @@ rule sc_hash_xorShr8Hash32
 }
 ```
 </details>
+
+Retrohunting across the past 30 days worth of samples yields the following distribution:
+
+```
+   9162 sll1AddHash32
+    391 ror13AddHash32
+     95 crc32
+     75 ror13AddHash32AddDll
+     59 rol5XorHash32
+     27 poisonIvyHash
+     23 shr2Shl5XorHash32
+     16 rol7XorHash32
+     16 imul83hAdd
+     13 or21hXorRor11Hash32
+     12 fnv1Xor67f
+      9 xorShr8Hash32
+      7 ror9AddHash32
+      7 ror13AddHash32Sub20h
+      5 ror13AddWithNullHash32
+      5 crc32Xor0xca9d4d4e
+      5 addRor4WithNullHash32
+      5 addRor13Hash32
+      5 addRol5HashOncemore32
+      5 add1505Shl5Hash32
+      4 shl7Shr19AddHash32
+      4 ror7AddHash32
+      4 rol7AddHash32
+      4 chAddRol8Hash32
+      3 xorRol9Hash32
+      3 ror13AddHash32Sub1
+      3 ror11AddHash32
+      3 rol9XorHash32
+      3 rol9AddHash32
+      3 rol3XorHash32
+      3 playWith0xe8677835Hash
+      3 hash_Carbanak
+      2 rol3XorEax
+      2 mult21AddHash32
+      2 imul21hAddHash32
+      2 addRor13HashOncemore32
+      1 shl7SubHash32DoublePulser
+      1 shift0x82F63B78
+      1 ror13AddHash32DllSimple
+      1 rol8Xor0xB0D4D06Hash32
+      1 rol7AddXor2Hash32
+      1 rol5AddHash32
+      1 hash_ror13AddUpperDllnameHash32
+      1 dualaccModFFF1Hash
+      1 crc32bzip2lower
+      1 adler32_666
+```
