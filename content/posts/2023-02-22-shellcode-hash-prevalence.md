@@ -15,52 +15,52 @@ In [capa-rules#175](https://github.com/mandiant/capa-rules/issues/175) we want t
 TL;DR:
 
 ```
-   9162 sll1AddHash32
-    391 ror13AddHash32
-     95 crc32
-     75 ror13AddHash32AddDll
-     59 rol5XorHash32
-     27 poisonIvyHash
-     23 shr2Shl5XorHash32
-     16 rol7XorHash32
-     16 imul83hAdd
-     13 or21hXorRor11Hash32
-     12 fnv1Xor67f
-      9 xorShr8Hash32
-      7 ror9AddHash32
-      7 ror13AddHash32Sub20h
-      5 ror13AddWithNullHash32
-      5 crc32Xor0xca9d4d4e
-      5 addRor4WithNullHash32
-      5 addRor13Hash32
-      5 addRol5HashOncemore32
-      5 add1505Shl5Hash32
-      4 shl7Shr19AddHash32
-      4 ror7AddHash32
-      4 rol7AddHash32
-      4 chAddRol8Hash32
-      3 xorRol9Hash32
-      3 ror13AddHash32Sub1
-      3 ror11AddHash32
-      3 rol9XorHash32
-      3 rol9AddHash32
-      3 rol3XorHash32
-      3 playWith0xe8677835Hash
-      3 hash_Carbanak
-      2 rol3XorEax
-      2 mult21AddHash32
-      2 imul21hAddHash32
-      2 addRor13HashOncemore32
-      1 shl7SubHash32DoublePulser
-      1 shift0x82F63B78
-      1 ror13AddHash32DllSimple
-      1 rol8Xor0xB0D4D06Hash32
-      1 rol7AddXor2Hash32
-      1 rol5AddHash32
-      1 hash_ror13AddUpperDllnameHash32
-      1 dualaccModFFF1Hash
-      1 crc32bzip2lower
-      1 adler32_666
+   9162* sll1AddHash32 (many FPs due to hash collisions)
+    391  ror13AddHash32
+     95  crc32
+     75  ror13AddHash32AddDll
+     59  rol5XorHash32
+     27  poisonIvyHash
+     23  shr2Shl5XorHash32
+     16  rol7XorHash32
+     16  imul83hAdd
+     13  or21hXorRor11Hash32
+     12  fnv1Xor67f
+      9  xorShr8Hash32
+      7  ror9AddHash32
+      7  ror13AddHash32Sub20h
+      5  ror13AddWithNullHash32
+      5  crc32Xor0xca9d4d4e
+      5  addRor4WithNullHash32
+      5  addRor13Hash32
+      5  addRol5HashOncemore32
+      5  add1505Shl5Hash32
+      4  shl7Shr19AddHash32
+      4  ror7AddHash32
+      4  rol7AddHash32
+      4  chAddRol8Hash32
+      3  xorRol9Hash32
+      3  ror13AddHash32Sub1
+      3  ror11AddHash32
+      3  rol9XorHash32
+      3  rol9AddHash32
+      3  rol3XorHash32
+      3  playWith0xe8677835Hash
+      3  hash_Carbanak
+      2  rol3XorEax
+      2  mult21AddHash32
+      2  imul21hAddHash32
+      2  addRor13HashOncemore32
+      1  shl7SubHash32DoublePulser
+      1  shift0x82F63B78
+      1  ror13AddHash32DllSimple
+      1  rol8Xor0xB0D4D06Hash32
+      1  rol7AddXor2Hash32
+      1  rol5AddHash32
+      1  hash_ror13AddUpperDllnameHash32
+      1  dualaccModFFF1Hash
+      1  crc32bzip2lower
+      1  adler32_666
 ```
 
 Using the [flare-ida](https://github.com/mandiant/flare-ida) [shellcode hashes database](https://github.com/mandiant/flare-ida/tree/master/shellcode_hashes) `sc_hashes.db`, we can generate VirusTotal queries to search for PE files with interesting hashes like this:
@@ -1881,7 +1881,7 @@ rule sc_hash_xorShr8Hash32
 Retrohunting across the past 30 days worth of samples yields the following distribution:
 
 ```
-   9162 sll1AddHash32
+   9162 sll1AddHash32 (many FPs due to hash collisions)
     391 ror13AddHash32
      95 crc32
      75 ror13AddHash32AddDll
@@ -1928,3 +1928,22 @@ Retrohunting across the past 30 days worth of samples yields the following distr
       1 crc32bzip2lower
       1 adler32_666
 ```
+
+The `sll1AddHash32` hashes are surprisingly prevalent. If we peek at some of the matches:
+
+```console
+❯ yara sc_hashes.yar tests/data/ -s
+...
+sc_hash_sll1AddHash32 tests/data//mimikatz.exe_.viv
+0x49d373:$GetVersion: 90 49 03 00
+0xe10c76:$LoadLibraryA: 86 57 0D 00
+0xe10e9c:$LoadLibraryW: B2 57 0D 00
+0xd1fc6:$Sleep: BC 1A 00 00
+0x11c5b1:$Sleep: BC 1A 00 00
+0x1a7527:$Sleep: BC 1A 00 00
+0x4e30b0:$WSAStartup: 14 93 03 00
+0x1c337b:$socket: A4 36 00 00
+...
+```
+
+then we see that there are a few values that are "not very random" (only 16-20 bits of information). These are sure to be found in many PE files, in encoded data such as RVAs, etc. So, I think most of these hits can be attributed to false positives.
