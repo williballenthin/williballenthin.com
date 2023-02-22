@@ -603,7 +603,7 @@ rule sc_hash_add1505Shl5Hash32
         $socket = { 2E03311C }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
 ```
 
@@ -662,7 +662,7 @@ rule sc_hash_{hash_name}
 {strings}
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }}
         """.format(hash_name=hash_name, strings="\n".join(strings))
     
@@ -698,7 +698,7 @@ rule sc_hash_add1505Shl5Hash32
         $socket = { 2E03311C }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -723,7 +723,7 @@ rule sc_hash_addRol5HashOncemore32
         $socket = { B453E48C }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -748,7 +748,7 @@ rule sc_hash_addRor13Hash32
         $socket = { 7849725B }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -773,7 +773,7 @@ rule sc_hash_addRor13HashOncemore32
         $socket = { 92DBC24B }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -798,7 +798,7 @@ rule sc_hash_addRor4WithNullHash32
         $socket = { 30A6C17A }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -823,7 +823,7 @@ rule sc_hash_adler32_666
         $socket = { 6304E415 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -848,7 +848,7 @@ rule sc_hash_chAddRol8Hash32
         $socket = { 147F6816 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -873,7 +873,7 @@ rule sc_hash_crc32
         $socket = { BB68E505 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -898,7 +898,7 @@ rule sc_hash_crc32Xor0xca9d4d4e
         $socket = { F52578CF }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -923,7 +923,7 @@ rule sc_hash_crc32bzip2lower
         $socket = { C5BFA946 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -948,7 +948,7 @@ rule sc_hash_dualaccModFFF1Hash
         $socket = { 8A02EE08 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -973,7 +973,7 @@ rule sc_hash_fnv1Xor67f
         $socket = { 13701290 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -998,7 +998,7 @@ rule sc_hash_hash_Carbanak
         $socket = { C4A1A507 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1023,7 +1023,7 @@ rule sc_hash_hash_ror13AddUpperDllnameHash32
         $socket = { 49DDC037 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1048,7 +1048,7 @@ rule sc_hash_imul21hAddHash32
         $socket = { 6EC636CF }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1073,7 +1073,7 @@ rule sc_hash_imul83hAdd
         $socket = { 9F2D40A6 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1098,7 +1098,7 @@ rule sc_hash_mult21AddHash32
         $socket = { 69FE5114 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1123,7 +1123,7 @@ rule sc_hash_or21hXorRor11Hash32
         $socket = { 1A99C52E }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1148,7 +1148,7 @@ rule sc_hash_or23hXorRor17Hash32
         $socket = { 6C1B560E }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1173,7 +1173,7 @@ rule sc_hash_playWith0xe8677835Hash
         $socket = { E9DAC1F4 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1198,7 +1198,7 @@ rule sc_hash_poisonIvyHash
         $socket = { E160B48E }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1223,7 +1223,7 @@ rule sc_hash_rol3XorEax
         $socket = { 2207CA13 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1248,7 +1248,7 @@ rule sc_hash_rol3XorHash32
         $socket = { 9CAF3F00 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1273,7 +1273,7 @@ rule sc_hash_rol5AddHash32
         $socket = { 143923ED }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1298,7 +1298,7 @@ rule sc_hash_rol5XorHash32
         $socket = { D420C0E0 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1323,7 +1323,7 @@ rule sc_hash_rol7AddHash32
         $socket = { 92F67AFC }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1348,7 +1348,7 @@ rule sc_hash_rol7AddXor2Hash32
         $socket = { 84773ADC }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1373,7 +1373,7 @@ rule sc_hash_rol7XorHash32
         $socket = { 6AF17AFC }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1398,7 +1398,7 @@ rule sc_hash_rol8Xor0xB0D4D06Hash32
         $socket = { 6678D603 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1423,7 +1423,7 @@ rule sc_hash_rol9AddHash32
         $socket = { 6731BB19 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1448,7 +1448,7 @@ rule sc_hash_rol9XorHash32
         $socket = { 87ACA219 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1473,7 +1473,7 @@ rule sc_hash_ror11AddHash32
         $socket = { A5929293 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1498,7 +1498,7 @@ rule sc_hash_ror13AddHash32
         $socket = { 6E0B2F49 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1523,7 +1523,7 @@ rule sc_hash_ror13AddHash32AddDll
         $socket = { 40E26178 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1548,7 +1548,7 @@ rule sc_hash_ror13AddHash32DllSimple
         $socket = { 49DDC037 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1573,7 +1573,7 @@ rule sc_hash_ror13AddHash32Sub1
         $socket = { 6D0B2F49 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1598,7 +1598,7 @@ rule sc_hash_ror13AddHash32Sub20h
         $socket = { 3E032D08 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1623,7 +1623,7 @@ rule sc_hash_ror13AddWithNullHash32
         $socket = { 7849725B }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1648,7 +1648,7 @@ rule sc_hash_ror7AddHash32
         $socket = { 731FAF2B }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1673,7 +1673,7 @@ rule sc_hash_ror9AddHash32
         $socket = { DBCC3226 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1698,7 +1698,7 @@ rule sc_hash_shift0x82F63B78
         $socket = { 8334E1BF }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1723,7 +1723,7 @@ rule sc_hash_shl7Shr19AddHash32
         $socket = { 92F67AFC }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1748,7 +1748,7 @@ rule sc_hash_shl7Shr19XorHash32
         $socket = { 318CC7A2 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1773,7 +1773,7 @@ rule sc_hash_shl7SubHash32DoublePulser
         $socket = { EDAB1698 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1798,7 +1798,7 @@ rule sc_hash_shr2Shl5XorHash32
         $socket = { 677ED77F }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
 
 
@@ -1823,7 +1823,7 @@ rule sc_hash_xorRol9Hash32
         $socket = { 330E5945 }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
         
 
@@ -1848,7 +1848,7 @@ rule sc_hash_xorShr8Hash32
         $socket = { 87FDA3FF }
 
     condition:
-        3 of them
+        filesize < 500KB and 3 of them
 }
 ```
 </details>
