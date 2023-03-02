@@ -36,4 +36,4 @@ layout: home
   - <a rel="me" href="https://github.com/williballenthin">GitHub</a>
   - <a rel="me" href="https://twitter.com/williballenthin">Twitter</a>
 
-![github stats](https://github-readme-stats.vercel.app/api?username=williballenthin&theme=graywhite&hide_border=true&include_all_commits=true&count_private=false&border_radius=0)
+![github stats](https://github-readme-stats.vercel.app/api?username=williballenthin&theme=graywhite&hide_border=true&include_all_commits=false&count_private=false&border_radius=0)
