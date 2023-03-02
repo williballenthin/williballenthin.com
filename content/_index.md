@@ -22,10 +22,10 @@ layout: home
   - ## [python-evt](https://github.com/williballenthin/LfLe)
     Recover event log entries from an image by heurisitically looking for record structures. 
   - ## [python-cim](https://github.com/mandiant/flare-wmi/tree/master/python-cim) (WMI)
-    Pure Python parser for the Microsoft Windows CIM (WMI) repository database.<br />
+    Pure Python parser for the Microsoft Windows CIM (WMI) repository database.
     This database is found in the files `OBJECTS.DATA`, `INDEX.BTR`, and `MAPPING[1-3].MAP`.
   - ## [python-sdb](https://github.com/williballenthin/python-sdb)
-    Pure Python parser for Application Compatibility Shim Databases (.sdb files) .
+    Pure Python parser for Application Compatibility Shim Databases (.sdb files).
   - ## [INDXParse](https://github.com/williballenthin/INDXParse)
     Tool suite for inspecting NTFS artifacts.
   - ## [EVTXtract](https://github.com/williballenthin/EVTXtract)
