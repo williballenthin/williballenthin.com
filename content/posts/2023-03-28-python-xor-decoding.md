@@ -1,6 +1,6 @@
 ---
 title: "python: XOR decoding data"
-date: 2023-02-15T00:00:00-07:00
+date: 2023-03-28T00:00:00-07:00
 tags:
   - python
   - xor
