@@ -1,0 +1,4 @@
+https://files.pythonhosted.org/packages/ff/50/e0c8b296dc9d1b4b1b747555c88146318dce2c1a8a3f5125116567b214d9/textual-0.22.3-py3-none-any.whl
+https://files.pythonhosted.org/packages/39/03/6de23bdd88f5ee7f8b03f94f6e88108f5d7ffe6d207e95cdb06d9aa4cd57/rich-13.3.5-py3-none-any.whl
+https://files.pythonhosted.org/packages/de/d3/eaa6148126b86087867a9383248499a552e3b8da9f201c7cd100250e3f0d/dissect.cstruct-3.6-py3-none-any.whl
+https://files.pythonhosted.org/packages/55/26/d0ad8b448476d0a1e8d3ea5622dc77b916db84c6aa3cb1e1c0965af948fc/pefile-2023.2.7-py3-none-any.whl
