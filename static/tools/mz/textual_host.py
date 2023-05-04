@@ -197,23 +197,3 @@ class XtermjsDriver(Driver):
 
     def disable_input(self) -> None:
         """Disable further input."""
-
-
-class FooApp:
-    def on_notified(self, message: XtermjsDriver.Notified):
-        """application-specific message provided by the application host"""
-        js.console.log("notified", message.data)
-
-
-async def main(buf: js.jsarray):
-    js.console.log("hello from python app")
-    app = PEApp(pathlib.Path("/[memory]"), bytes(buf.to_py()))
-    await app.run_async()
-
-
-#if __name__ == "__main__":
-    # within pyodide, we're already running within a coroutine.
-    # so we can use await directly.
-    #
-    # still, lets keep this to a minimum.
-    #await main()
