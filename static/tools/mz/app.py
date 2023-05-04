@@ -1,186 +1,6 @@
-from __future__ import annotations
-
-import os
-import sys
-import asyncio
-from dataclasses import dataclass
-
-# from requirements.txt
-import textual
-
-# from pyodide environment
-import js
-
-
-js.console.log("Hello World!")
-
-from textual.app import App, ComposeResult
-from textual.widgets import Header, Footer
-
-### setup
-
-# ensure textual/rich recognizes we're in terminal with lots of colors.
-os.environ["COLORTERM"] = "truecolor"
-os.environ["TERM"] = "xterm-256color"
-
-### hack until https://github.com/Textualize/textual/issues/2468 is addressed
-
-import inspect
-
-def getfile(*args, **kwargs):
-    raise TypeError("getfile() is not supported in the browser")
-
-inspect.getfile = getfile
-import textual.dom
-textual.dom.getfile = getfile
-
-
-### event handling, global
-
-
-@dataclass
-class DataEvent:
-    data: str
-
-TERMINAL_Q = asyncio.Queue()
-
-# global callback, well known name
-async def on_data(data):
-    await TERMINAL_Q.put(DataEvent(data=data))
-
-### driver
-
-
-from textual import events
-from textual.driver import Driver
-from textual.geometry import Size
-
-counter = iter(range(sys.maxsize))
-
-# relies on global TERMINAL_Q
-# manipulates js.term directly
-class XtermjsDriver(Driver):
-    @property
-    def term(self):
-        # term passed via global :-(
-        return js.term
-
-    @property
-    def is_headless(self) -> bool:
-        return False
-
-    def write(self, data: str) -> None:
-        self.term.write(data)
-        if next(counter) % 1000 == 0:
-            # see xtermjs#4480
-            self.term.clearTextureAtlas()
-
-    def _enable_mouse_support(self) -> None:
-        """Enable reporting of mouse events."""
-        write = self.write
-        write("\x1b[?1000h")  # SET_VT200_MOUSE
-        write("\x1b[?1003h")  # SET_ANY_EVENT_MOUSE
-        write("\x1b[?1015h")  # SET_VT200_HIGHLIGHT_MOUSE
-        write("\x1b[?1006h")  # SET_SGR_EXT_MODE_MOUSE
-
-        # Note: E.g. lxterminal understands 1000h, but not the urxvt or sgr
-        #       extensions.
-
-    def _enable_bracketed_paste(self) -> None:
-        """Enable bracketed paste mode."""
-        self.write("\x1b[?2004h")
-
-    def _disable_bracketed_paste(self) -> None:
-        """Disable bracketed paste mode."""
-        self.write("\x1b[?2004l")
-
-    def _disable_mouse_support(self) -> None:
-        """Disable reporting of mouse events."""
-        write = self.write
-        write("\x1b[?1000l")  #
-        write("\x1b[?1003l")  #
-        write("\x1b[?1015l")
-        write("\x1b[?1006l")
-
-    def _request_terminal_sync_mode_support(self) -> None:
-        """Writes an escape sequence to query the terminal support for the sync protocol."""
-        # Terminals should ignore this sequence if not supported.
-        self.write("\033[?2026$p")
-
-    def start_application_mode(self) -> None:
-        """Start application mode."""
-        loop = asyncio.get_running_loop()
-
-        def send_size_event() -> None:
-            """Send first resize event."""
-            textual_size = Size(self.term.cols, self.term.rows)
-            event = events.Resize(textual_size, textual_size)
-            asyncio.run_coroutine_threadsafe(
-                self._app._post_message(event),
-                loop=loop,
-            )
-
-        async def handle_events() -> None:
-            from textual._xterm_parser import XTermParser
-
-            parser = XTermParser(lambda: False, self._debug)
-            feed = parser.feed
-
-            while True:
-                event = await TERMINAL_Q.get()
-                if isinstance(event, DataEvent):
-                    for ev in feed(event.data):
-                        # js.console.log("event1: ", str(ev), repr(ev))
-                        self.process_event(ev)
-                else:
-                    raise NotImplementedError(event)
-
-        asyncio.run_coroutine_threadsafe(
-            handle_events(),
-            loop=loop,
-        )
-
-        self.write("\x1b[?1049h")  # Alt screen
-        self._enable_mouse_support()
-        self.write("\x1b[?25l")  # Hide cursor
-        self.write("\033[?1003h\n")
-        send_size_event()
-        self._request_terminal_sync_mode_support()
-        self._enable_bracketed_paste()
-        send_size_event()
-
-    def stop_application_mode(self) -> None:
-        """Stop application mode, restore state."""
-        self._disable_bracketed_paste()
-        self.disable_input()
-
-        # Alt screen false, show cursor
-        self.write("\x1b[?1049l" + "\x1b[?25h")
-
-    def disable_input(self) -> None:
-        """Disable further input."""
-
-### import mz
-
-"""
-    "textual==0.22.3",
-    "rich==13.3.3",
-    "dissect.cstruct==3.6",
-    "pefile==2023.2.7",
-
-    TODO:
-      - other structures
-      - structure & hexview side by side
-      - on hover structure highlight the hex
-"""
-import os
 import re
-import sys
-import mmap
-import asyncio
 import logging
 import pathlib
-import argparse
 import textwrap
 import itertools
 import dataclasses
@@ -199,7 +19,6 @@ from textual.strip import Strip
 from textual.screen import Screen
 from textual.widget import Widget
 from textual.binding import Binding
-from textual.logging import TextualHandler
 from textual.widgets import Label, Footer, Static, TabPane, TabbedContent
 from textual.geometry import Size
 from textual.reactive import reactive
@@ -287,6 +106,41 @@ class Context:
             return 64
         else:
             raise ValueError("unknown bitness")
+
+    @classmethod
+    def from_bytes(cls, path: pathlib.Path, buf: bytes):
+        # premature optimization consideration:
+        # do the parsing within the app, in case the file is really large and this is laggy.
+        # we can introduce background parsing later.
+        pe = pefile.PE(data=buf, fast_load=False)
+
+        cparser = cstruct.cstruct()
+        cparser.load(STRUCTURES)
+
+        renderers = {
+            "IMAGE_FILE_HEADER.TimeDateStamp": render_timestamp,
+            "IMAGE_FILE_HEADER.Characteristics": render_characteristics,
+            "IMAGE_OPTIONAL_HEADER32.DllCharacteristics": render_dll_characteristics,
+            "IMAGE_OPTIONAL_HEADER32.CheckSum": render_u32,
+            "IMAGE_OPTIONAL_HEADER64.DllCharacteristics": render_dll_characteristics,
+            "IMAGE_OPTIONAL_HEADER64.CheckSum": render_u32,
+            # parsed in more detail elsewhere.
+            "IMAGE_OPTIONAL_HEADER32.DataDirectory": dont_render,
+            "IMAGE_OPTIONAL_HEADER64.DataDirectory": dont_render,
+        }
+
+        key_fields = {
+            "IMAGE_FILE_HEADER": {"Machine", "TimeDateStamp", "Characteristics"},
+            "IMAGE_OPTIONAL_HEADER32": {"ImageBase", "Subsystem", "CheckSum", "DllCharacteristics"},
+            "IMAGE_OPTIONAL_HEADER64": {"ImageBase", "Subsystem", "CheckSum", "DllCharacteristics"},
+            "IMAGE_DATA_DIRECTORY": {"VirtualAddress", "Size"},
+        }
+
+        strings = list(
+            sorted(itertools.chain(extract_ascii_strings(buf), extract_unicode_strings(buf)), key=lambda s: s.offset)
+        )
+
+        return cls(path, buf, strings, pe, cparser, renderers, key_fields)
 
 
 def get_global_style(node, classname: str) -> Styles:
@@ -1683,6 +1537,47 @@ class MainScreen(Screen):
         yield Footer()
 
 
+class TitleScreen(Screen):
+    DEFAULT_CSS = """
+        TitleScreen {
+            height: 100%;
+            width: 100%;
+            align: center middle;
+        }
+    """
+
+    def compose(self) -> ComposeResult:
+        yield Label(textwrap.dedent("""\
+          _____                   _____          
+         /\    \                 /\    \         
+        /::\____\               /::\    \        
+       /::::|   |               \:::\    \       
+      /:::::|   |                \:::\    \      
+     /::::::|   |                 \:::\    \     
+    /:::/|::|   |                  \:::\    \    
+   /:::/ |::|   |                   \:::\    \   
+  /:::/  |::|___|______              \:::\    \  
+ /:::/   |::::::::\    \              \:::\    \ 
+/:::/    |:::::::::\____\______________\:::\____\ 
+\::/    / ~~~~~/:::/    \::::::::::::::::::/    /
+ \/____/      /:::/    / \::::::::::::::::/    / 
+             /:::/    /   \:::\~~~~\~~~~~~-----
+            /:::/    /     \:::\    \            
+           /:::/    /       \:::\    \           
+          /:::/    /         \:::\    \          
+         /:::/    /           \:::\    \         
+        /:::/    /             \:::\____\        
+        \::/    /               \::/    /        
+         \/____/                 \/____/         
+
+            mz: yet another PE viewer
+
+
+
+           drag 'n drop a PE file here
+        """.rstrip()), classes="logo")
+
+
 class PEApp(App):
     TITLE = "pe"
     DEFAULT_CSS = """
@@ -1729,56 +1624,39 @@ class PEApp(App):
         }
     """
 
-    def __init__(self, path: pathlib.Path, buf: bytearray, *args, **kwargs) -> None:
+    def __init__(self, path: pathlib.Path | None = None, buf: bytearray | None = None, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-
-        # premature optimization consideration:
-        # do the parsing within the app, in case the file is really large and this is laggy.
-        # we can introduce background parsing later.
-        pe = pefile.PE(data=buf, fast_load=False)
-
-        cparser = cstruct.cstruct()
-        cparser.load(STRUCTURES)
-
-        renderers = {
-            "IMAGE_FILE_HEADER.TimeDateStamp": render_timestamp,
-            "IMAGE_FILE_HEADER.Characteristics": render_characteristics,
-            "IMAGE_OPTIONAL_HEADER32.DllCharacteristics": render_dll_characteristics,
-            "IMAGE_OPTIONAL_HEADER32.CheckSum": render_u32,
-            "IMAGE_OPTIONAL_HEADER64.DllCharacteristics": render_dll_characteristics,
-            "IMAGE_OPTIONAL_HEADER64.CheckSum": render_u32,
-            # parsed in more detail elsewhere.
-            "IMAGE_OPTIONAL_HEADER32.DataDirectory": dont_render,
-            "IMAGE_OPTIONAL_HEADER64.DataDirectory": dont_render,
-        }
-
-        key_fields = {
-            "IMAGE_FILE_HEADER": {"Machine", "TimeDateStamp", "Characteristics"},
-            "IMAGE_OPTIONAL_HEADER32": {"ImageBase", "Subsystem", "CheckSum", "DllCharacteristics"},
-            "IMAGE_OPTIONAL_HEADER64": {"ImageBase", "Subsystem", "CheckSum", "DllCharacteristics"},
-            "IMAGE_DATA_DIRECTORY": {"VirtualAddress", "Size"},
-        }
-
-        strings = list(
-            sorted(itertools.chain(extract_ascii_strings(buf), extract_unicode_strings(buf)), key=lambda s: s.offset)
-        )
-
-        self.ctx = Context(path, buf, strings, pe, cparser, renderers, key_fields)
-
-        self.title = f"pe: {self.ctx.path.name}"
+        self.title = "mz"
+        self.path = path
+        self.buf = buf
 
     def on_mount(self):
-        self.push_screen(MainScreen(self.ctx))
+        if self.path and self.buf:
+            # if the App was initialized with path/buf, render them immediately
+            # otherwise, see on_notified
+            ctx = Context.from_bytes(self.path, self.buf)
+            self.push_screen(MainScreen(ctx))
+        else:
+            self.push_screen(TitleScreen())
 
+    def on_notified(self, message):
+        """application-specific message provided by the application host"""
+        try:
+            import js
+        except ImportError:
+            # not in pyodide environment,
+            # so we won't be getting these messages
+            return
 
-async def main(buf: js.jsarray):
-    app = PEApp(pathlib.Path("/[memory]"), bytes(buf.to_py()), driver_class=XtermjsDriver)
-    await app.run_async()
+        path = pathlib.Path(message.data.path)
+        buf = bytes(message.data.buf.to_py())
 
+        try:
+            ctx = Context.from_bytes(path, buf)
+        except Exception as e:
+            js.console.log("error: failed to parse PE: " + str(e))
+            return
 
-#if __name__ == "__main__":
-    # within pyodide, we're already running within a coroutine.
-    # so we can use await directly.
-    #
-    # still, lets keep this to a minimum.
-    #await main()
+        # either TitleScreen or existing MainScreen
+        self.pop_screen()
+        self.push_screen(MainScreen(ctx))
