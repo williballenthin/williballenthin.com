@@ -37,6 +37,7 @@
 
         let data_counter = 0;
         let current_file = null;
+        let has_connected = false;
 
         worker.onmessage = (e) => {
             if (e.data.type === "data") {
@@ -47,6 +48,13 @@
                     // due to texture cache corruption.
                     // see xtermjs#4480
                     term.clearTextureAtlas();
+                }
+            } else if (e.data.type === "log") {
+                if (e.data.level === "log") {
+                    // console.log level
+                    if (!has_connected) {
+                        term.writeln(" " + e.data.args.join(" "));
+                    }
                 }
             } else if (e.data.type === "syn") {
                 // initial connection, send along current state.
@@ -65,6 +73,7 @@
                     cols: term.cols,
                     rows: term.rows,
                 });
+                has_connected = true;
             } else {
                 console.log("unknown message type: ", e.data.type, e.data.data);
             }

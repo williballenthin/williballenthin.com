@@ -1,6 +1,3 @@
-from __future__ import annotations
-
-
 ### setup: prior to importing textual
 import os
 # ensure textual/rich recognizes we're in terminal with lots of colors.
@@ -12,20 +9,9 @@ os.environ["TERM"] = "xterm-256color"
 os.environ["TEXTUAL_DRIVER"] = "__main__:XtermjsDriver"
 ### end setup
 
-
-### hack until https://github.com/Textualize/textual/issues/2468 is addressed
-import inspect
-
-def getfile(*args, **kwargs):
-    raise TypeError("getfile() is not supported in the browser")
-
-inspect.getfile = getfile
-import textual.dom
-textual.dom.getfile = getfile
-### end hack
-
 import os
 import asyncio
+from typing import Any
 from dataclasses import dataclass
 
 import textual

@@ -1576,6 +1576,8 @@ class TitleScreen(Screen):
 
            drag 'n drop a PE file here
         """.rstrip()), classes="logo")
+        # TODO: don't ask for DnD when on console
+        # or handle that event.
 
 
 class PEApp(App):
@@ -1660,3 +1662,66 @@ class PEApp(App):
         # either TitleScreen or existing MainScreen
         self.pop_screen()
         self.push_screen(MainScreen(ctx))
+
+
+async def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]
+
+    parser = argparse.ArgumentParser(description="Portable Executable viewer.")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable debug logging")
+    parser.add_argument("-q", "--quiet", action="store_true", help="Disable all output but errors")
+    parser.add_argument("--dev", action="store_true", help="Run app in textual dev mode")
+    parser.add_argument("path", type=str, help="path to PE file to inspect")
+    args = parser.parse_args(args=argv)
+
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG, handlers=[TextualHandler()])
+    elif args.quiet:
+        logging.basicConfig(level=logging.CRITICAL, handlers=[TextualHandler()])
+    else:
+        logging.basicConfig(level=logging.INFO, handlers=[TextualHandler()])
+
+    if args.dev:
+        # so we can use the textual console.
+        #
+        # undocumented, so probably subject to change:
+        # https://github.com/Textualize/textual/blob/d9a229ff0f6b77171fbf61cefc851c4d7498b200/src/textual/cli/cli.py#LL77C5-L77C55
+        os.environ["TEXTUAL"] = ",".join(sorted(["debug", "devtools"]))
+
+    path = pathlib.Path(args.path)
+    if not path.exists():
+        logging.error("%s does not exist", path)
+        return 1
+
+    with path.open("rb") as f:
+        WHOLE_FILE = 0
+        with mmap.mmap(f.fileno(), length=WHOLE_FILE, access=mmap.ACCESS_READ) as mm:
+            # treat the mmap as a readable bytearray
+            buf: bytearray = mm  # type: ignore
+
+            app = PEApp(path, buf)
+            await app.run_async()
+
+    # silly graceful shutdown to avoid ResourceWarning
+    # see here: https://docs.aiohttp.org/en/stable/client_advanced.html#graceful-shutdown
+    await asyncio.sleep(0.125)
+
+
+if __name__ == "__main__":
+    sys.exit(asyncio.run(main()))
+elif __name__ == "__pyodide__":
+    import asyncio
+
+    app = PEApp()
+
+    # pyodide provides an async event loop
+    # (in fact, we're already running in a coroutine)
+    # so we need to use that one, and not directly call app.run().
+    loop = asyncio.get_running_loop()
+    
+    asyncio.run_coroutine_threadsafe(
+        app.run_async(),
+        loop=loop,
+    )
+

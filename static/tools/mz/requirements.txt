@@ -1,4 +1,24 @@
-https://files.pythonhosted.org/packages/ff/50/e0c8b296dc9d1b4b1b747555c88146318dce2c1a8a3f5125116567b214d9/textual-0.22.3-py3-none-any.whl
+# we have three real dependencies: textual, dissect.cstruct, pefile
+# but we've manually unrolled their transitive dependencies 
+# to avoid extra roundtrips to the pypi api.
+#
+# mdurl < markdown-it < rich < textual
+https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl
+# markdown-it < rich < textual
+https://files.pythonhosted.org/packages/bf/25/2d88e8feee8e055d015343f9b86e370a1ccbec546f2865c98397aaef24af/markdown_it_py-2.2.0-py3-none-any.whl
+# pygments < rich < textual
+https://files.pythonhosted.org/packages/34/a7/37c8d68532ba71549db4212cb036dbd6161b40e463aba336770e80c72f84/Pygments-2.15.1-py3-none-any.whl
+# rich < textual
 https://files.pythonhosted.org/packages/39/03/6de23bdd88f5ee7f8b03f94f6e88108f5d7ffe6d207e95cdb06d9aa4cd57/rich-13.3.5-py3-none-any.whl
+# zipp < importlib-metadata < textual
+https://files.pythonhosted.org/packages/5b/fa/c9e82bbe1af6266adf08afb563905eb87cab83fde00a0a08963510621047/zipp-3.15.0-py3-none-any.whl
+# importlib-metadata < textual
+https://files.pythonhosted.org/packages/30/bb/bf2944b8b88c65b797acc2c6a2cb0fb817f7364debf0675792e034013858/importlib_metadata-6.6.0-py3-none-any.whl
+# typing_extensions < textual
+https://files.pythonhosted.org/packages/31/25/5abcd82372d3d4a3932e1fa8c3dbf9efac10cc7c0d16e78467460571b404/typing_extensions-4.5.0-py3-none-any.whl
+# textual
+https://files.pythonhosted.org/packages/a7/f2/ac9cbb97999b5205a0337073cfb937d8af24059e05ab50369e1e44c2a7fb/textual-0.24.1-py3-none-any.whl
+# dissect.cstruct
 https://files.pythonhosted.org/packages/de/d3/eaa6148126b86087867a9383248499a552e3b8da9f201c7cd100250e3f0d/dissect.cstruct-3.6-py3-none-any.whl
+# pefile
 https://files.pythonhosted.org/packages/55/26/d0ad8b448476d0a1e8d3ea5622dc77b916db84c6aa3cb1e1c0965af948fc/pefile-2023.2.7-py3-none-any.whl
