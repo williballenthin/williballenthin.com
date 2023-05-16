@@ -16,7 +16,8 @@ def lines(mm: bytes):
     while True:
         next = mm.find(b"\n", index)
         if next == -1:
-            break
+			yield mm[index:]
+			return
 
         yield mm[index:next].decode("utf-8")
         index = next + 1
