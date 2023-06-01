@@ -1,7 +1,6 @@
 ---
 title: "ghidra: ML extension"
 date: 2023-02-26T00:00:00-07:00
-draft: true
 tags:
   - ghidra
   - reverse-engineering
@@ -280,11 +279,12 @@ Here's the built-in usage documentation via [RandomForestFunctionFinderPlugin.ht
 
 ---
 
+### Thoughts and notes
 
-Toolchest -> File -> Install Extensions -> MachineLearning
-restart ghidra
+Setting it up:
 
-
+  1. Toolchest -> File -> Install Extensions -> MachineLearning
+  2. restart ghidra
 
 ![screenshot: results](results1.jpg "screenshot: results")
 
@@ -292,8 +292,4 @@ Increasing "Start to Non-start Sampling Factors" increases training time (there'
 
 Blind spot: data thats not code, such as switch tables or string resources. These won't be seen in the training data, neither as a function start nor non-start. So how does the model classify this?
 
-
 Results: It found five more functions. The UI makes it very easy to review and apply the recommendations.
-
-
-
