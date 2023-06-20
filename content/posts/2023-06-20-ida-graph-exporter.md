@@ -24,8 +24,6 @@ Here's a hosted example: [mimikatz.exe@0x46e2b7](http://www.williballenthin.com/
 
 ![side by side](https://github.com/williballenthin/ida-graph-exporter/blob/cbee393/example/side-by-side.png?raw=true)
 
-### hosted
-
 ### iframe
 
 *(click and drag to pan, just like in IDA)*
