@@ -18,9 +18,13 @@ I took a little time to experiment with Julian's code and derived a new IDAPytho
 
 You should get familiar with Julian's project, since he did all the hard work and its really neat. Still, if any of these features interest you, give the derived project a try, too.
 
+Here's a hosted example: [mimikatz.exe@0x46e2b7](http://www.williballenthin.com/tools/ida/mimikatz/0x46e2b7/index.html).
+
 ### *screenshot*:
 
 ![side by side](https://github.com/williballenthin/ida-graph-exporter/blob/130fe762bbce8c02c91ca3325172156ff6ca60c1/example/side-by-side.png)
+
+### hosted
 
 ### iframe
 
