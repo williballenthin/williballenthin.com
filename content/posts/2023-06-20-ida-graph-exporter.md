@@ -25,4 +25,5 @@ You should get familiar with Julian's project, since he did all the hard work an
 
 ### iframe
 
-<iframe src="http://www.williballenthin.com/tools/ida/mimikatz/0x46e2b7/index.html" height="2000" title="ida-graph-exporter"></iframe>
+*(click and drag to pan, just like in IDA)*
+<iframe src="http://www.williballenthin.com/tools/ida/mimikatz/0x46e2b7/index.html" width="100%" height="1200" title="ida-graph-exporter"></iframe>
