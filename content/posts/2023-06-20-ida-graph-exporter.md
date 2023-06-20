@@ -20,8 +20,7 @@ You should get familiar with Julian's project, since he did all the hard work an
 
 ### *screenshot*:
 
-![side by side](https://github.com/williballenthin/ida-graph-exporter/blob/130fe76/example/side-by-side.png)
-
+![side by side](https://github.com/williballenthin/ida-graph-exporter/blob/130fe762bbce8c02c91ca3325172156ff6ca60c1/example/side-by-side.png)
 
 ### iframe
 
