@@ -70,13 +70,13 @@ Here are some [jq](https://jqlang.github.io/jq/) invocations that are useful for
 
 *show Go compiler version:*
 ```console
-❯ bat goresym.json | jq -r ".BuildInfo.GoVersion"
+❯ cat goresym.json | jq -r ".BuildInfo.GoVersion"
 go1.19.5
 ```
 
 *show compiler settings:*
 ```console
-❯ bat goresym.json | jq -r '.BuildInfo.Settings[] | "\(.Key): \(.Value)"' | sort
+❯ cat goresym.json | jq -r '.BuildInfo.Settings[] | "\(.Key): \(.Value)"' | sort
 -compiler: gc
 -ldflags: "-s -w"
 -tags: release
@@ -88,7 +88,7 @@ GOOS: windows
 
 *show dependencies and their versions:*
 ```console
-❯ bat goresym.json | jq -r '.BuildInfo.Deps[] | "\(.Path) \(.Version)"' | sort
+❯ cat goresym.json | jq -r '.BuildInfo.Deps[] | "\(.Path) \(.Version)"' | sort
 github.com/go-ping/ping v1.1.0
 github.com/google/uuid v1.3.0
 golang.org/x/sys v0.2.0
@@ -97,7 +97,7 @@ golang.org/x/sys v0.2.0
 
 *list packages:*
 ```console
-❯ bat goresym.json | jq -r '.UserFunctions[].PackageName' | sort | uniq
+❯ cat goresym.json | jq -r '.UserFunctions[].PackageName' | sort | uniq
 github.com/go-ping/ping
 github.com/google/uuid
 golang.org/x/sync/errgroup
@@ -107,7 +107,7 @@ main
 
 *list main package functions:*
 ```
-❯ bat goresym.json | jq -r '.UserFunctions[] | select(.PackageName == "main") | .FullName' | sort | uniq
+❯ cat goresym.json | jq -r '.UserFunctions[] | select(.PackageName == "main") | .FullName' | sort | uniq
 main.connect
 main.spin
 main.main
@@ -116,7 +116,7 @@ main.main
 
 *list source file paths:*
 ```console
-❯ bat goresym.json | jq -r ".Files[]" | sort
+❯ cat goresym.json | jq -r ".Files[]" | sort
 ...
 /usr/lib/go-1.19/src/crypto/ecdsa/ecdsa.go
 /usr/lib/go-1.19/src/crypto/ecdsa/ecdsa_noasm.go
@@ -129,7 +129,7 @@ main.main
 
 *list type names:*
 ```console
-❯ bat goresym.json | jq -r ".Types[].Str" | sort | uniq
+❯ cat goresym.json | jq -r ".Types[].Str" | sort | uniq
 **big.Int
 **gob.decEngine
 *[]*runtime.bmap
