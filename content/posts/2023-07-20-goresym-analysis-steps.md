@@ -35,18 +35,23 @@ Often I'll output to a temporary JSON file so that I can more quickly run querie
 Then I use [jless](https://jless.io/) to interactively explore the results:
 
 ```
-▽ {Version: "1.19.5", BuildId: "Gftn3y7Me3ljLt7lDk7Y/_fkIctizzhovOx…", …}    Version: "1.19.5"
-    BuildId: "Gftn3y7Me3ljLt7lDk7Y/_fkIctizzhovOxyBwvYX/11PCBjPQbF43WKD…"    Arch: "amd64"
+▽ {Version: "1.19.5", BuildId: "Gftn3y7Me3ljLt7lDk7Y/_fkIctizzhovOx…", …}
+    Version: "1.19.5"
+    BuildId: "Gftn3y7Me3ljLt7lDk7Y/_fkIctizzhovOxyBwvYX/11PCBjPQbF43WKD…"
+    Arch: "amd64"
     OS: "freebsd"
-  ▽ TabMeta: {VA: 7262656, Version: "1.18", Endianess: "LittleEndian", …}      VA: 7262656
+  ▽ TabMeta: {VA: 7262656, Version: "1.18", Endianess: "LittleEndian", …}
+      VA: 7262656
       Version: "1.18"
       Endianess: "LittleEndian"
       CpuQuantum: 1
       CpuQuantumStr: "x86/x64/wasm"
       PointerSize: 8
-  ▷ ModuleMeta: {VA: 8504992, TextVA: 4198400, Types: 6381568, ET…: …, …}  ▷ Types: [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, …]
+  ▷ ModuleMeta: {VA: 8504992, TextVA: 4198400, Types: 6381568, ET…: …, …}
+  ▷ Types: [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, …]
   ▷ Interfaces: [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, …]
-  ▽ BuildInfo: {GoVersion: "go1.19.5", Path: "command-line-arguments", …}      GoVersion: "go1.19.5"
+  ▽ BuildInfo: {GoVersion: "go1.19.5", Path: "command-line-arguments", …}
+      GoVersion: "go1.19.5"
       Path: "command-line-arguments"
     ▽ Main: {Path: "", Version: "", Sum: "", Replace: null}
         Path: ""
