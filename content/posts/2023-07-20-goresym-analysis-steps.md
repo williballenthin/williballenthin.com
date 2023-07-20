@@ -1,5 +1,5 @@
 ---
-title: "Analyze Go programs with GoReSym"
+title: "Analyzing Go programs with GoReSym"
 date: 2023-07-20T00:00:00-07:00
 tags:
   - reverse-engineering
