@@ -12,7 +12,7 @@ tags:
 
 As a reminder, here is the help text:
 
-```
+```console
 Usage of GoReSym:
   -d    Print Default Packages
   -human
@@ -34,7 +34,7 @@ $  GoReSym -d -p -t /path/to/sample  >  goresym.json
 Often I'll output to a temporary JSON file so that I can more quickly run queries against the data.
 Then I use [jless](https://jless.io/) to interactively explore the results:
 
-```
+```console
 ▽ {Version: "1.19.5", BuildId: "Gftn3y7Me3ljLt7lDk7Y/_fkIctizzhovOx…", …}
     Version: "1.19.5"
     BuildId: "Gftn3y7Me3ljLt7lDk7Y/_fkIctizzhovOxyBwvYX/11PCBjPQbF43WKD…"
