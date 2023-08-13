@@ -3,8 +3,7 @@ languageCode = 'en-us'
 title = 'Willi Ballenthin'
 
 theme = 'wb'
-
-googleAnalytics = 'G-354515685'
+relativeURLs = true
 
 [permalinks]
   # use old post path to keep existing links working

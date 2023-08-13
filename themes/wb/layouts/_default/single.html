@@ -4,7 +4,7 @@
   itemtype="http://schema.org/Article" style="max-width: 800px;">
   {{ $baseurl := .Site.BaseURL }}
   <span class="b">/ </span>
-  <a href="{{ .Site.BaseURL  }}" class="b bb bw1 pb1 no-underline black">{{ .Site.Title }}</a>
+  <a href="{{ .Site.Home.RelPermalink }}" class="b bb bw1 pb1 no-underline black">{{ .Site.Title }}</a>
 
   <section id="main" class="mt5">
     <h1 itemprop="name" id="title">{{ .Title }}</h1>
@@ -17,4 +17,5 @@
   {{ partial "footer.html" . }}
 </body>
 
+<!-- layout: _default/single.html -->
 </html>

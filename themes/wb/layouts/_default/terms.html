@@ -22,7 +22,7 @@
         <li class="list pl0 lh-copy hide-child">
           <a
             class="f4 b dib black no-underline"
-            href="{{ .Permalink}}"
+            href="{{ .RelPermalink}}"
             >{{ .Title }}</a
           >
           <span class="f6 gray db dib-ns child"
@@ -39,4 +39,6 @@
 
   {{ partial "footer.html" . }}
   </body>
+
+<!-- layout: _default/terms.html -->
 </html>

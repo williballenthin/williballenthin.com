@@ -15,11 +15,13 @@
   {{ partial "head_includes.html" . }}
 </head>
 
-<body lang="{{ .Site.LanguageCode }}" class="sans-serif w-90 w-60-ns center center-ns mv2 mv5-ns">
-  <section id="main">
+<body lang="{{ .Site.LanguageCode }}">
+  <section id="main" class="sans-serif w-90 w-60-ns center center-ns mv2 mv5-ns">
     <div>
       <h1 id="title" class="f3">
         {{ .Site.Title }} {{ .Site.Params.TitleEmoji | emojify }}
+
+        <img style="height: 30px; position: relative; top: 7px;" src="http://www.gravatar.com/avatar/677f6ada59932964b9150aba814fedd6?s=100&d=identicon" />
       </h1>
 
       <article itemprop="articleBody" id="content" class="w-90 lh-copy">
@@ -31,4 +33,5 @@
   {{ partial "footer.html" . }}
 </body>
 
+<!-- layout: index.html -->
 </html>

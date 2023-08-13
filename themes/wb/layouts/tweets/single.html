@@ -1,17 +1,17 @@
 {{ partial "header.html" . }}
 
-<body lang="{{ .Site.LanguageCode }}" class="sans-serif w-90 w-80-m w-60-ns center mv2 mv5-ns aa" itemscope
-  itemtype="http://schema.org/Article" style="max-width: 800px">
 
+<body lang="{{ .Site.LanguageCode }}" style="max-width: 800px">
+  <nav class="sans-serif w-90 w-80-m w-60-ns center">
+    <span class="breadcrumbs">
+      <a href="{{ .Site.Home.RelPermalink }}" class="breadcrumb">{{ .Site.Title }}</a>
+      {{ with .Site.GetPage "/tweets" }}
+      <a href="{{ .RelPermalink  }}" class="breadcrumb">tweets</a>
+      {{ end }}
+    </span>
+  </nav>
 
-  <span class="b">/ </span>
-  <a href="{{ .Site.BaseURL  }}" class="b bb bw1 pb1 no-underline black">{{ .Site.Title }}</a>
-  <span class="b">/ </span>
-  <span class="b bw1 bb pb1 no-underline black">tweets</span>
-  <span class="b">/ </span>
-  <span class="b bw1 bb pb1 no-underline black">{{ .Slug }} </span>
-
-  <section id="main" class="mt5">
+  <section id="main" class="sans-serif w-90 w-80-m w-60-ns center mv2 mv4-ns aa">
     <span class="f6 gray">
         <span class="post-date">
             <a href="https://twitter.com/williballenthin/status/{{ .Slug }}" style="text-decoration: none; color: grey; ">
@@ -25,7 +25,7 @@
         <span class="tweet-tags">
             {{ range (.GetTerms "tags") }}
                 <span class="tweet-tag">
-                    <a href="{{ .Permalink }}" style="color: gray;">
+                    <a href="{{ .RelPermalink }}" style="color: gray;">
                         #{{ .LinkTitle }}
                     </a>
                 </span>
@@ -55,4 +55,5 @@
   {{ partial "footer.html" . }}
 </body>
 
+<!-- layout: tweets/single.html -->
 </html>

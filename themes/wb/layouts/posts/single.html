@@ -1,21 +1,16 @@
 {{ partial "header.html" . }}
 
-<body lang="{{ .Site.LanguageCode }}" class="sans-serif w-90 w-80-m w-60-ns center mv2 mv5-ns aa" itemscope
-  itemtype="http://schema.org/Article" style="max-width: 800px">
+<body lang="{{ .Site.LanguageCode }}" style="max-width: 800px">
+  <nav class="sans-serif w-90 w-80-m w-60-ns center">
+    <span class="breadcrumbs">
+      <a href="{{ .Site.Home.RelPermalink }}" class="breadcrumb">{{ .Site.Title }}</a>
+      {{ with .Site.GetPage "/posts" }}
+      <a href="{{ .RelPermalink  }}" class="breadcrumb">blog</a>
+      {{ end }}
+    </span>
+  </nav>
 
-
-  <span class="b">/ </span>
-  <a href="{{ .Site.BaseURL  }}" class="b bb bw1 pb1 no-underline black">{{ .Site.Title }}</a>
-  <span class="b">/ </span>
-  {{ with .Site.GetPage "/posts" }}
-  <a
-    href="{{ .RelPermalink  }}"
-    class="b bw1 bb pb1 no-underline black"
-    >blog</a>
-  {{ end }}
- 
-
-  <section id="main" class="mt5">
+  <section id="main" class="sans-serif w-90 w-80-m w-60-ns center mv2 mv4-ns aa">
     <h1 itemprop="name" id="title">{{ .Title }}</h1>
     <span class="f6 gray">
         <span class="post-date">
@@ -28,7 +23,7 @@
         <span class="post-tags">
             {{ range (.GetTerms "tags") }}
                 <span class="post-tag">
-                    <a href="{{ .Permalink }}" style="color: gray;">
+                    <a href="{{ .RelPermalink }}" style="color: gray;">
                         #{{ .LinkTitle }}
                     </a>
                 </span>
@@ -62,7 +57,7 @@
       <ul class="list pl0">
         {{ range where $posts "Title" "!=" .Title }}
         <li class="list pl0 lh-copy">
-          <a class="f4 b dib black no-underline" href="{{ .Permalink}}">{{ .Title }}</a>
+          <a class="f4 b dib black no-underline" href="{{ .RelPermalink}}">{{ .Title }}</a>
           <span class="f6 gray">{{ .Date.Format "January 2, 2006" }}</span>
         </li>
         {{ end }}
@@ -80,4 +75,5 @@
   {{ partial "footer.html" . }}
 </body>
 
+<!-- layout: posts/single.html -->
 </html>

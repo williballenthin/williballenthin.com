@@ -1,26 +1,75 @@
+:root {
+  --main-highlight-color: #00C0A3;
+  --main-decoration-color: #CCCCCC;
+  --nav-height: 24px;
+  --footer-height: 24px;
+}
+
 a {
 	color: black;
-        text-decoration: underline grey;
+	text-decoration: underline var(--main-decoration-color);
 }
 
 a:hover {
-	color: blue;
-        text-decoration: underline blue;
+	color: black;
+	text-decoration: underline var(--main-highlight-color);
 }
 
-a.no-underline {
-	text-decoration: none;
-}
-
-div.highlight pre code {
-	border: 1px solid #CCCCCC;
+div.highlight pre code,
+.hljs {
+	border: 1px solid var(--main-decoration-color);
 }
 
 code {
-	color: #2b6372;
+	color: #444;
 }
 
 blockquote {
-	border-left: 4px solid #CCC;
+	border-left: 4px solid var(--main-decoration-color);
 	padding-left: 1em;
+}
+
+nav {
+	height: var(--nav-height);
+}
+
+
+nav .breadcrumbs {
+	--breadcrumb-separator-width: 12px;
+}
+
+nav .breadcrumbs .breadcrumb {
+	font-weight: bold;
+	text-decoration: none;
+	margin-left: var(--breadcrumb-separator-width);
+}
+
+nav .breadcrumbs .breadcrumb:hover {
+	color: black;
+	border-bottom: 2px solid var(--main-highlight-color);
+}
+
+nav .breadcrumbs .breadcrumb::before {
+	content: '› ';
+	font-size: 20px;
+	/* match with main content margin-left */
+	margin-left: calc(-1 * var(--breadcrumb-separator-width));
+}
+
+#main {
+	margin-top: 0px;
+	margin-bottom: 0px;
+	padding-top: 2em;
+	height: calc(100% - 24px - 24px);
+}
+
+html, body {
+	height: 100%;
+}
+
+footer {
+	position: relative;
+	top: -24px;
+	height: var(--footer-height);
+	background-image: url("../img/more-leaves-on-green.png");
 }

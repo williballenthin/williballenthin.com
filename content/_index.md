@@ -3,9 +3,14 @@ title: ""
 layout: home
 ---
 
-![logo](http://www.gravatar.com/avatar/677f6ada59932964b9150aba814fedd6?s=100&d=identicon)
+Reverse engineering and computer forensics at Mandiant/Google.
+Expect to encounter disassembly, debugging, emulation.
+Often programs in [#Python](./tags/python/) and [#Rust](./tags/rust/). 
+Post-rock and -metal.
 
 # [blog](./posts/)
+
+# [tweets (archive)](./tweets/)
 
 # [projects](https://github.com/williballenthin/) <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" height="40px" style="position: relative;top: 10px;"></img>
 

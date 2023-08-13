@@ -1,23 +1,13 @@
 {{ partial "header.html" . }}
-<body
-  lang="{{ .Site.LanguageCode }}"
-  class="sans-serif w-90 w-60-ns center center-ns mv2 mv5-ns"
->
-  <span class="b">/ </span>
-  <a
-    href="{{ .Site.BaseURL  }}"
-    class="b bw1 bb pb1 no-underline black"
-    >{{ .Site.Title  }}</a
-  >
-  <span class="b">/ </span>
-  {{ with .Site.GetPage "/posts" }}
-  <a
-    href="{{ .RelPermalink  }}"
-    class="b bw1 bb pb1 no-underline black"
-    >blog</a>
-  {{ end }}
- 
-  <section id="main" class="mt5">
+
+<body lang="{{ .Site.LanguageCode }}" style="max-width: 800px">
+  <nav class="sans-serif w-90 w-80-m w-60-ns center">
+    <span class="breadcrumbs">
+      <a href="{{ .Site.Home.RelPermalink }}" class="breadcrumb">{{ .Site.Title }}</a>
+    </span>
+  </nav>
+
+  <section id="main" class="sans-serif w-90 w-80-m w-60-ns center mv2 mv4-ns aa">
     <div>
       <ul id="list" class="pl0">
         <!-- prettier-ignore -->
@@ -25,7 +15,7 @@
         <li class="list pl0 lh-copy">
           <a
             class="f3 b dib black no-underline"
-            href="{{ .Permalink}}"
+            href="{{ .RelPermalink}}"
             >{{ .Title }}</a
           >
           <span
@@ -41,4 +31,6 @@
 
   {{ partial "footer.html" . }}
   </body>
+
+<!-- layout: posts/list.html -->
 </html>

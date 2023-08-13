@@ -22,7 +22,7 @@
         <li class="list pl0 lh-copy">
           <a
             class="f3 b dib black no-underline"
-            href="{{ .Permalink}}"
+            href="{{ .RelPermalink}}"
             >{{ .Title }}</a
           >
           <span
@@ -38,4 +38,6 @@
 
   {{ partial "footer.html" . }}
   </body>
+
+<!-- layout: _default/tag.html -->
 </html>
