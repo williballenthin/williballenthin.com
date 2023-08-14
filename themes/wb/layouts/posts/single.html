@@ -1,6 +1,6 @@
 {{ partial "header.html" . }}
 
-<body lang="{{ .Site.LanguageCode }}" style="max-width: 800px">
+<body lang="{{ .Site.LanguageCode }}">
   <nav class="sans-serif w-90 w-80-m w-60-ns center">
     <span class="breadcrumbs">
       <a href="{{ .Site.Home.RelPermalink }}" class="breadcrumb">{{ .Site.Title }}</a>
@@ -10,9 +10,9 @@
     </span>
   </nav>
 
-  <section id="main" class="sans-serif w-90 w-80-m w-60-ns center mv2 mv4-ns aa">
+  <section id="main" class="post sans-serif w-90 w-80-m w-60-ns center mv2 mv4-ns aa">
     <h1 itemprop="name" id="title">{{ .Title }}</h1>
-    <span class="f6 gray">
+    <span id="post-tags" class="f6 gray">
         <span class="post-date">
             {{ .Date.Format "January 2, 2006" }}
         </span>

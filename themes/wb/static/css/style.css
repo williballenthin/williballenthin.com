@@ -1,8 +1,13 @@
 :root {
-  --main-highlight-color: #00C0A3;
+  --main-highlight-color: #76cdbf;
   --main-decoration-color: #CCCCCC;
   --nav-height: 24px;
-  --footer-height: 24px;
+  --footer-height: 12px;
+}
+
+@font-face {
+  font-family: 'IntelOneMono';
+  src: url('../font/intelone-mono-font-family-regular.woff2') format('woff2');
 }
 
 a {
@@ -15,18 +20,48 @@ a:hover {
 	text-decoration: underline var(--main-highlight-color);
 }
 
-div.highlight pre code,
-.hljs {
+.highlight pre code {
 	border: 1px solid var(--main-decoration-color);
+	display: block;
+	padding: 1em;
+	overflow-x: scroll;
 }
 
 code {
 	color: #444;
+	font-family: IntelOneMono;
 }
 
 blockquote {
 	border-left: 4px solid var(--main-decoration-color);
 	padding-left: 1em;
+}
+
+ol, ul {
+	margin-left: 1em;
+}
+
+ul {
+	list-style: square;
+}
+
+ol {
+	list-style: decimal;
+}
+
+p, ul {
+	margin-bottom: 1em;
+	margin-top: 1em;
+}
+
+li > ul,
+li > ol {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+h1, h2, h3 {
+	font-weight:  bold;
 }
 
 nav {
@@ -54,13 +89,15 @@ nav .breadcrumbs .breadcrumb::before {
 	font-size: 20px;
 	/* match with main content margin-left */
 	margin-left: calc(-1 * var(--breadcrumb-separator-width));
+	color: var(--main-highlight-color);
 }
 
 #main {
-	margin-top: 0px;
-	margin-bottom: 0px;
-	padding-top: 2em;
-	height: calc(100% - 24px - 24px);
+	--margin-top: 2em;
+	--margin-bottom: 2em;
+	margin-top: var(--margin-top);
+	margin-bottom: var(--margin-bottom);
+	min-height: calc(100% - var(--nav-height) - var(--footer-height) - var(--margin-bottom) - var(--margin-top));
 }
 
 html, body {
@@ -69,7 +106,17 @@ html, body {
 
 footer {
 	position: relative;
-	top: -24px;
 	height: var(--footer-height);
 	background-image: url("../img/more-leaves-on-green.png");
+	border-top: 2px solid var(--main-highlight-color);
+}
+
+.post #title {
+	margin-bottom: 0;
+}
+
+.post #post-tags {
+	display:  inline-block;
+	margin-top: 0.5em;
+	margin-bottom: 2em;
 }

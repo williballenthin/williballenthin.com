@@ -581,7 +581,7 @@ for hash_name, symbols in sorted(hashes.items()):
 
 We can also generate yara rules for a retrohunt that match a collection of hashes. These rules benefit from the `3 or more` clauses that are a bit more flexible then requiring *all* hash values to be present:
 
-```yara
+```
 rule sc_hash_add1505Shl5Hash32
 {
     meta:
