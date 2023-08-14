@@ -106,7 +106,7 @@ main
 ```
 
 *list main package functions:*
-```
+```console
 ❯ cat goresym.json | jq -r '.UserFunctions[] | select(.PackageName == "main") | .FullName' | sort | uniq
 main.connect
 main.spin
