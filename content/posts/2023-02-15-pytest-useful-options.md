@@ -18,3 +18,5 @@ $ pytest --capture=no --log-cli-level=DEBUG
 ```
 $ pytest --pdb --pdbcls=IPython.terminal.debugger:TerminalPdb
 ```
+
+**use `breakpoint()` (Python 3.7+)**
