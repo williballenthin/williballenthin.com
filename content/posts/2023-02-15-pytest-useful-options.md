@@ -20,3 +20,16 @@ $ pytest --pdb --pdbcls=IPython.terminal.debugger:TerminalPdb
 ```
 
 **use `breakpoint()` (Python 3.7+)**
+
+```python
+if va == 0x401000:
+    breakpoint()
+```
+
+**use `interact` to drop into IPython shell from ipdb**
+
+```
+ipdb> interact
+*interactive*
+In [1]: r = 10
+```
