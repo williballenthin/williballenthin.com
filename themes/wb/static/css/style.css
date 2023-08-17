@@ -1,7 +1,7 @@
 :root {
   --main-highlight-color: #76cdbf;
   --main-decoration-color: #CCCCCC;
-  --nav-height: 24px;
+  --nav-height: 36px;
   --footer-height: 12px;
   --max-width: 1000px;
 }
@@ -68,6 +68,7 @@ h1, h2, h3 {
 nav {
 	height: var(--nav-height);
 	max-width: var(--max-width);
+	padding-top: 12px;
 }
 
 
@@ -105,6 +106,10 @@ nav .breadcrumbs .breadcrumb::before {
 
 html, body {
 	height: 100%;
+}
+
+body {
+	border-top: 3px solid var(--main-highlight-color);
 }
 
 footer {
