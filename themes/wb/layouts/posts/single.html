@@ -13,7 +13,7 @@
   <section id="main" class="post sans-serif w-90 w-80-m w-60-ns center mv2 mv4-ns aa">
     <h1 itemprop="name" id="title">{{ .Title }}</h1>
     <span id="post-tags" class="f6 gray">
-        <span class="post-date">
+        <span class="post-date" style="font-weight: bold;">
             {{ .Date.Format "January 2, 2006" }}
         </span>
 
@@ -43,33 +43,6 @@
       <span class="i">last modified</span> {{ dateFormat "January 2, 2006" .Lastmod }}
       {{ end }}
     </span>
-
-    {{ if and (.Site.Taxonomies.series) (isset .Params "series") }}
-    <section class="mt4">
-      {{ $readMore := ":wave:" }}
-      {{ $series := .Params.series | urlize}}
-      <h3>{{ $readMore | emojify }} Related posts in the <a href="/series/{{ $series }}"
-          class="b bb bw1 pb1 no-underline black">{{ .Params.Series }}</a> series...</h3>
-
-      {{ $posts := index .Site.Taxonomies.series $series }}
-
-      {{ if (gt ($posts | len) 1)}}
-      <ul class="list pl0">
-        {{ range where $posts "Title" "!=" .Title }}
-        <li class="list pl0 lh-copy">
-          <a class="f4 b dib black no-underline" href="{{ .RelPermalink}}">{{ .Title }}</a>
-          <span class="f6 gray">{{ .Date.Format "January 2, 2006" }}</span>
-        </li>
-        {{ end }}
-      </ul>
-      {{ else }}
-      <div class="ph2 i">
-        No follow up posts yet. Check back soon!
-      </div>
-      {{ end }}
-    </section>
-    {{ end }}
-
   </section>
 
   {{ partial "footer.html" . }}
