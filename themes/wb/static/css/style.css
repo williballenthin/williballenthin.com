@@ -1,5 +1,6 @@
 :root {
-  --main-highlight-color: #76cdbf;
+  /* keep in sync with meta.html theme-color */
+  --main-highlight-color: #85cba3;
   --main-decoration-color: #CCCCCC;
   --nav-height: 36px;
   --footer-height: 12px;
