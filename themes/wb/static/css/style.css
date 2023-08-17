@@ -116,6 +116,7 @@ footer {
 	position: relative;
 	height: var(--footer-height);
 	background-image: url("../img/more-leaves-on-green.png");
+	background-size: 250px;
 	border-top: 2px solid var(--main-highlight-color);
 }
 
