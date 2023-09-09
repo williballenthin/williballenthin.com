@@ -5,7 +5,23 @@ tags:
   - python
 ---
 
-Let's say you have a large text file, i.e., larger than RAM, and you want to process each line in Python. You can do this by opening the file via mmap, which exposes the content as a bytes-like object backed by virtual memory, and lazily generating the lines. For example:
+Let's say you have a large text file, i.e., larger than RAM, and you want to process each line in Python.
+
+*edit:* here's a better solution. The original solution is provided below for posterity.
+
+
+```python
+
+with path.open("rb") as f:
+    for line in io.TextIOWrapper(gzip.GzipFile(fileobj=f), encoding="utf-8"):
+        print(line)
+```
+
+---
+
+*original solution:*
+
+You can do this by opening the file via mmap, which exposes the content as a bytes-like object backed by virtual memory, and lazily generating the lines. For example:
 
 ```python
 import mmap
