@@ -51,7 +51,7 @@ ol {
 	list-style: decimal;
 }
 
-p, ul {
+p, ul, table, code {
 	margin-bottom: 1em;
 	margin-top: 1em;
 }
@@ -61,6 +61,19 @@ li > ol {
 	margin-top: 0;
 	margin-bottom: 0;
 }
+
+td {
+    border: 1px solid var(--main-decoration-color);
+    padding: 0 0.5em;
+}
+
+th {
+    border: 1px solid var(--main-decoration-color);
+    padding: 0 0.5em;
+    font-weight: bold;
+    text-align: left;
+}
+
 
 h1, h2, h3 {
 	font-weight:  bold;
