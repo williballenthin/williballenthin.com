@@ -15,7 +15,7 @@ layout: home
       /* pull these links right under the title */
       margin-bottom: 0px;
     }
-    td {
+    td, th {
       border: 0px;
     }
   </style>
