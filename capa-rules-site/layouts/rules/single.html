@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8" />
+  <title>{{ .Title }}</title>
+  <link rel="stylesheet" href="/css/capa-rules-style.css" />
+</head>
+<body>
+  <div class="content">
+    <h2 class="rule-namespace" style="color: #707070;">
+      {{ with site.GetPage (path.Join "namespaces" .Page.Params.namespace | urlize) }}
+          <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+      {{ end }}
+
+      {{ if .Page.Params.nursery }}
+        <span class="rule-nursery">
+          (nursery)
+        </span>
+      {{ end }}
+
+      {{ if .Page.Params.lib }}
+        <span class="rule-lib">
+          (lib)
+        </span>
+      {{ end }}
+    </h2>
+
+    <h1 class="rule-name" style="margin-bottom: 0.25em;">
+      {{ .Title }} 
+    </h1>
+
+    <ul 
+      class="rule-authors"
+      style="margin-left: 0; display: flex; flex-direction: row; width: 100%;"
+      >
+      {{ range .Page.Params.authors }}
+        <li 
+          class="rule-author"
+          style="display: block; margin-right: 1em;"
+          >
+          {{ with site.GetPage (path.Join "authors" . | urlize) }}
+              <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+          {{ end }}
+        </li>
+      {{ end }}
+    </ul>
+
+    {{ if isset .Page.Params "description" }} 
+    <div class="rule-description">
+      <pre>
+      {{ .Page.Params.description }}
+      </pre>
+    </div>
+    {{ end }}
+
+    <div class="rule-content" style="border: 1px solid black; border-radius: 3px; margin-top: 2em; margin-bottom: 2em;">
+
+      <div 
+        class="rule-scope" 
+        style="position: relative; float: right; margin-right: 0.5em;"
+        >
+        {{ .Page.Params.scope}}
+      </div>
+
+      {{ .Content }}
+    </div>
+
+    <ul class="rule-attacks">
+    {{ range .Page.Params.attack }}
+      <li class="rule-attack">
+      {{ with site.GetPage (path.Join "attack" . | urlize) }}
+          <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+      {{ end }}
+      </li>
+    {{ end }}
+    </ul>
+
+    <ul class="rule-mbcs">
+    {{ range .Page.Params.mbc }}
+      <li class="rule-mbc">
+      {{ with site.GetPage (path.Join "mbc" . | urlize) }}
+          <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+      {{ end }}
+      </li>
+    {{ end }}
+    </ul>
+
+    <ul class="rule-references">
+    {{ range .Page.Params.references }}
+      <li class="rule-reference">
+        {{ if hasPrefix . "http" }}
+          🔗<a href="{{ . }}">{{ . }}</a>
+        {{ else }}
+          {{ . }}
+        {{ end }}
+      </li>
+    {{ end }}
+    </ul>
+
+  </div>
+</body>
+</html> 

@@ -1,0 +1,313 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+  v2.0 | 20110126
+  License: none (public domain)
+*/
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol, ul {
+  list-style: none;
+}
+blockquote, q {
+  quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* end reset */
+
+/**
+ * derived from Elv.sh website
+ * https://github.com/elves/elvish/blob/1c0cffbfed892aa7129ae0a19dad1617255a9faa/website/style.css#L1
+ */
+@font-face { font-family: Source Serif; font-weight: 400; font-style: normal; font-stretch: normal; font-display: block; src: url("/font/SourceSerif4-Regular.woff2") format("woff");}
+@font-face { font-family: Source Serif; font-weight: 400; font-style: italic; font-stretch: normal; font-display: block; src: url("/font/SourceSerif4-It.woff2") format("woff");}
+@font-face { font-family: Source Serif; font-weight: 600; font-style: normal; font-stretch: normal; font-display: block; src: url("/font/SourceSerif4-Semibold.woff2") format("woff");}
+@font-face { font-family: Source Serif; font-weight: 600; font-style: italic; font-stretch: normal; font-display: block; src: url("/font/SourceSerif4-SemiboldIt.woff2") format("woff");}
+@font-face { font-family: Fira Mono; font-weight: 400; font-style: normal; font-stretch: normal; font-display: block; src: url("/font/FiraMono-Regular.woff2") format("woff");}
+@font-face { font-family: Fira Mono; font-weight: 600; font-style: italic; font-stretch: normal; font-display: block; src: url("/font/FiraMono-Bold.woff2") format("woff");}
+   
+html {
+    /* Prevent font scaling in landscape while allowing user zoom */
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    font-family: "Source Serif", Georgia, serif;
+    font-size: 17px;
+    line-height: 1.4;
+}
+
+img {
+    max-width: 100%;
+}
+
+
+
+.content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+/*
+832px = max-width + left and right padding of .content.
+
+After this screen width, .content will no longer get wider, but we allow
+.extra-wide elements to continue to get wider up to 900px, using negative
+left and right margins.
+*/
+@media screen and (min-width: 832px) {
+    .extra-wide  {
+        /* 32px is left and right padding of .content. */
+        width: calc(min(100vw - 32px, 900px));
+        /* upper bound is calculated by substituting 100vw = 900px + 32px */
+        margin-inline: calc(max((832px - 100vw) / 2, -50px));
+    }
+}
+
+/**
+ * Article header.
+ **/
+
+.timestamp {
+    margin-bottom: 0.6em;
+}
+
+.article-title {
+    padding: 16px 0;
+    border-bottom: darkred solid 2px;
+}
+
+/* Override .content h1 */
+.content .article-title h1 {
+    font-size: 1.4em;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+/**
+ * Article content.
+ **/
+
+.article-content {
+    padding-top: 32px;
+}
+
+.content p, .content ul, .content pre {
+    margin-bottom: 0.7em;
+}
+
+.content li {
+    margin: 0.5em 0;
+}
+
+/* Block code. */
+.content pre {
+    padding: 1em;
+    overflow: auto;
+}
+
+/* Inline code. */
+.content p code {
+    padding: 0.1em 0;
+}
+
+.content p code::before, .content p code::after {
+    letter-spacing: -0.2em;
+    content: "\00a0";
+}
+
+code, pre {
+    font-family: "Fira Mono", Menlo, "Roboto Mono", Consolas, monospace;
+}
+
+.content code, .content pre {
+    background-color: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* This doesn't have p, so that it also applies to ttyshots. */
+.content code {
+    font-size: 85%;
+}
+
+/* We only use h1 to h3. */
+
+.content h1, .content h2, .content h3 {
+    line-height: 1.25;
+}
+
+.content h1, .content h2, .content h3 {
+    margin-top: 24px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.content h1 {
+    font-size: 1.3em;
+}
+
+.content h1 {
+    border-left: darkred solid 0.3em;
+    padding-left: 0.3em;
+    margin-left: -0.6em;
+}
+
+.content h2 {
+    font-size: 1.2em;
+}
+
+.content ul, .content ol {
+    margin-left: 1.5em;
+}
+
+/**
+ * Category content.
+ **/
+
+.content.category {
+    padding-top: 32px;
+}
+
+.article-list > li:hover {
+    background-color: #d0d0d0;
+}
+
+.article-timestamp {
+    float: right;
+    display: block;
+    margin-left: 1em;
+}
+
+/**
+ * Layout utilities.
+ **/
+
+.clear {
+    clear: both;
+}
+
+.no-display {
+    display: none !important;
+}
+
+/**
+ * Miscellous elements.
+ **/
+
+hr {
+    clear: both;
+    border-color: #aaa;
+    text-align: center;
+}
+
+hr:after {
+    content: "❧";
+    text-shadow: 0px 0px 2px #667;
+    display: inline-block;
+    position: relative;
+    top: -0.5em;
+    padding: 0 0.25em;
+    font-size: 1.1em;
+    color: black;
+    background-color: white;
+}
+
+kbd {
+    display: inline-block;
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 0 3px;
+    margin: 1px;
+    font-size: 85%;
+    font-family: "Lucida Grande", Arial, sans-serif;
+}
+
+/** Header anchors. */
+.anchor {
+    opacity: 0;
+    font-size: 90%;
+    color: inherit;
+    padding-left: 0.15em;
+}
+
+*:hover > .anchor {
+    opacity: 1;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+td, th {
+    text-align: left;
+}
+
+tr:hover td {
+    background-color: #fafafa;
+}
+
+/* end derived from elv.sh */
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #0645ad;
+    text-decoration: underline;
+}
+
+ul.rule-attacks,
+ul.rule-mbcs {
+    margin-left: 3em;
+}
+
+li.rule-attack::marker {
+  content: '& ';
+  font-size: 1.2em;
+  color: darkred;
+}
+
+li.rule-mbc::marker {
+  content: 'mbc ';
+  font-size: 1.2em;
+  color: darkred;
+}

@@ -34,3 +34,26 @@ relativeURLs = true
     noHl = false
     style = 'modus-operandi'
     tabWidth = 4
+
+[module]
+[[module.mounts]]
+  source = 'content'
+  target = 'content'
+# feat: capa rules
+[[module.mounts]]
+  source = 'capa-rules-site/content'
+  target = 'content'
+[[module.mounts]]
+  source = 'capa-rules-site/layouts'
+  target = 'layouts'
+[[module.mounts]]
+  source = 'capa-rules-site/static'
+  target = 'static'
+
+# feat: capa rules
+[taxonomies]
+authors = "authors"
+namespaces = "namespaces"
+attack = "attack"
+mbc = "mbc"
+api = "api"

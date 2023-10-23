@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8" />
+    <title>
+        {{ if eq .Title "Api" }}
+            APIs
+        {{ else if eq .Title "Mbc" }}
+            MBC
+        {{ else if eq .Title "Attack" }}
+            ATT&CK
+        {{ else }}
+            {{ .Title }}
+        {{ end }}
+    </title>
+    <link rel="stylesheet" href="/css/capa-rules-style.css" />
+</head>
+<body>
+    <div class="content">
+        <h1>
+            {{ if eq .Title "Api" }}
+                APIs
+            {{ else if eq .Title "Mbc" }}
+                MBC
+            {{ else if eq .Title "Attack" }}
+                ATT&CK
+            {{ else }}
+                {{ .Title }}
+            {{ end }}
+        </h1>
+
+        <table>
+        {{ range sort .Pages "Params.namespace" | uniq }}
+        <tr>
+            {{ if isset .Page.Params "namespace" }}
+            <td
+                class="rule-namespace"
+                style="
+                    color: #707070;
+                    padding-right: 1em;
+                "
+            >
+                {{ with site.GetPage (path.Join "namespaces" .Page.Params.namespace | urlize) }}
+                    <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+                {{ end }}
+            </td>
+            {{ end }}
+
+            <td>
+                <a href="{{ .RelPermalink }}">
+                    {{ .Title }} 
+                </a>
+            </td>
+        </tr>
+        {{ end }}
+        </table>
+
+    </div>
+</body>
+</html>
