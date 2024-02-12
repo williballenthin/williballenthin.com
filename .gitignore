@@ -42,3 +42,6 @@ _site/
 
 public/
 .hugo_build.lock
+.env
+.envrc
+.direnv
