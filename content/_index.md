@@ -29,17 +29,51 @@ Post-rock and -metal.
 
 <table id="content-links">
   <tr>
-    <td>
+    <td style="padding: 0;">
       <h1>
         <a href="./posts/">blog</a>
       </h1>
     </td>
-    <td>
+    <td style="padding: 0;">
       <h1>
         <a href="./tweets/">tweet archive</a>
       </h1>
       for posterity, SEO, etc.
     </td>
+  </tr>
+  <tr>
+    <td style="padding: 0;" id="projects">
+    <h1><a href="https://github.com/williballenthin/">projects</a></h1>
+
+|                 	                                                          |                      |
+|---------------------------------------------------------------------------	|--------------------  |
+| **[capa](https://github.com/mandiant/capa)**                                | malware capabilities |
+| **[FLOSS](https://github.com/mandiant/flare-floss)**                        | obfuscated strings   |
+| **[python-idb](https://github.com/williballenthin/python-idb)**             | IDA Pro analysis     |
+| **[python-registry](https://github.com/williballenthin/python-registry)**   | Registry parser      |
+| **[INDXParse](https://github.com/williballenthin/INDXParse)**               | NTFS artifacts       |
+| **[EVTXtract](https://github.com/williballenthin/EVTXtract)**               | EVTX recovery        |
+
+<style>
+
+    #projects table tbody tr td {
+    text-align: left;
+    }
+
+
+    #projects table tr td:first-child {
+    text-align: right;
+    }
+
+
+    #projects table tr td:first-child::after {
+    content: ' :: ';
+    color: var(--main-decoration-color);
+    }
+</style>
+
+</div>
+
   </tr>
   <style>
     #content-links {
@@ -58,30 +92,8 @@ Post-rock and -metal.
       margin-bottom: 0;
     }
   </style>
+    </td>
+</tr>
 </table>
 
 
-<div id="projects">
-
-# [projects](https://github.com/williballenthin/) <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" height="40px" style="position: relative;top: 10px;"></img>
-
-
-|                 	                                                          |                      |
-|---------------------------------------------------------------------------	|--------------------  |
-| **[capa](https://github.com/mandiant/capa)**                                | malware capabilities |
-| **[FLOSS](https://github.com/mandiant/flare-floss)**                        | obfuscated strings   |
-| **[python-idb](https://github.com/williballenthin/python-idb)**             | IDA Pro analysis     |
-| **[python-registry](https://github.com/williballenthin/python-registry)**   | Registry parser      |
-| **[INDXParse](https://github.com/williballenthin/INDXParse)**               | NTFS artifacts       |
-| **[EVTXtract](https://github.com/williballenthin/EVTXtract)**               | EVTX recovery        |
-  <style>
-    #projects table tr td:first-child {
-      text-align: right;
-    }
-
-    #projects table tr td:first-child::after {
-      content: ' :: ';
-      color: var(--main-decoration-color);
-    }
-  </style>
-</div>

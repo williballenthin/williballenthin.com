@@ -4,22 +4,11 @@
   --main-decoration-color: #CCCCCC;
   --nav-height: 36px;
   --footer-height: 12px;
-  --max-width: 1000px;
 }
 
 @font-face {
   font-family: 'IntelOneMono';
   src: url('../font/intelone-mono-font-family-regular.woff2') format('woff2');
-}
-
-a {
-	color: black;
-	text-decoration: underline var(--main-decoration-color);
-}
-
-a:hover {
-	color: black;
-	text-decoration: underline var(--main-highlight-color);
 }
 
 .highlight pre code {
@@ -30,53 +19,7 @@ a:hover {
 }
 
 code {
-	color: #444;
 	font-family: IntelOneMono;
-}
-
-blockquote {
-	border-left: 4px solid var(--main-decoration-color);
-	padding-left: 1em;
-}
-
-ol, ul {
-	margin-left: 1em;
-}
-
-ul {
-	list-style: square;
-}
-
-ol {
-	list-style: decimal;
-}
-
-p, ul, table, code {
-	margin-bottom: 1em;
-	margin-top: 1em;
-}
-
-li > ul,
-li > ol {
-	margin-top: 0;
-	margin-bottom: 0;
-}
-
-td {
-    border: 1px solid var(--main-decoration-color);
-    padding: 0 0.5em;
-}
-
-th {
-    border: 1px solid var(--main-decoration-color);
-    padding: 0 0.5em;
-    font-weight: bold;
-    text-align: left;
-}
-
-
-h1, h2, h3 {
-	font-weight:  bold;
 }
 
 nav {
@@ -84,7 +27,6 @@ nav {
 	max-width: var(--max-width);
 	padding-top: 12px;
 }
-
 
 nav .breadcrumbs {
 	--breadcrumb-separator-width: 12px;
@@ -116,10 +58,6 @@ nav .breadcrumbs .breadcrumb::before {
 	margin-bottom: var(--margin-bottom);
 	min-height: calc(100% - var(--nav-height) - var(--footer-height) - var(--margin-bottom) - var(--margin-top));
 	max-width: var(--max-width);
-}
-
-html, body {
-	height: 100%;
 }
 
 body {
