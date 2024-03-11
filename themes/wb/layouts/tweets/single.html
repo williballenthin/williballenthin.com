@@ -2,7 +2,7 @@
 
 
 <body lang="{{ .Site.LanguageCode }}">
-  <nav class="sans-serif w-90 w-80-m w-60-ns center">
+  <nav class="container">
     <span class="breadcrumbs">
       <a href="{{ .Site.Home.RelPermalink }}" class="breadcrumb">{{ .Site.Title }}</a>
       {{ with .Site.GetPage "/tweets" }}
@@ -11,8 +11,8 @@
     </span>
   </nav>
 
-  <section id="main" class="sans-serif w-90 w-80-m w-60-ns center mv2 mv4-ns aa">
-    <span class="f6 gray">
+  <main class="container">
+    <span>
         <span class="post-date" style="font-weight: bold;">
             <a href="https://twitter.com/williballenthin/status/{{ .Slug }}" style="text-decoration: none; color: grey; ">
                 {{ .Date.Format "January 2, 2006" }}
@@ -34,7 +34,7 @@
         </span>
     </span>
 
-    <article itemprop="articleBody" id="content" class="w-90 lh-copy">
+    <div id="content">
         <blockquote style="margin: 0;">
           {{ .Content }}
 
@@ -43,14 +43,13 @@
           {{ end }}
         </blockquote>
 
-
-        <div class="f6 gray" style="float: right;">
+        <div style="float: right;">
             <i>
                 @williballenthin
             </i>
         </div>
-    </article>
-  </section>
+    </div>
+</main>
 
   {{ partial "footer.html" . }}
 </body>

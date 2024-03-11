@@ -9,6 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark" />
 
+    {{ partial "head_includes.html" . }}
+
     {{ partial "meta.html" . }}
 
     <title>{{ .Title }}</title>
@@ -23,5 +25,9 @@
     />
 {{ end }}
 
-    {{ partial "head_includes.html" . }}
+    <style>
+
+      /* TODO: move this back into style.css */
+
+    </style>
   </head>

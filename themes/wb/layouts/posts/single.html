@@ -1,18 +1,18 @@
 {{ partial "header.html" . }}
 
 <body lang="{{ .Site.LanguageCode }}">
-  <nav class="sans-serif w-90 w-80-m w-60-ns center">
+  <nav class="container">
     <span class="breadcrumbs">
-      <a href="{{ .Site.Home.RelPermalink }}" class="breadcrumb">{{ .Site.Title }}</a>
+      <a href="{{ .Site.Home.RelPermalink }}" id="site-name" class="breadcrumb">{{ .Site.Title }}</a>
       {{ with .Site.GetPage "/posts" }}
       <a href="{{ .RelPermalink  }}" class="breadcrumb">blog</a>
       {{ end }}
     </span>
   </nav>
 
-  <section id="main" class="post sans-serif w-90 w-80-m w-60-ns center mv2 mv4-ns aa">
-    <h1 itemprop="name" id="title">{{ .Title }}</h1>
-    <span id="post-tags" class="f6 gray">
+  <main class="container">
+    <h1 id="title">{{ .Title }}</h1>
+    <span id="post-tags">
         <span class="post-date" style="font-weight: bold;">
             {{ .Date.Format "January 2, 2006" }}
         </span>
@@ -32,18 +32,18 @@
         </span>
     </span>
 
-    <article itemprop="articleBody" id="content" class="w-90 lh-copy">
+    <div id="content" style="margin-top: 2em;">
       {{ .Content }}
-    </article>
+    </div>
 
     <!-- last modified note -->
-    <span class="f6 gray mv3"
+    <span
       title="Lastmod: {{ .Lastmod.Format "January 2, 2006" }}. Published at: {{ .PublishDate.Format "2006-01-02" }}.">
       {{ if ne .Lastmod .PublishDate }}
       <span class="i">last modified</span> {{ dateFormat "January 2, 2006" .Lastmod }}
       {{ end }}
     </span>
-  </section>
+  </main>
 
   {{ partial "footer.html" . }}
 </body>
