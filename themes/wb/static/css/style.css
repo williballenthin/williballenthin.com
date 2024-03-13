@@ -191,7 +191,8 @@ body > footer {
 
 /* post specifics */
 
-main.post {
+nav.container,
+main.container {
 	max-width: 36em;
 }
 
