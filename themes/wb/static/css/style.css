@@ -189,6 +189,12 @@ body > footer {
 	font-variant: small-caps;
 }
 
+/* post specifics */
+
+main.post {
+	max-width: 36em;
+}
+
 .post h1#title {
 	margin-bottom: 0;
 }
