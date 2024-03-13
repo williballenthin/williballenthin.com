@@ -2,8 +2,6 @@
   /* keep in sync with meta.html theme-color */
   --main-highlight-color: #85cba3;
   --main-decoration-color: #CCCCCC;
-  --nav-height: 36px;
-  --footer-height: 12px;
 }
 
 /* default (light) */
@@ -91,16 +89,11 @@
 	filter: invert(100%);
 }
 
-code {
-	font-family: IntelOneMono;
-}
-
 nav {
-	height: var(--nav-height);
-	max-width: var(--max-width);
 	padding-top: 12px;
+	margin-bottom: 1em;
+	font-family: var(--pico-font-family-sans-serif);
 }
-
 
 nav .breadcrumbs {
 	--breadcrumb-separator-width: 12px;
@@ -156,7 +149,7 @@ body {
 }
 
 body > footer {
-	height: var(--footer-height);
+	height: 12px;
 	background-image: url("../img/more-leaves-on-green.png");
 	background-size: 250px;
 	background-repeat: repeat-x;
@@ -165,25 +158,18 @@ body > footer {
 	padding-block: 0;
 }
 
-.post #title {
-	margin-bottom: 0;
-}
 
-.post #post-tags {
-	display:  inline-block;
-	margin-top: 0.5em;
-	margin-bottom: 2em;
-}
 
 .decoration {
 	color: var(--main-decoration-color);
 	font-size: smaller;
 }
 
+/* hugo list templates */
+
 #content-list {
 	margin-left: 0;
 	list-style: none;
-
 }
 
 #content-list li {
@@ -199,5 +185,21 @@ body > footer {
 
 #content-list li span.date {
 	font-size: smaller;
-	color: var(--main-decoration-color);
+	color: grey;
+	font-variant: small-caps;
+}
+
+.post h1#title {
+	margin-bottom: 0;
+}
+
+.post .post-date {
+	font-size: smaller;
+	font-variant: small-caps;
+}
+
+.post #post-tags {
+	display:  inline-block;
+	font-size: smaller;
+	font-family: var(--pico-font-family-sans-serif);
 }

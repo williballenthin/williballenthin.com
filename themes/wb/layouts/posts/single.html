@@ -10,10 +10,10 @@
     </span>
   </nav>
 
-  <main class="container">
+  <main class="container post">
     <h1 id="title">{{ .Title }}</h1>
     <span id="post-tags">
-        <span class="post-date" style="font-weight: bold;">
+        <span class="post-date">
             {{ .Date.Format "January 2, 2006" }}
         </span>
 
@@ -23,7 +23,7 @@
         <span class="post-tags">
             {{ range (.GetTerms "tags") }}
                 <span class="post-tag">
-                    <a href="{{ .RelPermalink }}" style="color: gray;">
+                    <a href="{{ .RelPermalink }}">
                         #{{ .LinkTitle }}
                     </a>
                 </span>

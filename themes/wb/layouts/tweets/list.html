@@ -1,13 +1,13 @@
 {{ partial "header.html" . }}
 
 <body lang="{{ .Site.LanguageCode }}">
-  <nav class="container">
+  <nav class="container" style="max-width: 32em;">
     <span class="breadcrumbs">
       <a href="{{ .Site.Home.RelPermalink }}" class="breadcrumb">{{ .Site.Title }}</a>
     </span>
   </nav>
 
-  <main class="container">
+  <main class="container" style="max-width: 32em;">
     <div>
       <ul id="content-list">
         {{ range .Pages.ByDate.Reverse }}
