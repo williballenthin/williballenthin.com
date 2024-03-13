@@ -1,39 +1,77 @@
-<!DOCTYPE html>
-<html class="" lang="{{ .Site.LanguageCode }}" prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
-
-<head>
-  <meta charset="utf-8" />
-
-  {{ partial "meta.html" . }}
-
-  <title>{{ .Site.Title }}</title>
-  <link rel="canonical" href="{{ .Permalink }}" />
-  {{ $sitetitle := .Site.Title }}
-  {{ with .OutputFormats.Get "RSS" }}
-  <link href="{{ .RelPermalink }}" rel="alternate" type="application/rss+xml" title="{{ $sitetitle }}" />
-  {{ end }}
-  {{ partial "head_includes.html" . }}
-</head>
+{{ partial "header.html" . }}
 
 <body lang="{{ .Site.LanguageCode }}" style="padding-top: 1em;">
-  <section id="main" class="sans-serif w-90 w-60-ns center center-ns mv2 mv5-ns"
-    style="
-      margin-top: 0 !important;
-      min-height: calc(100% - var(--footer-height) - var(--margin-bottom));
-    "
-  >
-    <div>
-      <h1 id="title" class="f3" style="margin-top: 0;">
-        {{ .Site.Title }} {{ .Site.Params.TitleEmoji | emojify }}
+  <style>
+    h1 {
+      --pico-font-family: var(--pico-font-family-sans-serif);
+    }
+  </style>
 
-        <img style="height: 30px; position: relative; top: 7px;" src="https://www.gravatar.com/avatar/677f6ada59932964b9150aba814fedd6?s=100&d=identicon" />
-      </h1>
-
-      <article itemprop="articleBody" id="content" class="w-90 lh-copy">
-        {{ .Content }}
-      </article>
+  <main class="container" style="max-width: 48em;">
+    <div style="width: 100%; display: flex; flex-flow: row wrap;">
+      <div style="flex-basis: 18em; flex-grow: 0; flex-shrink: 0; margin-bottom: 1em;">
+        <h1 id="title" style="margin-bottom: 0px; color: var(--main-highlight-color);">
+          Willi Ballenthin
+        </h1>
+        <span id="me-links">
+          <a rel="me" href="https://mastodon.social/@williballenthin">@mastodon</a>
+          <a rel="me" href="https://github.com/williballenthin">@github</a>
+          <a rel="me" href="https://twitter.com/williballenthin">@twitter</a>
+          <style>
+            #me-links a {
+              color: var(--main-decoration-color);
+              font-size: 14px;
+            }
+          </style>
+        </span>
+      </div>
+      <div style="flex-basis: 24em; flex-grow: 1; flex-shrink: 1;">
+        Software reverse engineer writing about disassembly, debugging, emulation;
+        programming in <a href="./tags/python">Python</a> and <a href="./tags/rust">Rust</a>;
+        and listening to post-rock and -metal.
+      </div>
     </div>
-  </section>
+
+    <div style="margin-top: 2em;">
+      <div>
+        <h1>
+          <a href="./posts/">blog</a>
+        </h1>
+      </div>
+
+      <div>
+        <h1>
+          <a href="https://github.com/williballenthin/">projects</a>
+        </h1>
+        <dl>
+            <dt><a href="https://github.com/mandiant/capa">capa</a></dt>
+            <dd>malware capabilities</dd>
+
+            <dt><a href="https://github.com/mandiant/flare-floss">FLOSS</a></dt>
+            <dd>obfuscated strings</dd>
+
+            <dt><a href="https://github.com/williballenthin/python-idb">python-idb</a></dt>
+            <dd>IDA Pro analysis</dd>
+  
+            <dt><a href="https://github.com/williballenthin/python-registry">python-registry</a></dt>
+            <dd>Registry parser</dd>
+
+            <dt><a href="https://github.com/williballenthin/INDXParse">INDXParse</a></dt>
+            <dd>NTFS artifacts</dd>
+
+            <dt><a href="https://github.com/williballenthin/EVTXtract">EVTXtract</a></dt>
+            <dd>EVTX recovery</dd>
+        </dl>
+      </div>
+
+      <div>
+        <h1 style="margin-bottom: 0;">
+          <a href="./tweets/">tweet archive</a>
+        </h1>
+        for posterity, SEO, etc.
+      </div>
+    </div>
+  </main>
 
   {{ partial "footer.html" . }}
 </body>

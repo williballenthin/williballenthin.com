@@ -4,79 +4,95 @@
   --main-decoration-color: #CCCCCC;
   --nav-height: 36px;
   --footer-height: 12px;
-  --max-width: 1000px;
 }
 
-@font-face {
-  font-family: 'IntelOneMono';
-  src: url('../font/intelone-mono-font-family-regular.woff2') format('woff2');
+/* default (light) */
+[data-theme="light"],
+:root:not([data-theme="dark"]) {
+	--main-highlight-color: #85cba3;
+	--main-decoration-color: #666666;
+
+	--pico-primary: var(--main-decoration-color);
+	--pico-primary-hover: var(--main-highlight-color);
+	--pico-primary-focus: var(--main-highlight-color);
+	--pico-primary-underline: var(--main-highlight-color);
+	--pico-primary-hover-underline: var(--main-highlight-color);
+	--pico-primary-inverse: #FFF;
 }
 
-a {
-	color: black;
-	text-decoration: underline var(--main-decoration-color);
+/* prefers dark */
+@media only screen and (prefers-color-scheme: dark) {
+	:root:not([data-theme]) {
+		--main-highlight-color: #85cba3;
+		--main-decoration-color: #AAAAAA;
+
+		--pico-primary: var(--main-decoration-color);
+		--pico-primary-hover: var(--main-highlight-color);
+		--pico-primary-focus: var(--main-highlight-color);
+		--pico-primary-underline: var(--main-highlight-color);
+		--pico-primary-hover-underline: var(--main-highlight-color);
+		--pico-primary-inverse: #FFF;
+	}
 }
 
-a:hover {
-	color: black;
-	text-decoration: underline var(--main-highlight-color);
+/* forced dark */
+[data-theme="dark"] {
+	--main-highlight-color: #85cba3;
+	--main-decoration-color: #AAAAAA;
+
+	--pico-primary: var(--main-decoration-color);
+	--pico-primary-hover: var(--main-highlight-color);
+	--pico-primary-focus: var(--main-highlight-color);
+	--pico-primary-underline: var(--main-highlight-color);
+	--pico-primary-hover-underline: var(--main-highlight-color);
+	--pico-primary-inverse: #FFF;
+}
+
+:root {
+	--pico-font-family-emoji: "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+	--pico-font-family-serif: "IBM Plex Serif", serif;
+	--pico-font-family-sans-serif: "IBM Plex Sans", sans-serif;
+	--pico-font-family-monospace: "IBM Plex Mono", monospace;
+	--pico-font-family: var(--pico-font-family-serif);
+}
+
+.highlight pre {
+	/* override pico */
+	border-radius: 0;
 }
 
 .highlight pre code {
 	border: 1px solid var(--main-decoration-color);
+	border-radius: 0;
 	display: block;
 	padding: 1em;
 	overflow-x: auto;
 }
 
+/* prefers dark */
+@media only screen and (prefers-color-scheme: dark) {
+	:root:not([data-theme]) .highlight pre {
+		/* override inline style set by code renderer */
+		background-color: transparent !important;
+	}
+	:root:not([data-theme]) .highlight pre code {
+		/* invert text color so that the light-themed text sorta works on dark background */
+		filter: invert(100%);
+	}
+}
+
+/* forced dark */
+[data-theme="dark"] .highlight pre {
+	/* override inline style set by code renderer */
+	background-color: transparent !important;
+}
+[data-theme="dark"] .highlight pre code {
+	/* invert text color so that the light-themed text sorta works on dark background */
+	filter: invert(100%);
+}
+
 code {
-	color: #444;
 	font-family: IntelOneMono;
-}
-
-blockquote {
-	border-left: 4px solid var(--main-decoration-color);
-	padding-left: 1em;
-}
-
-ol, ul {
-	margin-left: 1em;
-}
-
-ul {
-	list-style: square;
-}
-
-ol {
-	list-style: decimal;
-}
-
-p, ul, table, code {
-	margin-bottom: 1em;
-	margin-top: 1em;
-}
-
-li > ul,
-li > ol {
-	margin-top: 0;
-	margin-bottom: 0;
-}
-
-td {
-    border: 1px solid var(--main-decoration-color);
-    padding: 0 0.5em;
-}
-
-th {
-    border: 1px solid var(--main-decoration-color);
-    padding: 0 0.5em;
-    font-weight: bold;
-    text-align: left;
-}
-
-
-h1, h2, h3 {
-	font-weight:  bold;
 }
 
 nav {
@@ -96,9 +112,9 @@ nav .breadcrumbs .breadcrumb {
 	margin-left: var(--breadcrumb-separator-width);
 }
 
-nav .breadcrumbs .breadcrumb:hover {
-	color: black;
-	border-bottom: 2px solid var(--main-highlight-color);
+nav .breadcrumbs .breadcrumb:first-child {
+	font-family: var(--pico-font-family-sans-serif);
+	color: var(--main-highlight-color);
 }
 
 nav .breadcrumbs .breadcrumb::before {
@@ -109,29 +125,44 @@ nav .breadcrumbs .breadcrumb::before {
 	color: var(--main-highlight-color);
 }
 
-#main {
-	--margin-top: 2em;
-	--margin-bottom: 2em;
-	margin-top: var(--margin-top);
-	margin-bottom: var(--margin-bottom);
-	min-height: calc(100% - var(--nav-height) - var(--footer-height) - var(--margin-bottom) - var(--margin-top));
-	max-width: var(--max-width);
+/* sticky footer, from here: https://developer.mozilla.org/en-US/docs/Web/CSS/Layout_cookbook/Sticky_footers */
+html {
+  box-sizing: border-box;
+  height: 100%;
+  padding: 0;
+  margin: 0;
 }
 
-html, body {
-	height: 100%;
+body {
+  box-sizing: border-box;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
+
+nav, footer {
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+main {
+  flex-grow: 1;
+}
+
+/* end sticky footer */
 
 body {
 	border-top: 3px solid var(--main-highlight-color);
 }
 
-footer {
-	position: relative;
+body > footer {
 	height: var(--footer-height);
 	background-image: url("../img/more-leaves-on-green.png");
 	background-size: 250px;
+	background-repeat: repeat-x;
 	border-top: 2px solid var(--main-highlight-color);
+	padding: 0;
+	padding-block: 0;
 }
 
 .post #title {
@@ -142,4 +173,31 @@ footer {
 	display:  inline-block;
 	margin-top: 0.5em;
 	margin-bottom: 2em;
+}
+
+.decoration {
+	color: var(--main-decoration-color);
+	font-size: smaller;
+}
+
+#content-list {
+	margin-left: 0;
+	list-style: none;
+
+}
+
+#content-list li {
+	line-height: 1.0; 
+	margin-bottom: 1em;
+}
+
+#content-list li a {
+	font-size: larger;
+	display: inline-block;
+	width: 100%;
+}
+
+#content-list li span.date {
+	font-size: smaller;
+	color: var(--main-decoration-color);
 }

@@ -1,33 +1,24 @@
 {{ partial "header.html" . }}
 
 <body lang="{{ .Site.LanguageCode }}">
-  <nav class="sans-serif w-90 w-80-m w-60-ns center">
+  <nav class="container">
     <span class="breadcrumbs">
       <a href="{{ .Site.Home.RelPermalink }}" class="breadcrumb">{{ .Site.Title }}</a>
     </span>
   </nav>
 
-  <section id="main" class="sans-serif w-90 w-80-m w-60-ns center mv2 mv4-ns aa">
+  <main class="container">
     <div>
-      <ul id="list" style="margin-left: 0; line-height: 1.5; list-style: none;">
-        <!-- prettier-ignore -->
+      <ul id="content-list">
         {{ range .Pages.ByDate.Reverse }}
         <li>
-          <a
-            class="f3 b dib black no-underline"
-            href="{{ .RelPermalink}}"
-            >{{ .Title }}</a
-          >
-          <span
-            class="f6 gray db dib-ns"
-            >{{ .Date.Format "January 2, 2006" }}</span
-          >
+          <a href="{{ .RelPermalink}}">{{ .Title }}</a><br/>
+          <span class="date">{{ .Date.Format "January 2, 2006" }}</span>
         </li>
-        <!-- prettier-ignore -->
         {{ end }}
       </ul>
     </div>
-  </section>
+  </main>
 
   {{ partial "footer.html" . }}
   </body>
