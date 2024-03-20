@@ -15,14 +15,14 @@ Key numbers (clean build):
   - baseline: 3m 04s
   - with Cranelift: 50s
   - increasing to `opt-level=3` for dependencies: 1m 01s
-  - parallel frontend, two threads: 50s
+  - parallel front-end, two threads: 50s
 
 And for an incremental build:
 
   - baseline: 6.7s
   - Cranelift, `opt-level={1,3}`, 2 threads, mold: 1.2s
 
-So, a clean build is about 3.5x faster with Cranelift and the parallel frontend, and an incremental build is about 5x faster with Cranelift, the parallel frontend, and mold!
+So, a clean build is about *3.5x* faster with Cranelift and the parallel front-end, and an incremental build is about *5x* faster with Cranelift, the parallel front-end, and mold! This seems very worthwhile to configure for most Rust development environments.
 
 # Background
 
