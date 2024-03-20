@@ -1,28 +1,29 @@
 ---
 title: "Rust compilation time"
 date: 2024-03-20T00:00:00-07:00
+draft: true
 tags:
   - rust
 ---
 
-Lots of chatter these few weeks about Rust compilation time and tweaks you can make to improve the developer experience.
-Let's see if we can reproduce any of the results on my Rust projects.
+Lots of chatter these few weeks about Rust compilation time and tweaks you can do to improve the developer experience.
+Let's see if we can reproduce any of the results on my primary Rust side-project, [Lancelot](https://github.com/williballenthin/lancelot).
 
 In summary: yes, quite a significant improvement in compilation time, especially for incremental builds.
 
-Key numbers for a full build:
+Key numbers (clean build):
 
   - baseline: 1m 34s
-  - Cranelift: 1m 02s
-  - opt-level 1:3: 1m 33s
+  - with Cranelift: 1m 02s
+  - increasing to `opt-level=3` for dependencies: 1m 33s
   - parallel frontend, two threads: 45s
 
-and for an incremental build:
+And for an incremental build:
 
   - baseline: 9.1s
-  - Cranelift, mold, opt-level 1:3: 1.7s
+  - Cranelift, mold, `opt-level={1,3}`: 1.7s
 
-So, a full build is about 2x faster with Cranelift, and an incremental build is about 5x faster with Cranelift and mold!
+So, a clean build is about 2x faster with Cranelift, and an incremental build is about 5x faster with Cranelift and mold!
 
 # Background
 
@@ -32,9 +33,9 @@ Background and inspiration:
   - https://lwn.net/SubscriberLink/964735/8b795f23495af1d4/
   - https://benw.is/posts/how-i-improved-my-rust-compile-times-by-seventy-five-percent
 
-I do my side projects on a Surface Book 2 with an Intel i7-8650U CPU (1.90GHz with 4 core/8 logical processors) and 16GB RAM.
+I do my side projects on a Surface Book 2 with an Intel i7-8650U CPU (1.90GHz with 4 cores/8 logical processors) and 16GB RAM.
 Furthermore, since the laptop runs Windows 10, I develop under WSL2 in a Ubuntu 22.04.2 LTS virtual machine.
-In other words, a five year old laptop, not a big developer rig, doing compilation within a VM - not great for performace but it works.
+In other words, on five year old laptop and within a VM - not great for performance, but it works.
 
 The project we'll use as a test target is [Lancelot](https://github.com/williballenthin/lancelot),
 my library for disassembling and recovering code flow for x86-64 binaries.
@@ -51,11 +52,10 @@ Instead, let me explain the key configuration changes and layer them together.
 Let's dig in.
 
 
-## Baseline
+# Baseline: 1m 34s / 9.1s
 
 ```console
 ❯ time cargo build
-warning: profiles for the non root package will be ignored, specify profiles at the workspace root:
 package:   /home/user/code/lancelot/bin/Cargo.toml
 workspace: /home/user/code/lancelot/Cargo.toml
    Compiling lancelot-bin v0.8.10 (/home/user/code/lancelot/bin)
@@ -67,7 +67,7 @@ Executed in   94.19 secs    fish           external
    sys time   66.06 secs  729.00 micros   66.06 secs
 
 
-❯ time cargo build
+❯ time cargo build  # edit & incremental build
    Compiling lancelot-bin v0.8.10 (/home/user/code/lancelot/bin)
     Finished `dev` profile [unoptimized + debuginfo] target(s) in 9.15s
 
@@ -81,46 +81,90 @@ Executed in    9.27 secs    fish           external
 ```
 
 
-## Increase optimizations for third party crates
+# Cranelift: 1m 08s
+
+My primary workflow is edit-compile-run, so improving the performance of the dev profile is important. Cranelift makes a big difference here. Its about 30% faster for a clean build, down to 1m 08s from 1m 34s.
+
+Install and register:
+
+```console
+❯ rustup component add rustc-codegen-cranelift-preview --toolchain nightly
+❯ set -x CARGO_PROFILE_DEV_CODEGEN_BACKEND cranelift  # fish shell
+❯ time cargo build -Zcodegen-backend
+   Compiling lancelot-bin v0.8.10 (/home/user/code/lancelot/bin)
+    Finished `dev` profile [optimized + debuginfo] target(s) in 1m 08s
+
+________________________________________________________
+Executed in   68.65 secs    fish           external
+   usr time  370.91 secs  312.00 micros  370.91 secs
+   sys time   41.01 secs  355.00 micros   41.01 secs
+```
+
+You can use direnv or other dev profile tool to persist the `CARGO_PROFILE_DEV_CODEGEN_BACKEND` environment variable, too.
 
 
-via: https://benw.is/posts/how-i-improved-my-rust-compile-times-by-seventy-five-percent
+# `opt-levels`: 1m 33s / 2.5s
 
+As noted in the [benw post](https://benw.is/posts/how-i-improved-my-rust-compile-times-by-seventy-five-percent) and other social media comment, its worthwhile to adjust the optimization levels for different parts of a project. Since Rust rarely recompiles dependencies during development, if we configure a higher optimization level for dependencies then we can get faster dev executables at the expense of a (single) longer initial compilation. Pair this with a lower optimization level for the in-development code, and we can get fast incremental compilations that produce reasonably fast dev executables.
+
+Increasing to `opt-level=3` for dependencies, while keeping `opt-level=1` for the development workspace, slowed clean build times by about 50% while having neligible effect on incremental build times. This means that the clean build time is back to around where we started, but incremental build time is still down to 2.5s (from 9.1s)
+
+TODO: show performance delta in dev executables produced by these profiles.
+
+## `opt-level={1:1}`: 1m 08s
 
 ```toml
 [profile.dev]
 opt-level = 1
 
 [profile.dev.package."*"]
-# via: https://benw.is/posts/how-i-improved-my-rust-compile-times-by-seventy-five-percent
-# third party dependencies are more optimized,
-# but they won't be recompiled often.
+opt-level = 1
+```
+
+```console
+❯ time cargo build -Zcodegen-backend
+   Compiling lancelot-bin v0.8.10 (/home/user/code/lancelot/bin)
+    Finished `dev` profile [optimized + debuginfo] target(s) in 1m 08s
+
+________________________________________________________
+Executed in   68.65 secs    fish           external
+   usr time  370.91 secs  312.00 micros  370.91 secs
+   sys time   41.01 secs  355.00 micros   41.01 secs
+```
+
+
+## `opt-level={1:3}`: 1m 33s
+
+```toml
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
 opt-level = 3
 ```
 
 ```console
-❯ time cargo build
-package:   /home/user/code/lancelot/bin/Cargo.toml
-workspace: /home/user/code/lancelot/Cargo.toml
-...
-    Finished `dev` profile [optimized + debuginfo] target(s) in 3m 39s
-
-________________________________________________________
-Executed in  219.31 secs    fish           external
-   usr time   22.32 mins    0.00 micros   22.32 mins
-   sys time    1.56 mins  620.00 micros    1.56 mins
-
-❯ time cargo build
+❯ time cargo build -Zcodegen-backend
    Compiling lancelot-bin v0.8.10 (/home/user/code/lancelot/bin)
-    Finished `dev` profile [optimized + debuginfo] target(s) in 8.05s
+    Finished `dev` profile [optimized + debuginfo] target(s) in 1m 33s
 
 ________________________________________________________
-Executed in    8.15 secs    fish           external
-   usr time   16.05 secs  436.00 micros   16.05 secs
-   sys time    4.13 secs    0.00 micros    4.13 secs
+Executed in   93.25 secs    fish           external
+   usr time  518.20 secs  321.00 micros  518.20 secs
+   sys time   52.17 secs  365.00 micros   52.17 secs
+```
 
-❯ cargo clean
-     Removed 2432 files, 1.6GiB total 
+## incremental build: opt-level=1:3 with Cranelift
+
+```console
+❯ time cargo build -Zcodegen-backend  # edit & incremental build
+   Compiling lancelot-bin v0.8.10 (/home/user/code/lancelot/bin)
+    Finished `dev` profile [optimized + debuginfo] target(s) in 2.25s
+
+________________________________________________________
+Executed in    2.35 secs    fish           external
+   usr time    5.30 secs  281.00 micros    5.30 secs
+   sys time    2.50 secs  319.00 micros    2.50 secs
 ```
 
 
@@ -159,7 +203,7 @@ Executed in  353.73 secs    fish           external
    usr time   38.42 mins  403.00 micros   38.42 mins
    sys time    2.32 mins  512.00 micros    2.32 mins
 
-❯ time cargo build
+❯ time cargo build  # edit & incremental build
    Compiling lancelot-bin v0.8.10 (/home/user/code/lancelot/bin)
     Finished `dev` profile [optimized + debuginfo] target(s) in 7.70s
 
@@ -201,7 +245,7 @@ Executed in  419.21 secs    fish           external
    usr time   44.79 mins  426.00 micros   44.79 mins
    sys time    2.93 mins  517.00 micros    2.93 mins
 
-❯ time cargo build
+❯ time cargo build  # edit & incremental build
    Compiling lancelot-bin v0.8.10 (/home/user/code/lancelot/bin)
     Finished `dev` profile [optimized + debuginfo] target(s) in 8.68s
 
@@ -237,7 +281,7 @@ Something about this breaks my nixOS config, since cmake is looking for `/usr/bi
 I don't want to debug that now, so we can do the initial full build without mold, and then use it for incremental builds:
 
 ```
-❯ mold -run cargo build
+❯ mold -run cargo build  # edit & incremental build
    Compiling lancelot-bin v0.8.10 (/home/user/code/lancelot/bin)
     Finished `dev` profile [optimized + debuginfo] target(s) in 4.58s
 ```
@@ -269,7 +313,7 @@ Executed in  108.97 secs    fish           external
    usr time  602.25 secs  342.00 micros  602.25 secs
    sys time   67.62 secs  417.00 micros   67.62 secs
 
-❯ time cargo build
+❯ time cargo build  # edit & incremental build
    Compiling lancelot-bin v0.8.10 (/home/user/code/lancelot/bin)
     Finished `dev` profile [optimized + debuginfo] target(s) in 1.92s
 
@@ -329,66 +373,10 @@ Executed in   60.37 secs    fish           external
 ```
 
 
-## full build: opt-level=1:1
-
-```toml
-[profile.dev]
-opt-level = 1
-
-[profile.dev.package."*"]
-opt-level = 1
-```
-
-```console
-❯ time cargo build -Zcodegen-backend
-   Compiling lancelot-bin v0.8.10 (/home/user/code/lancelot/bin)
-    Finished `dev` profile [optimized + debuginfo] target(s) in 1m 08s
-
-________________________________________________________
-Executed in   68.65 secs    fish           external
-   usr time  370.91 secs  312.00 micros  370.91 secs
-   sys time   41.01 secs  355.00 micros   41.01 secs
-```
-
-
-## full build: opt-level=1:3
-
-```toml
-[profile.dev]
-opt-level = 1
-
-[profile.dev.package."*"]
-opt-level = 3
-```
-
-```console
-❯ time cargo build -Zcodegen-backend
-   Compiling lancelot-bin v0.8.10 (/home/user/code/lancelot/bin)
-    Finished `dev` profile [optimized + debuginfo] target(s) in 1m 33s
-
-________________________________________________________
-Executed in   93.25 secs    fish           external
-   usr time  518.20 secs  321.00 micros  518.20 secs
-   sys time   52.17 secs  365.00 micros   52.17 secs
-```
-
-## incremental build: opt-level=1:3 with Cranelift
-
-```console
-❯ time cargo build -Zcodegen-backend
-   Compiling lancelot-bin v0.8.10 (/home/user/code/lancelot/bin)
-    Finished `dev` profile [optimized + debuginfo] target(s) in 2.25s
-
-________________________________________________________
-Executed in    2.35 secs    fish           external
-   usr time    5.30 secs  281.00 micros    5.30 secs
-   sys time    2.50 secs  319.00 micros    2.50 secs
-```
-
 ## incremental build: opt-level=1:3 with Cranelift and mold
 
 ```console
-❯ time mold -run cargo build -Zcodegen-backend
+❯ time mold -run cargo build -Zcodegen-backend  # edit & incremental build
    Compiling lancelot-bin v0.8.10 (/home/user/code/lancelot/bin)
     Finished `dev` profile [optimized + debuginfo] target(s) in 1.70s
 
