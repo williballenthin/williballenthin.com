@@ -12,9 +12,9 @@ In summary: yes, quite a significant improvement in compilation time, especially
 
 Key numbers (clean build):
 
-  - baseline: 3m 04s
+  - baseline: 184s 
   - with Cranelift: 50s
-  - increasing to `opt-level=3` for dependencies: 1m 01s
+  - increasing to `opt-level=3` for dependencies: 61s
   - parallel front-end, two threads: 50s
 
 And for an incremental build:
@@ -26,11 +26,11 @@ So, a clean build is about *3.5x* faster with Cranelift and the parallel front-e
 
 # Background
 
-Background and inspiration:
-
   - https://blog.rust-lang.org/2023/11/09/parallel-rustc.html
   - https://lwn.net/SubscriberLink/964735/8b795f23495af1d4/
   - https://benw.is/posts/how-i-improved-my-rust-compile-times-by-seventy-five-percent
+
+### Hardware and environment
 
 I do my side projects on a Surface Book 2 with an Intel i7-8650U CPU (1.90GHz with 4 cores/8 logical processors) and 16GB RAM.
 Furthermore, since the laptop runs Windows 10, I develop under WSL2 in a Ubuntu 22.04.2 LTS virtual machine.
@@ -39,19 +39,20 @@ In other words, on five year old laptop and within a VM - not great for performa
 The project we'll use as a test target is [Lancelot](https://github.com/williballenthin/lancelot),
 my library for disassembling and recovering code flow for x86-64 binaries.
 It has 185 dependencies and takes a few minutes to build from scratch.
+This project may not representative of all Rust projects, but it's what dictates my ongoing experience with Rust, so we'll use it here.
 
-This is going to be much less rigorous than the linked articles, because:
+To be clear, this discussion is going to be much less rigorous than the linked articles, because:
 
-  1. its just a sketch of the results in a fraction of the time, and 
+  1. its just a sketch of the results in a fraction of the time (not using hyperfine, etc.), and 
   2. if they're as good as claimed, the results will be obvious.
 
-Also, this won't follow my steps exactly - I stumbled around at first while I figured out the variables.
+Also, this won't follow my real-life steps exactly - I stumbled around at first while I figured out the variables.
 Instead, let me explain the key configuration changes and layer them together.
 
 Let's dig in.
 
 
-# Baseline: 3m 04s / 6.7s
+# Baseline: 184s / 6.7s
 
 ```console
 ❯ time cargo build
@@ -75,7 +76,7 @@ Executed in    6.82 secs    fish           external
 
 # Cranelift: 50s / 2.5s
 
-My primary workflow is edit-compile-run, so improving the performance of the dev profile is important. Cranelift makes a big difference here. Its about 3x faster for a clean build, down to 50s from 3m 04s!
+My primary workflow is edit-compile-run, so improving the performance of the dev profile is important. Cranelift makes a big difference here. Its about 3x faster for a clean build, down to 50s from 184s!
 
 Install and register:
 
@@ -103,7 +104,7 @@ Executed in    2.59 secs    fish           external
 You can use direnv or other dev profile tool to persist the `CARGO_PROFILE_DEV_CODEGEN_BACKEND` environment variable, too.
 
 
-# `opt-level={1:3}`: 1m 01s / 2.0s
+# `opt-level={1:3}`: 61s / 2.0s
 
 As noted in the [benw post](https://benw.is/posts/how-i-improved-my-rust-compile-times-by-seventy-five-percent) and other social media comment, its worthwhile to adjust the optimization levels for different parts of a project. Since Rust rarely recompiles dependencies during development, if we configure a higher optimization level for dependencies then we can get faster dev executables at the expense of a (single) longer initial compilation. Pair this with a lower optimization level for the in-development code, and we can get fast incremental compilations that produce reasonably fast dev executables.
 
@@ -194,3 +195,9 @@ Executed in    1.36 secs    fish           external
    usr time    1.78 secs  256.00 micros    1.78 secs
    sys time    0.68 secs  314.00 micros    0.68 secs
 ```
+
+# Conclusion
+
+So, its probably worthwhile to spend a few minutes configuring these knobs for your Rust development environment. The results are quite significant, especially for incremental builds.
+
+I'm keen to repeat these experiments on other hardware, namely an M1 Mac Mini and a high-end desktop, to see how the results vary. I'll update here as I do so.
