@@ -1,0 +1,18 @@
+{{ partial "header.html" . }}
+
+<body lang="{{ .Site.LanguageCode }}">
+
+  
+  <main class="container">
+
+    <div id="content" style="margin-top: 2em;">
+      {{ .Content }}
+    </div>
+
+  </main>
+
+  {{ partial "footer.html" . }}
+</body>
+
+<!-- layout: _default/single.html -->
+</html>
