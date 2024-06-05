@@ -183,7 +183,7 @@ rustflags = ["-Z", "threads=2"]
 
 # Mold: ??? / 1.2s
 
-Doesn't work for clean builds due to interplace of zydis-rs using cmake-rs asking for gmake which isn't provided by my nix environment... blah blah. I don't want to debug that now, so we can do the initial full build without mold, and then use it for incremental builds:
+Mold doesn't work for clean builds of Lancelot due to the interplay of zydis-rs using cmake-rs asking for gmake which isn't provided by my nix environment... blah blah. I don't want to debug that now, so we can do the initial clean build without mold, and then use it for incremental builds:
 
 ```
 ❯ time mold -run cargo build -Zcodegen-backend
