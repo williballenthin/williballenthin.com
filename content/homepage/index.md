@@ -1,8 +1,14 @@
 ---
 ---
-<div style="font-size: 48px; position: relative; top: 2.1em; left: -2em;">🏡</div>
+<style>
+  main.container {
+    padding-top: 0;
+  }
+</style>
 
-<div style="margin-top: 2em; margin-bottom: 2em;">
+<div style="font-size: 48px; position: relative; top: -10px; left: -2em; height: 0;">🏡</div>
+
+<div>
   <form action="https://www.kagi.com/search" method="get">
     <input type="search" id="kagi-search" name="q" />
   </form>
@@ -10,12 +16,20 @@
 
 <hr />
 
-  - internal
-    - [navidrome](http://g4.ferret-goblin.ts.net:4533/app/)
-  - external
-    - [gemini](https://gemini.google.com/app)
-    - [nixOS packages](https://search.nixos.org/packages?channel=unstable&show=mosh&from=0&size=50&sort=relevance&type=packages&query=)
-    - [whats my ip](https://ifconfig.co/)
+<div class="links" style="display: flex; flex-direction: row;">
+  <div style="margin-right: 1em">
+    <ul>
+      <li><a href="https://gemini.google.com/app">gemini</a></li>
+      <li><a href="https://search.nixos.org/packages?channel=unstable&show=mosh&from=0&size=50&sort=relevance&type=packages&query=">nixOS packages</a></li>
+      <li><a href="https://ifconfig.co/">whats my ip</a></li>
+    </ul>
+  </div>
+
+  <div style="margin-left: auto;">
+    <ul>
+      <li><a href="http://g4.ferret-goblin.ts.net:4533/app/">navidrome</a></li>
+  </div>
+</div>
 
 <hr />
 
@@ -51,6 +65,7 @@
     text-decoration: none;
     color: var(--main-decoration-color);
     font-size: smaller;
+    opacity: 0.3;
   }
 
   li.entry details div.content {
