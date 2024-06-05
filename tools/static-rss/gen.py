@@ -27,12 +27,26 @@ logging.basicConfig(level=logging.DEBUG)
 class Feed:
     category: str
     url: str
+    title: str
 
     # link to project/homepage/base, not the feed
     homepage: Optional[str] = None
 
-    # updated once the feed is fetched
-    title: Optional[str] = None
+
+    @classmethod
+    def from_mastodon(cls, handle):
+        assert handle[0] == "@"
+        assert "@" in handle[1:]
+
+        user, _, server = handle.rpartition("@")
+
+        return cls(
+            category="mastodon",
+            # returns last 20 posts by default
+            url=f"https://{server}/{user}.rss",
+            homepage=f"https://{server}/{user}",
+            title=handle
+        )
 
 
 @dataclass
@@ -46,8 +60,6 @@ class Entry:
 
 def fetch_feed(feed: Feed) -> Iterator[Entry]:
     d = feedparser.parse(feed.url)
-    if not feed.title:
-        feed.title = d.feed.title
 
     for entry in d.entries:
 
@@ -97,16 +109,16 @@ def fetch_feed(feed: Feed) -> Iterator[Entry]:
 
 
 feeds = [
-    Feed(
-         category="mastodon", 
-         url="https://infosec.exchange/@cxiao.rss", 
-         homepage="https://infosec.exchange/@cxiao", 
-         title="@cxiao"
-     ),
+    Feed.from_mastodon("@cxiao@infosec.exchange"),
+    Feed.from_mastodon("@malcat@infosec.exchange"),
+    Feed.from_mastodon("@pnx@infosec.exchange"),
+    Feed.from_mastodon("@trailofbits@infosec.exchange"),
+    Feed.from_mastodon("@HexRaysSA@infosec.exchange"),
+    Feed.from_mastodon("@binaryninja@infosec.exchange"),
 ]
 
 # take the 20 most recently updated repos
-for repo in requests.get("https://api.github.com/users/williballenthin/starred?sort=updated&direction=desc&per_page=20").json():
+for repo in requests.get("https://api.github.com/users/williballenthin/starred?sort=updated&direction=desc&per_page=2").json():
     title = repo["full_name"]
     logger.debug("found repo: %s", title)
 
