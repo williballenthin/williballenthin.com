@@ -118,7 +118,7 @@ feeds = [
 ]
 
 # take the 20 most recently updated repos
-for repo in requests.get("https://api.github.com/users/williballenthin/starred?sort=updated&direction=desc&per_page=2").json():
+for repo in requests.get("https://api.github.com/users/williballenthin/starred?sort=updated&direction=desc&per_page=20").json():
     title = repo["full_name"]
     logger.debug("found repo: %s", title)
 
