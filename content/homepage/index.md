@@ -3,6 +3,7 @@
 <style>
   main.container {
     padding-top: 0;
+    font-family: var(--pico-font-family-sans-serif);
   }
 </style>
 
@@ -59,6 +60,10 @@
 
   li.entry details summary span.category {
     display: none;
+  }
+
+  li.entry details summary span.title {
+    line-height: 1.4;
   }
 
   li.entry details summary span.link a {
