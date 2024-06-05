@@ -6,11 +6,11 @@
   }
 </style>
 
-<div style="font-size: 48px; position: relative; top: -10px; left: -2em; height: 0;">🏡</div>
+<div style="font-size: 36px; position: relative; top: 0px; left: 8px; height: 0;">🏡</div>
 
 <div>
   <form action="https://www.kagi.com/search" method="get">
-    <input type="search" id="kagi-search" name="q" />
+    <input type="search" id="kagi-search" name="q" placeholder="kagi..." />
   </form>
 </div>
 
