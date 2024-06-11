@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<opml version="1.0">
+    <head>
+        <title>Willi Ballenthin's noisy RSS subscriptions</title>
+    </head>
+    <body>
+        <outline text="aa-noisy" title="aa-noisy">
+            <outline type="rss" text="Arduino Hacks – Hackaday" title="Arduino Hacks – Hackaday" xmlUrl="http://hackaday.com/category/arduino-hacks/feed" htmlUrl="https://hackaday.com"/>
+            <outline type="rss" text="Duolingo Blog" title="Duolingo Blog" xmlUrl="http://blog.duolingo.com/rss" htmlUrl="https://blog.duolingo.com/"/>
+            <outline type="rss" text="Marginal Revolution" title="Marginal Revolution" xmlUrl="http://www.marginalrevolution.com/marginalrevolution/index.rdf" htmlUrl="https://marginalrevolution.com/"/>
+            <outline type="rss" text="This Week in Rust" title="This Week in Rust" xmlUrl="http://this-week-in-rust.org/atom.xml" htmlUrl="https://this-week-in-rust.org/"/>
+            <outline type="rss" text="News : NPR" title="News : NPR" xmlUrl="http://www.npr.org/rss/rss.php?id=1001" htmlUrl="https://www.npr.org/templates/story/story.php?storyId=1001"/>
+            <outline type="rss" text="Clojure News" title="Clojure News" xmlUrl="https://clojure.org/feed.xml" htmlUrl="https://clojure.org"/>
+            <outline type="rss" text="Richard Hanania's Newsletter" title="Richard Hanania's Newsletter" xmlUrl="https://richardhanania.substack.com/feed/" htmlUrl="https://www.richardhanania.com"/>
+            <outline type="rss" text="xkcd" title="xkcd" xmlUrl="http://xkcd.com/rss.xml" htmlUrl="https://xkcd.com/"/>
+            <outline type="rss" text="Google Online Security Blog" title="Google Online Security Blog" xmlUrl="http://googleonlinesecurity.blogspot.com/atom.xml" htmlUrl="http://security.googleblog.com/"/>
+            <outline type="rss" text="Lobsters: lisp,programming,reversing,rust" title="Lobsters: lisp,programming,reversing,rust" xmlUrl="https://lobste.rs/t/reversing,programming,rust,lisp.rss" htmlUrl="https://lobste.rs/"/>
+        </outline>
+    </body>
+</opml>
