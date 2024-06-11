@@ -9,7 +9,6 @@ import html
 import logging
 import datetime
 import itertools
-import multiprocessing.dummy
 from typing import Iterator, Optional
 from dataclasses import dataclass
 
@@ -25,6 +24,15 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 @dataclass
+class Entry:
+    timestamp: datetime.datetime
+    title: str
+    link: str
+    content: str
+    feed: "Feed"
+
+
+@dataclass
 class Feed:
     category: str
     url: str
@@ -32,7 +40,6 @@ class Feed:
 
     # link to project/homepage/base, not the feed
     homepage: Optional[str] = None
-
 
     @classmethod
     def from_mastodon(cls, handle):
@@ -49,74 +56,64 @@ class Feed:
             title=handle
         )
 
+    def fetch(self) -> Iterator[Entry]:
+        logger.debug("fetching feed: %s", self.title)
 
-@dataclass
-class Entry:
-    timestamp: datetime.datetime
-    title: str
-    link: str
-    content: str
-    feed: Feed
+        d = feedparser.parse(self.url)
 
+        for entry in d.entries:
 
-def fetch_feed(feed: Feed) -> Iterator[Entry]:
-    logger.debug("fetching feed: %s", feed.title)
+            if self.category == "rss" or self.category == "release":
+                # github releases Atom feed
 
-    d = feedparser.parse(feed.url)
+                if hasattr(entry, "content"):
+                    for content in entry.content:
+                        if content.type in ("text/html", "application/xhtml+xml"):
 
-    for entry in d.entries:
+                            # danger: injection
+                            # content_html = html.unescape(content.value)
 
-        if feed.category == "rss" or feed.category == "release":
-            # github releases Atom feed
+                            content_md = html2text.html2text(content.value)
+                            content_html = markdown.markdown(content_md)
 
-            if hasattr(entry, "content"):
-                for content in entry.content:
-                    if content.type in ("text/html", "application/xhtml+xml"):
+                        elif content.type == "text/plain":
+                            content_html = markdown.markdown(content.value)
 
-                        # danger: injection
-                        # content_html = html.unescape(content.value)
+                        else:
+                            raise ValueError("unexpected content type: " + content.type)
 
-                        content_md = html2text.html2text(content.value)
-                        content_html = markdown.markdown(content_md)
+                        # only yield one entry per entry
+                        break
 
-                    elif content.type == "text/plain":
-                        content_html = markdown.markdown(content.value)
-
-                    else:
-                        raise ValueError("unexpected content type: " + content.type)
-
-                    # only yield one entry per entry
-                    break
-
-            elif hasattr(entry, "summary"):
-                content_html = markdown.markdown(entry.summary)
+                elif hasattr(entry, "summary"):
+                    content_html = markdown.markdown(entry.summary)
 
 
-            yield Entry(
-                timestamp=dateutil.parser.parse(entry.updated),
-                title=entry.title,
-                link=entry.link,
-                content=content_html,
-                feed=feed,
-            )
+                yield Entry(
+                    timestamp=dateutil.parser.parse(entry.updated),
+                    title=entry.title,
+                    link=entry.link,
+                    content=content_html,
+                    feed=self,
+                )
 
-        elif feed.category == "mastodon":
-            # mastodon post RSS feed
+            elif self.category == "mastodon":
+                # mastodon post RSS feed
 
-            content_md = html2text.html2text(entry.summary)
-            content_html = markdown.markdown(content_md)
+                content_md = html2text.html2text(entry.summary)
+                content_html = markdown.markdown(content_md)
             
-            yield Entry(
-                timestamp=dateutil.parser.parse(entry.updated),
-                # use first line of content
-                title=content_md.partition("\n")[0],
-                link=entry.link,
-                content=content_html,
-                feed=feed,
-            )
+                yield Entry(
+                    timestamp=dateutil.parser.parse(entry.updated),
+                    # use first line of content
+                    title=content_md.partition("\n")[0],
+                    link=entry.link,
+                    content=content_html,
+                    feed=self,
+                )
 
-        else:
-            raise ValueError("unexpected category")
+            else:
+                raise ValueError("unexpected category")
 
 
 feeds = [
@@ -445,13 +442,18 @@ for repo in requests.get("https://api.github.com/users/williballenthin/starred?s
         Feed("release", url, homepage=homepage, title=title)
     )
 
-with multiprocessing.dummy.Pool(16) as pool:
-    entries = list(pool.imap_unordered(fetch_feed, feeds))
-    entries = list(itertools.chain.from_iterable(entries))
+# TODO
+# feeds = feeds[:3]
+
+entries = []
+for feed in feeds:
+    entries.extend(feed.fetch())
+
 
 # only show entries within the past three days
 now = datetime.datetime.now()
 three_days_ago = (now - datetime.timedelta(days=3)).date()
+# TODO
 entries = list(filter(lambda entry: entry.timestamp.date() >= three_days_ago, entries))
 
 print("<ol class='feed'>")
