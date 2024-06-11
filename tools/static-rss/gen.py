@@ -429,6 +429,12 @@ feeds = [
          url="https://madned.substack.com/feed/", 
          homepage="https://madned.substack.com"
     ),
+    Feed(
+         category="rss",
+         title="News Minimalist",
+         url="https://rss.beehiiv.com/feeds/4aF2pGVAEN.xml",
+         homepage="https://newsletter.newsminimalist.com"
+    ),
 ]
 
 # take the 20 most recently updated repos
