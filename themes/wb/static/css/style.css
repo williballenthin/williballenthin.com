@@ -48,9 +48,10 @@
 
 :root {
 	--pico-font-family-emoji: "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
-	--pico-font-family-serif: "IBM Plex Serif", serif;
-	--pico-font-family-sans-serif: "IBM Plex Sans", sans-serif;
-	--pico-font-family-monospace: "IBM Plex Mono", monospace;
+	--pico-font-family-serif:  Didot, 'Bodoni MT', 'Noto Serif Display', 'URW Palladio L', P052, Sylfaen, serif;
+	--pico-font-family-sans-serif: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
+	/* --pico-font-family-sans-serif: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif; */
+	--pico-font-family-monospace: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace; 
 	--pico-font-family: var(--pico-font-family-serif);
 }
 
@@ -170,6 +171,7 @@ body > footer {
 #content-list {
 	margin-left: 0;
 	list-style: none;
+	padding-left: 0.5em;
 }
 
 #content-list li {
