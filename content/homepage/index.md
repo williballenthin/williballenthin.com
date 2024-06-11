@@ -28,7 +28,7 @@
 
   <div style="margin-left: auto;">
     <ul>
-      <li><a href="http://g4.ferret-goblin.ts.net:4533/app/">navidrome</a></li>
+    </ul>
   </div>
 </div>
 
@@ -64,6 +64,16 @@
 
   li.entry details summary span.title {
     line-height: 1.4;
+  }
+
+
+  li.entry details summary span.link {
+    display: block;
+    width: 1em;
+    height: 0;
+    position: relative;
+    left: -1.5em;
+    top: 5px;
   }
 
   li.entry details summary span.link a {
