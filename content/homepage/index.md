@@ -34,7 +34,7 @@
 
 <hr />
 
-{{< read file="static/homepage-feed.html" >}}
+{{< read file="static/fragments/homepage/feed.html" >}}
 
 <style>
   ol.feed {
