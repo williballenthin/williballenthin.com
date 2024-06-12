@@ -59,7 +59,11 @@ class Feed:
     def fetch(self) -> Iterator[Entry]:
         logger.debug("fetching feed: %s", self.title)
 
-        d = feedparser.parse(self.url)
+        try:
+            d = feedparser.parse(self.url)
+        except Exception as e:
+            logger.warn("failed to fetch: %s", self.title, exc_info=True)
+            return
 
         for entry in d.entries:
 
