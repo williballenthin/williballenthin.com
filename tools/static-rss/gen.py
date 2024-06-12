@@ -439,6 +439,18 @@ feeds = [
          url="https://rss.beehiiv.com/feeds/4aF2pGVAEN.xml",
          homepage="https://newsletter.newsminimalist.com"
     ),
+    Feed(
+        category="rss",
+        title="Gnome home",
+        url="https://lawngno.me/feed.xml",
+        homepage="https://lawngno.me/",
+    ),
+    Feed(
+        category="rss",
+        title="Dan Groshev",
+        url="https://dgroshev.com/atom.xml",
+        homepage="https://dgroshev.com",
+    ),
 ]
 
 # take the 20 most recently updated repos
