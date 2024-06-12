@@ -12,8 +12,8 @@ They are partitioned into "quiet" and "noisy" feeds.
 The quiet feeds have only a few posts per month, while the noisy feeds post daily.
 In my feed reader, I display the quiet feeds at the top, so I can catch up on "small web" content first.
 
-  - [quiet](./quiet.opml)
-  - [noisy](./noisy.opml)
+  - [quiet](./williballenthin-quiet.opml)
+  - [noisy](./williballenthin-noisy.opml)
 
 ---
 
