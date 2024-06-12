@@ -7,7 +7,7 @@
   }
 </style>
 
-<div style="font-size: 36px; position: relative; top: 0px; left: 8px; height: 0;">🏡</div>
+<div style="font-size: 36px; position: relative; top: 0px; left: -2em; height: 0;">🏡</div>
 
 <div>
   <form action="https://www.kagi.com/search" method="get">
@@ -31,6 +31,16 @@
     </ul>
   </div>
 </div>
+
+<hr />
+
+{{< includeHtml file="static/fragments/homepage/to-read.html" >}}
+
+<style>
+  p.to-read-metadata-generated {
+    display: none;
+  }
+</style>
 
 <hr />
 
