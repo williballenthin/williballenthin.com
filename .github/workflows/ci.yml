@@ -26,6 +26,8 @@ jobs:
       run: |
         pip install pinboard
         python tools/static-to-read/gen.py > static/fragments/homepage/to-read.html
+      env:
+        PINBOARD_TOKEN: ${{ secrets.PINBOARD_TOKEN }}
     - name: gen homepage feed
       run: |
         pip install feedparser html2text markdown python-dateutil requests
