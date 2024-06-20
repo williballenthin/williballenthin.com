@@ -23,11 +23,14 @@
       <li><a href="https://gemini.google.com/app">gemini</a></li>
       <li><a href="https://search.nixos.org/packages?channel=unstable&show=mosh&from=0&size=50&sort=relevance&type=packages&query=">nixOS packages</a></li>
       <li><a href="https://ifconfig.co/">whats my ip</a></li>
+      <li><a href="https://pinboard.in/">pinboard</a></li>
     </ul>
   </div>
 
   <div style="margin-left: auto;">
     <ul>
+      <li>↔</li>
+      <li>→</li>
     </ul>
   </div>
 </div>
