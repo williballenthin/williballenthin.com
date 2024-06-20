@@ -451,6 +451,30 @@ feeds = [
         url="https://dgroshev.com/atom.xml",
         homepage="https://dgroshev.com",
     ),
+    Feed(
+        category="rss",
+        title="Kagi",
+        url="https://blog.kagi.com/rss.xml",
+        homepage="https://kagi.com",
+    ),
+    Feed(
+        category="rss",
+        title="Kagi release notes",
+        url="https://kagifeedback.org/atom/t/release-notes",
+        homepage="https://kagi.com",
+    ),
+    Feed(
+        category="rss",
+        title="@brandur",
+        url="https://brandur.org/articles.atom",
+        homepage="https://brandur.org/",
+    ),
+    Feed(
+        category="rss",
+        title="Confessions of a Code Addict",
+        url="https://blog.codingconfessions.com/feed",
+        homepage="https://blog.codingconfessions.com/",
+    ),
 ]
 
 # take the 20 most recently updated repos
