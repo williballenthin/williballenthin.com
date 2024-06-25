@@ -94,7 +94,7 @@ class Feed:
 
 
                 yield Entry(
-                    timestamp=dateutil.parser.parse(entry.updated),
+                    timestamp=dateutil.parser.parse(entry.published),
                     title=entry.title,
                     link=entry.link,
                     content=content_html,
@@ -108,7 +108,7 @@ class Feed:
                 content_html = markdown.markdown(content_md)
             
                 yield Entry(
-                    timestamp=dateutil.parser.parse(entry.updated),
+                    timestamp=dateutil.parser.parse(entry.published),
                     # use first line of content
                     title=content_md.partition("\n")[0],
                     link=entry.link,
