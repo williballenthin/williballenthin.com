@@ -8,7 +8,6 @@ relativeURLs = true
 [permalinks]
   # use old post path to keep existing links working
   posts = "post/:slug"
-  tweets = "tweet/:slug"
 
 [sitemap]
   changefreq = 'monthly'
