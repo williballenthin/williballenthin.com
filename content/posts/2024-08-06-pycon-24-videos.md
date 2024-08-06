@@ -1,11 +1,11 @@
 ---
-title: "Pycon '24 Recordings"
+title: "PyCon US 2024 Recordings"
 date: 2024-08-06T00:00:00-07:00
 tags:
   - python
 ---
 
-The PyCon US 2024 recordings are posted here: [Youtube PyCon US 2024](https://www.youtube.com/playlist?list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ).
+The PyCon US 2024 recordings are [posted on YouTube](https://www.youtube.com/playlist?list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ).
 Here I'll highlight some of the interesting entries and takeaways as I watch them.
 
 Willi's notes:
