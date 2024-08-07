@@ -10,13 +10,14 @@ Here I'll highlight some of the interesting entries and takeaways as I watch the
 
 Willi's notes:
 
-  - [Talks - Josh Wiedemeier: There and Back Again: Reverse Engineering Python Binaries](https://www.youtube.com/watch?v=mCkqz8jo19M&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=62&pp=iAQB)
+  - ★★★☆☆ [Talks - Josh Wiedemeier: There and Back Again: Reverse Engineering Python Binaries](https://www.youtube.com/watch?v=mCkqz8jo19M&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=62&pp=iAQB)
     - https://pylingual.io is an AI/transformer-powered Python bytecode decompiler. Unfortunately it appears to be closed source and available only via a web interface.
-
+  - ★★☆☆☆ [Talks - Anthony Shaw: Unlocking the Parallel Universe: Subinterpreters and Free-Threading in...](https://www.youtube.com/watch?v=lCjsy7tb420&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=131&pp=iAQB)
+    - cool to see these big new changes working live
+    - doesn't really touch on synchronization and data exchange
 
 Willi's enqueued talks:
 
-  - [Talks - Anthony Shaw: Unlocking the Parallel Universe: Subinterpreters and Free-Threading in...](https://www.youtube.com/watch?v=lCjsy7tb420&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=131&pp=iAQB)
   - [Talks - Brandt Bucher: Building a JIT compiler for CPython](https://www.youtube.com/watch?v=wr0fVU3Ajwc&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=129&pp=iAQB)
   - [Talks - Irit Katriel: CPython's Compilation Pipeline](https://www.youtube.com/watch?v=La_wk7maIpY&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=105&pp=iAQB)
   - [Talks - Arthur Pastel: Demystifying AsyncIO: Building Your Own Event Loop in Python](https://www.youtube.com/watch?v=heF0Iaxa5k8&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=107&pp=iAQB)
