@@ -16,10 +16,10 @@ Willi's notes:
     - cool to see these big new changes working live
     - doesn't really touch on synchronization and data exchange
   - ★★★★★ [Talks - Brandt Bucher: Building a JIT compiler for CPython](https://www.youtube.com/watch?v=wr0fVU3Ajwc&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=129&pp=iAQB)
+  - ★★★☆☆ [Talks - Irit Katriel: CPython's Compilation Pipeline](https://www.youtube.com/watch?v=La_wk7maIpY&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=105&pp=iAQB)
 
 Willi's enqueued talks:
 
-  - [Talks - Irit Katriel: CPython's Compilation Pipeline](https://www.youtube.com/watch?v=La_wk7maIpY&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=105&pp=iAQB)
   - [Talks - Arthur Pastel: Demystifying AsyncIO: Building Your Own Event Loop in Python](https://www.youtube.com/watch?v=heF0Iaxa5k8&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=107&pp=iAQB)
   - [Talks - Vinícius Gubiani Ferreira: PEP 683: Immortal Objects - A new approach for memory managing](https://www.youtube.com/watch?v=7j0RRiDeqRg&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=66&pp=iAQB)
   - [Talks - Antonio Cuni: SPy (Static Python) lang: fast as C, Pythonic as Python](https://www.youtube.com/watch?v=0UGFhldmSBA&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=127&pp=iAQB)
