@@ -1,6 +1,7 @@
 on:
   schedule:
     - cron: '0 * * * *'  #  hourly rebuild
+  workflow_dispatch:
 
 name: update homepage
 
