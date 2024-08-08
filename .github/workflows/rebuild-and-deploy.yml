@@ -1,0 +1,48 @@
+on:
+  push:
+    branches: [ master ]
+
+name: rebuild and deploy site
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: [ubuntu-latest]
+    steps:
+    - name: checkout
+      uses: actions/checkout@v1
+      with:
+        submodules: true
+    - name: Set up Python 3.11
+      uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+      with:
+        python-version: "3.11"
+    - name: gen homepage to-read
+      run: |
+        pip install pinboard
+        python tools/static-to-read/gen.py > static/fragments/homepage/to-read.html
+      env:
+        PINBOARD_TOKEN: ${{ secrets.PINBOARD_TOKEN }}
+    - name: gen homepage feed
+      run: |
+        pip install feedparser html2text markdown python-dateutil requests
+        python tools/static-rss/gen.py > static/fragments/homepage/feed.html
+    - name: hugo
+      uses: peaceiris/actions-hugo@v2
+      with:
+        hugo-version: '0.111.3'
+    - name: build
+      run: hugo
+    - name: cleanup
+      run: |
+        mv public /tmp/
+        rm -rf * .git .github .gitignore .gitmodules
+        mv /tmp/public/* .
+    - name: deploy
+      uses: peter-evans/s3-backup@v1.0.0
+      env:
+        ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+        SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+        MIRROR_TARGET: www.williballenthin.com
+      with:
+        args: --overwrite --remove
