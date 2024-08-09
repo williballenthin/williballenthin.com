@@ -1,0 +1,43 @@
+on:
+  schedule:
+    - cron: '0 * * * *'  #  hourly rebuild
+  workflow_dispatch:
+
+name: update homepage
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: [ubuntu-latest]
+    steps:
+    - name: checkout
+      uses: actions/checkout@v1
+      with:
+        submodules: true
+    - name: Set up Python 3.11
+      uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+      with:
+        python-version: "3.11"
+    - name: gen homepage to-read
+      run: |
+        pip install pinboard
+        python tools/static-to-read/gen.py > static/fragments/homepage/to-read.html
+      env:
+        PINBOARD_TOKEN: ${{ secrets.PINBOARD_TOKEN }}
+    - name: gen homepage feed
+      run: |
+        pip install feedparser html2text markdown python-dateutil requests
+        python tools/static-rss/gen.py > static/fragments/homepage/feed.html
+    - name: hugo
+      uses: peaceiris/actions-hugo@v2
+      with:
+        hugo-version: '0.111.3'
+    - name: build
+      run: hugo
+    - name: Upload to S3
+      run: |
+        aws s3 cp ./public/homepage/index.html s3://www.williballenthin.com/homepage/index.html
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: 'us-east-1'
