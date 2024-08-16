@@ -212,6 +212,12 @@ feeds = [
          homepage="https://arne.me"
     ),
     Feed(
+        category="rss",
+        title="Arne Bahlo Weekly Newsletter",
+        url="https://arne.me/weekly/feed.xml",
+        homepage="https://arne.me",
+    ),
+    Feed(
          category="rss",
          title="Andrew Ayer - Blog",
          url="https://www.agwa.name/blog/feed", 
@@ -474,6 +480,24 @@ feeds = [
         title="Confessions of a Code Addict",
         url="https://blog.codingconfessions.com/feed",
         homepage="https://blog.codingconfessions.com/",
+    ),
+    Feed(
+        category="rss",
+        title="Console.dev newsletter",
+        url="https://console.dev/tools/rss.xml",
+        homepage="https://console.dev",
+    ),
+    Feed(
+        category="rss",
+        title="Works in Progress",
+        homepage="https://worksinprogress.co/",
+        url="https://worksinprogress.substack.com/feed/",
+    ),
+    Feed(
+        category="rss",
+        title="Bits About Money",
+        homepage="https://www.bitsaboutmoney.com/",
+        url="https://bam.kalzumeus.com/archive/rss/",
     ),
 ]
 
