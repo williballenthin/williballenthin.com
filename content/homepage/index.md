@@ -31,6 +31,10 @@
     <ul>
       <li>↔</li>
       <li>→</li>
+      <li><a href="https://uptime.ferret-goblin.ts.net">uptime</a></li>
+      <li><a href="https://metube.ferret-goblin.ts.net">metube</a></li>
+      <li><a href="https://login.tailscale.com/admin/machines">tailscale</a></li>
+      <li><a href="https://my.nextdns.io">nextdns</a></li>
     </ul>
   </div>
 </div>
