@@ -499,6 +499,12 @@ feeds = [
         homepage="https://www.bitsaboutmoney.com/",
         url="https://bam.kalzumeus.com/archive/rss/",
     ),
+    Feed(
+        category="rss",
+        title="Alex W.'s Blog",
+        homepage="https://blog.alexwendland.com/",
+        url="https://blog.alexwendland.com/rss.xml.xml",
+    ),
 ]
 
 # take the 20 most recently updated repos
