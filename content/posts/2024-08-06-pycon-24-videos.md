@@ -10,20 +10,23 @@ Here I'll highlight some of the interesting entries and takeaways as I watch the
 
 Willi's notes:
 
+  - ★★★★★ [Talks - Brandt Bucher: Building a JIT compiler for CPython](https://www.youtube.com/watch?v=wr0fVU3Ajwc&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=129&pp=iAQB)
+  - ★★★★★ [Talks - Sydney Runkle: Pydantic Power-up: Performance Tips for Lightning-Fast Python Applications](https://www.youtube.com/watch?v=Qvj5e9xtaSE&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=59&pp=iAQB)
+    - practical, technical, performance-oriented tips for a widely used library
+    - delivery was pretty concise and used precise language, which I appreciated
   - ★★★☆☆ [Talks - Josh Wiedemeier: There and Back Again: Reverse Engineering Python Binaries](https://www.youtube.com/watch?v=mCkqz8jo19M&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=62&pp=iAQB)
     - https://pylingual.io is an AI/transformer-powered Python bytecode decompiler. Unfortunately it appears to be closed source and available only via a web interface.
+  - ★★★☆☆ [Talks - Irit Katriel: CPython's Compilation Pipeline](https://www.youtube.com/watch?v=La_wk7maIpY&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=105&pp=iAQB)
+  - ★★★☆☆ [Talks - Antonio Cuni: SPy (Static Python) lang: fast as C, Pythonic as Python](https://www.youtube.com/watch?v=0UGFhldmSBA&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=127&pp=iAQB)
+    - yet another compiled Python-like language
   - ★★☆☆☆ [Talks - Anthony Shaw: Unlocking the Parallel Universe: Subinterpreters and Free-Threading in...](https://www.youtube.com/watch?v=lCjsy7tb420&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=131&pp=iAQB)
     - cool to see these big new changes working live
     - doesn't really touch on synchronization and data exchange
-  - ★★★★★ [Talks - Brandt Bucher: Building a JIT compiler for CPython](https://www.youtube.com/watch?v=wr0fVU3Ajwc&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=129&pp=iAQB)
-  - ★★★☆☆ [Talks - Irit Katriel: CPython's Compilation Pipeline](https://www.youtube.com/watch?v=La_wk7maIpY&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=105&pp=iAQB)
+  - ★★☆☆☆ [Talks - Vinícius Gubiani Ferreira: PEP 683: Immortal Objects - A new approach for memory managing](https://www.youtube.com/watch?v=7j0RRiDeqRg&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=66&pp=iAQB)
 
 Willi's enqueued talks:
 
   - [Talks - Arthur Pastel: Demystifying AsyncIO: Building Your Own Event Loop in Python](https://www.youtube.com/watch?v=heF0Iaxa5k8&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=107&pp=iAQB)
-  - [Talks - Vinícius Gubiani Ferreira: PEP 683: Immortal Objects - A new approach for memory managing](https://www.youtube.com/watch?v=7j0RRiDeqRg&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=66&pp=iAQB)
-  - [Talks - Antonio Cuni: SPy (Static Python) lang: fast as C, Pythonic as Python](https://www.youtube.com/watch?v=0UGFhldmSBA&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=127&pp=iAQB)
-  - [Talks - Sydney Runkle: Pydantic Power-up: Performance Tips for Lightning-Fast Python Applications](https://www.youtube.com/watch?v=Qvj5e9xtaSE&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=59&pp=iAQB)
   - [Talks - Sebastian Buczyński: Having fun with pydantic and pattern matching](https://www.youtube.com/watch?v=VQcXKGeCsI8&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=87&pp=iAQB)
   - [Sponsor Presentations - Introducing Pydantic's new platform (Sponsor: Pydantic)](https://www.youtube.com/watch?v=kns4Qlvl3vk&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=47&pp=iAQB)
   - [Talks - Charlie Marsh: Ruff: An Extremely Fast Python Linter and Code Formatter, Written in Rust](https://www.youtube.com/watch?v=4zeJUz18ZtA&list=PL2Uw4_HvXqvYhjub9bw4uDAmNtprgAvlJ&index=69&pp=iAQB)
