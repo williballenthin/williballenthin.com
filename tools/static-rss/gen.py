@@ -517,6 +517,12 @@ feeds = [
         homepage="https://www.youtube.com/@Cercle",
         url="https://www.youtube.com/feeds/videos.xml?channel_id=UCPKT_csvP72boVX0XrMtagQ",
     ),
+    Feed(
+        category="rss",
+        title="3Blue1Brown (YouTube)",
+        homepage="https://www.youtube.com/@3blue1brown",
+        url="https://www.youtube.com/feeds/videos.xml?channel_id=UCYO_jab_esuFRV4b17AJtAw",
+    ),
 ]
 
 # take the 20 most recently updated repos
