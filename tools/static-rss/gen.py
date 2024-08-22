@@ -511,6 +511,12 @@ feeds = [
         homepage="https://www.youtube.com/@Jeremy_Fielding",
         url="https://www.youtube.com/feeds/videos.xml?channel_id=UC_SLthyNX_ivd-dmsFgmJVg",
     ),
+    Feed(
+        category="rss",
+        title="Cercle (YouTube)",
+        homepage="https://www.youtube.com/@Cercle",
+        url="https://www.youtube.com/feeds/videos.xml?channel_id=UCPKT_csvP72boVX0XrMtagQ",
+    ),
 ]
 
 # take the 20 most recently updated repos
