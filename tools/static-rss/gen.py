@@ -505,6 +505,12 @@ feeds = [
         homepage="https://blog.alexwendland.com/",
         url="https://blog.alexwendland.com/rss.xml.xml",
     ),
+    Feed(
+        category="rss",
+        title="Jeremy Fielding (YouTube)",
+        homepage="https://www.youtube.com/@Jeremy_Fielding",
+        url="https://www.youtube.com/feeds/videos.xml?channel_id=UC_SLthyNX_ivd-dmsFgmJVg",
+    ),
 ]
 
 # take the 20 most recently updated repos
