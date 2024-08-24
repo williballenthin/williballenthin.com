@@ -11,7 +11,6 @@ Let's say you have a large text file, i.e., larger than RAM, and you want to pro
 
 
 ```python
-
 with path.open("rb") as f:
     for line in io.TextIOWrapper(gzip.GzipFile(fileobj=f), encoding="utf-8"):
         print(line)
