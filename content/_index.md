@@ -1,5 +1,6 @@
 ---
 title: ""
+layout: single
 ---
 
 <style>
