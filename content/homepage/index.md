@@ -7,7 +7,9 @@
   }
 </style>
 
-<div style="font-size: 36px; position: relative; top: 0px; left: -2em; height: 0;">🏡</div>
+<div style="font-size: 36px; position: relative; top: 0px; left: -2em; height: 0;">
+<a href="../">🏡</a>
+</div>
 
 <div>
   <form action="https://www.kagi.com/search" method="get">
