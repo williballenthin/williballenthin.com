@@ -38,6 +38,7 @@ main {
   - [direnv](https://direnv.net/) to load project settings upon entry of directory.
     - [devshell](https://github.com/numtide/devshell) to install project-local tooling via nix ([example](https://github.com/williballenthin/dotfiles/blob/flake/nix/profiles/python/devshell.toml)).
   - [Helix](https://helix-editor.com/) for editing code with integrated LSP and tree-sitter support.
+  - [Jujutsu (jj)](https://martinvonz.github.io/jj/latest/) for version control.
   - [Hugo](https://gohugo.io/) to generate my website.
 
 ### Software Libraries
