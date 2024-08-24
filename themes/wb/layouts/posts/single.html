@@ -24,7 +24,7 @@
             {{ range (.GetTerms "tags") }}
                 <span class="post-tag">
                     <a href="{{ .RelPermalink }}">
-                        #{{ .LinkTitle }}
+                        #{{ lower .LinkTitle }}
                     </a>
                 </span>
                 &nbsp;
