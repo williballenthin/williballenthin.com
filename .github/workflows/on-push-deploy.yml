@@ -38,6 +38,7 @@ jobs:
     - name: build
       run: hugo
     - name: rehype
+      continue-on-error: true
       run: |
         npm install
         npx rehype-cli public -o
