@@ -1,8 +1,6 @@
 ---
+title: uses
 ---
-
-
-## Willi Ballenthin uses:
 
 ### Services
 
