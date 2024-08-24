@@ -1,0 +1,10 @@
+{
+  "plugins": [
+    ["@shikijs/rehype", {
+      "themes": {
+        "light": "one-light",
+        "dark": "github-dark-high-contrast"
+      }
+    }]
+  ]
+}
