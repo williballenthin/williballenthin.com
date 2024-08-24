@@ -34,7 +34,7 @@ layout: single
   <div style="flex-basis: 24em; flex-grow: 1; flex-shrink: 1;">
     Software reverse engineer writing about disassembly, debugging, emulation;
     programming in <a href="./tags/python">Python</a> and <a href="./tags/rust">Rust</a>;
-    and listening to post-rock and -metal.
+    and listening to post-rock and -metal. <a href="./uses/">Uses this stuff</a>.
   </div>
 </div>
 
