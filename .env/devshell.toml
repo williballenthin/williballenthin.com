@@ -2,12 +2,28 @@
 
 [[commands]]
 name = "profile"
-command = "echo 'local'"
-help = "show profile (local)"
+command = "echo 'williballenthin.com'"
+help = "show profile (williballenthin.com)"
 
 [devshell]
 packages = [
-  "go",
   "hugo",
+  "nodejs",
+  "stdenv.cc.cc.lib",
+  "pre-commit",
+  # LSP for helix
+  "nodePackages.typescript-language-server",
 ]
 
+# via: https://github.com/numtide/devshell/issues/172#issuecomment-1208745562
+[[env]]
+name = "CPPFLAGS"
+eval = "-I${DEVSHELL_DIR}/include"
+
+[[env]]
+name = "LDFLAGS"
+eval = "-L${DEVSHELL_DIR}/lib"
+
+[[env]]
+name = "LD_LIBRARY_PATH"
+eval = "${DEVSHELL_DIR}/lib:${LD_LIBRARY_PATH}"

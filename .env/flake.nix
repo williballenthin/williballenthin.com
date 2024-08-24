@@ -2,12 +2,13 @@
   description = "virtual environments";
 
   inputs = {
+
     nixpkgs = {
       type = "github";
       owner = "nixos";
       repo = "nixpkgs";
-      # nixos-23.05
-      ref = "4ecab3273592f27479a583fb6d975d4aba3486fe";
+      # nixos-24.05
+      ref = "63dacb46bf939521bdc93981b4cbb7ecb58427a0";
     };
     devshell = {
       url = "github:numtide/devshell";
