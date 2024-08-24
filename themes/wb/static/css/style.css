@@ -48,13 +48,14 @@
 
 :root {
 	--pico-font-family-emoji: "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
-	/* --pico-font-family-serif:  Didot, 'Bodoni MT', 'Noto Serif Display', 'URW Palladio L', P052, Sylfaen, serif; */
 	--pico-font-family-serif: ui-serif,Georgia,Cambria,Times New Roman,Times,serif;
 	--pico-font-family-sans-serif: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
-	/* --pico-font-family-sans-serif: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif; */
 	--pico-font-family-monospace: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace; 
 	--pico-font-family: var(--pico-font-family-serif);
 }
+
+
+/* ########### code blocks ################# */ 
 
 .highlight pre {
 	/* override pico */
@@ -90,6 +91,8 @@
 	/* invert text color so that the light-themed text sorta works on dark background */
 	filter: invert(100%);
 }
+
+/* ############# other elements ################## */
 
 nav {
 	padding-top: 12px;
@@ -159,8 +162,6 @@ body > footer {
 	padding: 0;
 	padding-block: 0;
 }
-
-
 
 .decoration {
 	color: var(--main-decoration-color);
