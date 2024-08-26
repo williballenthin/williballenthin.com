@@ -1,14 +1,24 @@
-# requires:
-#  - feedparser==6
-#  - html2text==2024.2.26
-#  - markdown==3
-#  - python-dateutil==2
-#  - requests==2
+# You can invoke this script with `uv run` (v0.3+):
+#
+#     uv run tools/static-rss/gen.py
+#
+# /// script
+# dependencies = [
+#  "feedparser==6.0.11",
+#  "html2text==2024.2.26",
+#  "markdown==3.7",
+#  "python-dateutil==2.9.0.post0",
+#  "requests==2.32.3",
+#  "listparser==0.20.0",
+# ]
+# ///
 
+import sys
 import html
 import logging
 import datetime
 import itertools
+from pathlib import Path
 from typing import Iterator, Optional
 from dataclasses import dataclass
 
@@ -16,11 +26,15 @@ import markdown
 import requests
 import html2text
 import feedparser
+import listparser
 import dateutil.parser
 
 
 logger = logging.getLogger("gen")
 logging.basicConfig(level=logging.DEBUG)
+
+
+opml = listparser.parse(Path(sys.argv[1]).read_text(encoding="utf-8"))
 
 
 @dataclass
@@ -127,403 +141,21 @@ feeds = [
     Feed.from_mastodon("@trailofbits@infosec.exchange"),
     Feed.from_mastodon("@HexRaysSA@infosec.exchange"),
     Feed.from_mastodon("@binaryninja@infosec.exchange"),
-    Feed(
-         category="rss",
-         title="Willi Ballenthin",
-         url="http://www.williballenthin.com/index.xml", 
-         homepage="http://www.williballenthin.com/"
-    ),
-    Feed(
-         category="rss",
-         title="Jessitron",
-         url="http://blog.jessitron.com/feeds/posts/default", 
-         homepage="https://jessitron.com"
-    ),
-    Feed(
-         category="rss",
-         title="Without boats, dreams dry up",
-         url="https://without.boats/index.xml", 
-         homepage="https://without.boats/"
-    ),
-    Feed(
-         category="rss",
-         title="Register Spill",
-         url="https://registerspill.thorstenball.com/feed", 
-         homepage="https://registerspill.thorstenball.com"
-    ),
-    Feed(
-         category="rss",
-         title="The Pragmatic Engineer",
-         url="http://blog.pragmaticengineer.com/rss/", 
-         homepage="https://blog.pragmaticengineer.com/"
-    ),
-    Feed(
-         category="rss",
-         title="Rust Blog",
-         url="http://blog.rust-lang.org/feed.xml", 
-         homepage="https://blog.rust-lang.org/"
-    ),
-    Feed(
-         category="rss",
-         title="Stories by nusenu on Medium",
-         url="https://medium.com/feed/@nusenu", 
-         homepage="https://medium.com/@nusenu?source=rss-d10fe243b17f------2"
-    ),
-    Feed(
-         category="rss",
-         title="Dan Luu",
-         url="http://danluu.com/atom.xml", 
-         homepage="https://danluu.com/atom/index.xml"
-    ),
-    Feed(
-         category="rss",
-         title="Ted Kaminski",
-         url="http://www.tedinski.com/feed.xml", 
-         homepage="http://www.tedinski.com/"
-    ),
-    Feed(
-         category="rss",
-         title="Zeus WPI",
-         url="https://zeus.ugent.be/feed.xml", 
-         homepage="https://zeus.ugent.be/"
-    ),
-    Feed(
-         category="rss",
-         title="Anton Zhiyanov",
-         url="https://antonz.org/feed.xml", 
-         homepage="https://antonz.org/"
-    ),
-    Feed(
-         category="rss",
-         title="SparkFun Tutorials",
-         url="http://www.sparkfun.com/feeds/tutorials", 
-         homepage="https://learn.sparkfun.com/tutorials"
-    ),
-    Feed(
-         category="rss",
-         title="the morning paper",
-         url="http://blog.acolyer.org/feed/", 
-         homepage="https://blog.acolyer.org"
-    ),
-    Feed(
-         category="rss",
-         title="Arne Bahlo",
-         url="https://arne.me/feed.xml", 
-         homepage="https://arne.me"
-    ),
-    Feed(
-        category="rss",
-        title="Arne Bahlo Weekly Newsletter",
-        url="https://arne.me/weekly/feed.xml",
-        homepage="https://arne.me",
-    ),
-    Feed(
-         category="rss",
-         title="Andrew Ayer - Blog",
-         url="https://www.agwa.name/blog/feed", 
-         homepage="https://www.agwa.name/blog"
-    ),
-    Feed(
-         category="rss",
-         title="Emacs - Sacha Chua",
-         url="http://sachachua.com/wp/category/emacs/feed/", 
-         homepage="https://sachachua.com/blog/category/emacs"
-    ),
-    Feed(
-         category="rss",
-         title="g/ianguid/o.today",
-         url="https://g7o.today/feed.xml", 
-         homepage="https://g7o.today/"
-    ),
-    Feed(
-         category="rss",
-         title="Cal Paterson",
-         url="http://calpaterson.com/calpaterson.rss", 
-         homepage="https://calpaterson.com/calpaterson.rss"
-    ),
-    Feed(
-         category="rss",
-         title="Probably Dance",
-         url="http://probablydance.com/feed/", 
-         homepage="https://probablydance.com"
-    ),
-    Feed(
-         category="rss",
-         title="James Sinclair",
-         url="http://jrsinclair.com/index.rss", 
-         homepage="https://jrsinclair.com/"
-    ),
-    Feed(
-         category="rss",
-         title="Mr. Money Mustache",
-         url="http://feeds.feedburner.com/MrMoneyMustache", 
-         homepage="https://www.mrmoneymustache.com"
-    ),
-    Feed(
-         category="rss",
-         title="secret club",
-         url="https://secret.club/feed.xml", 
-         homepage="https://secret.club/"
-    ),
-    Feed(
-         category="rss",
-         title="Electric Fire Design",
-         url="https://electricfiredesign.com/feed/", 
-         homepage="https://electricfiredesign.com"
-    ),
-    Feed(
-         category="rss",
-         title="Stephen Diehl",
-         url="http://www.stephendiehl.com/feed.rss", 
-         homepage="http://www.stephendiehl.com"
-    ),
-    Feed(
-         category="rss",
-         title="Lambda the Ultimate",
-         url="http://lambda-the-ultimate.org/rss.xml", 
-         homepage="http://lambda-the-ultimate.org"
-    ),
-    Feed(
-         category="rss",
-         title="srcbeat",
-         url="http://www.srcbeat.com/index.xml", 
-         homepage="https://www.srcbeat.com/"
-    ),
-    Feed(
-         category="rss",
-         title="jank blog",
-         url="https://jank-lang.org/blog/feed.xml", 
-         homepage="https://jank-lang.org/blog/"
-    ),
-    Feed(
-         category="rss",
-         title="Andrew Healey's Blog",
-         url="https://healeycodes.com/feed.xml", 
-         homepage="https://healeycodes.com"
-    ),
-    Feed(
-         category="rss",
-         title="Kalzumeus Software",
-         url="http://www.kalzumeus.com/feed/", 
-         homepage="https://www.kalzumeus.com"
-    ),
-    Feed(
-         category="rss",
-         title="HPy",
-         url="https://hpyproject.org/rss.xml", 
-         homepage="https://hpyproject.org/"
-    ),
-    Feed(
-         category="rss",
-         title="seanmonstar",
-         url="http://seanmonstar.com/rss", 
-         homepage="https://seanmonstar.com/"
-    ),
-    Feed(
-         category="rss",
-         title="The Grumpy Economist",
-         url="http://johnhcochrane.blogspot.com/feeds/posts/default", 
-         homepage="https://johnhcochrane.blogspot.com/"
-    ),
-    Feed(
-         category="rss",
-         title="Cryptography &amp; Security Newsletter",
-         url="https://www.feistyduck.com/bulletproof-tls-newsletter/feed", 
-         homepage="https://www.feistyduck.com/newsletter/"
-    ),
-    Feed(
-         category="rss",
-         title="Paul Khuong: some Lisp",
-         url="http://www.pvk.ca/atom.xml", 
-         homepage="https://www.pvk.ca/"
-    ),
-    Feed(
-         category="rss",
-         title="Servo Blog",
-         url="http://blog.servo.org/feed.xml", 
-         homepage="https://servo.org"
-    ),
-    Feed(
-         category="rss",
-         title="Baby Steps",
-         url="http://smallcultfollowing.com/babysteps/atom.xml", 
-         homepage="https://smallcultfollowing.com/babysteps/"
-    ),
-    Feed(
-         category="rss",
-         title="Luke Muehlhauser",
-         url="http://feeds.feedburner.com/LukeMuehlhauser", 
-         homepage="https://lukemuehlhauser.com"
-    ),
-    Feed(
-         category="rss",
-         title="Locklin on science",
-         url="http://scottlocklin.wordpress.com/feed/", 
-         homepage="https://scottlocklin.wordpress.com"
-    ),
-    Feed(
-         category="rss",
-         title="matklad",
-         url="https://matklad.github.io//feed.xml", 
-         homepage="https://matklad.github.io"
-    ),
-    Feed(
-         category="rss",
-         title="tonsky.me",
-         url="http://tonsky.me/blog/atom.xml", 
-         homepage="https://tonsky.me/"
-    ),
-    Feed(
-         category="rss",
-         title="delan azabani",
-         url="https://www.azabani.com/feed/tag/home.xml", 
-         homepage="https://www.azabani.com/"
-    ),
-    Feed(
-         category="rss",
-         title="Fosskers.ca Blog",
-         url="https://www.fosskers.ca/en/rss", 
-         homepage="https://www.fosskers.ca"
-    ),
-    Feed(
-         category="rss",
-         title="sacha chua :: living an awesome life",
-         url="http://feeds.feedburner.com/sachac", 
-         homepage="https://sachachua.com"
-    ),
-    Feed(
-         category="rss",
-         title="Llogiq on stuff",
-         url="http://llogiq.github.io/feed.xml", 
-         homepage="https://llogiq.github.io/"
-    ),
-    Feed(
-         category="rss",
-         title="Articles by thoughtram",
-         url="http://feeds.feedburner.com/thoughtram", 
-         homepage="http://blog.thoughtram.io/"
-    ),
-    Feed(
-         category="rss",
-         title="Julia Evans",
-         url="http://jvns.ca/atom.xml", 
-         homepage="http://jvns.ca"
-    ),
-    Feed(
-         category="rss",
-         title="Stavros' Stuff Latest Posts",
-         url="http://feeds.feedburner.com/stavrosstuff", 
-         homepage="http://www.stavros.io/"
-    ),
-    Feed(
-         category="rss",
-         title="Drew DeVault's blog",
-         url="https://drewdevault.com/feed.xml", 
-         homepage="https://drewdevault.com"
-    ),
-    Feed(
-         category="rss",
-         title="Project Zero",
-         url="http://googleprojectzero.blogspot.com/feeds/posts/default", 
-         homepage="https://googleprojectzero.blogspot.com/"
-    ),
-    Feed(
-         category="rss",
-         title="Papers We Love",
-         url="http://paperswelove.org/feed.xml", 
-         homepage="http://papers-we-love.github.io/"
-    ),
-    Feed(
-         category="rss",
-         title="The Mad Ned Memo",
-         url="https://madned.substack.com/feed/", 
-         homepage="https://madned.substack.com"
-    ),
-    Feed(
-         category="rss",
-         title="News Minimalist",
-         url="https://rss.beehiiv.com/feeds/4aF2pGVAEN.xml",
-         homepage="https://newsletter.newsminimalist.com"
-    ),
-    Feed(
-        category="rss",
-        title="Gnome home",
-        url="https://lawngno.me/feed.xml",
-        homepage="https://lawngno.me/",
-    ),
-    Feed(
-        category="rss",
-        title="Dan Groshev",
-        url="https://dgroshev.com/atom.xml",
-        homepage="https://dgroshev.com",
-    ),
-    Feed(
-        category="rss",
-        title="Kagi",
-        url="https://blog.kagi.com/rss.xml",
-        homepage="https://kagi.com",
-    ),
-    Feed(
-        category="rss",
-        title="Kagi release notes",
-        url="https://kagifeedback.org/atom/t/release-notes",
-        homepage="https://kagi.com",
-    ),
-    Feed(
-        category="rss",
-        title="@brandur",
-        url="https://brandur.org/articles.atom",
-        homepage="https://brandur.org/",
-    ),
-    Feed(
-        category="rss",
-        title="Confessions of a Code Addict",
-        url="https://blog.codingconfessions.com/feed",
-        homepage="https://blog.codingconfessions.com/",
-    ),
-    Feed(
-        category="rss",
-        title="Console.dev newsletter",
-        url="https://console.dev/tools/rss.xml",
-        homepage="https://console.dev",
-    ),
-    Feed(
-        category="rss",
-        title="Works in Progress",
-        homepage="https://worksinprogress.co/",
-        url="https://worksinprogress.substack.com/feed/",
-    ),
-    Feed(
-        category="rss",
-        title="Bits About Money",
-        homepage="https://www.bitsaboutmoney.com/",
-        url="https://bam.kalzumeus.com/archive/rss/",
-    ),
-    Feed(
-        category="rss",
-        title="Alex W.'s Blog",
-        homepage="https://blog.alexwendland.com/",
-        url="https://blog.alexwendland.com/rss.xml.xml",
-    ),
-    Feed(
-        category="rss",
-        title="Jeremy Fielding (YouTube)",
-        homepage="https://www.youtube.com/@Jeremy_Fielding",
-        url="https://www.youtube.com/feeds/videos.xml?channel_id=UC_SLthyNX_ivd-dmsFgmJVg",
-    ),
-    Feed(
-        category="rss",
-        title="Cercle (YouTube)",
-        homepage="https://www.youtube.com/@Cercle",
-        url="https://www.youtube.com/feeds/videos.xml?channel_id=UCPKT_csvP72boVX0XrMtagQ",
-    ),
-    Feed(
-        category="rss",
-        title="3Blue1Brown (YouTube)",
-        homepage="https://www.youtube.com/@3blue1brown",
-        url="https://www.youtube.com/feeds/videos.xml?channel_id=UCYO_jab_esuFRV4b17AJtAw",
-    ),
 ]
+
+
+for feed in opml["feeds"]:
+    if "a-quiet" not in feed["tags"]:
+        continue
+
+    feeds.append(
+        Feed(
+            category="rss",
+            title=feed["title"],
+            url=feed["url"],
+        )
+    )
+
 
 # take the 20 most recently updated repos
 for repo in requests.get("https://api.github.com/users/williballenthin/starred?sort=updated&direction=desc&per_page=20").json():

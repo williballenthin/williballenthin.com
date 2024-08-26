@@ -1,5 +1,12 @@
-# requires:
-#  - pinboard>=2.0
+# You can invoke this script with `uv run` (v0.3+):
+#
+#     uv run tools/static-to-read/gen.py
+#
+# /// script
+# dependencies = [
+#  "pinboard==2.1.9",
+# ]
+# ///
 
 import os
 import sys

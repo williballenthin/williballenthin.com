@@ -17,20 +17,20 @@ jobs:
       with:
         cache: npm
         cache-dependency-path: package-lock.json
-    - name: Set up Python 3.11
+    - name: Set up Python 3.12
       uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
       with:
-        python-version: "3.11"
+        python-version: "3.12"
     - name: gen homepage to-read
       run: |
-        pip install pinboard
-        python tools/static-to-read/gen.py > static/fragments/homepage/to-read.html
+        pip install uv
+        uv run tools/static-to-read/gen.py > static/fragments/homepage/to-read.html
       env:
         PINBOARD_TOKEN: ${{ secrets.PINBOARD_TOKEN }}
     - name: gen homepage feed
       run: |
-        pip install feedparser html2text markdown python-dateutil requests
-        python tools/static-rss/gen.py > static/fragments/homepage/feed.html
+        pip install uv
+        uv run tools/static-rss/gen.py > static/fragments/homepage/feed.html
     - name: hugo
       uses: peaceiris/actions-hugo@v2
       with:
