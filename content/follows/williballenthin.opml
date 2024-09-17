@@ -21,7 +21,6 @@
             <outline type="rss" text="the morning paper" title="the morning paper" xmlUrl="http://blog.acolyer.org/feed/" htmlUrl="https://blog.acolyer.org"/>
             <outline type="rss" text="Arne Bahlo" title="Arne Bahlo" xmlUrl="https://arne.me/feed.xml" htmlUrl="https://arne.me"/>
             <outline type="rss" text="Andrew Ayer - Blog" title="Andrew Ayer - Blog" xmlUrl="https://www.agwa.name/blog/feed" htmlUrl="https://www.agwa.name/blog"/>
-            <outline type="rss" text="Emacs - Sacha Chua" title="Emacs - Sacha Chua" xmlUrl="http://sachachua.com/wp/category/emacs/feed/" htmlUrl="https://sachachua.com/blog/category/emacs"/>
             <outline type="rss" text="g/ianguid/o.today" title="g/ianguid/o.today" xmlUrl="https://g7o.today/feed.xml" htmlUrl="https://g7o.today/"/>
             <outline type="rss" text="Cal Paterson" title="Cal Paterson" xmlUrl="http://calpaterson.com/calpaterson.rss" htmlUrl="https://calpaterson.com/calpaterson.rss"/>
             <outline type="rss" text="Probably Dance" title="Probably Dance" xmlUrl="http://probablydance.com/feed/" htmlUrl="https://probablydance.com"/>
