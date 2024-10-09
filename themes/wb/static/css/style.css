@@ -170,24 +170,24 @@ body > footer {
 
 /* hugo list templates */
 
-#content-list {
+.content-list {
 	margin-left: 0;
 	list-style: none;
 	padding-left: 0.5em;
 }
 
-#content-list li {
+.content-list li {
 	line-height: 1.0; 
 	margin-bottom: 1em;
 }
 
-#content-list li a {
+.content-list li a {
 	font-size: larger;
 	display: inline-block;
 	width: 100%;
 }
 
-#content-list li span.date {
+.content-list li span.date {
 	font-size: smaller;
 	color: grey;
 	font-variant: small-caps;

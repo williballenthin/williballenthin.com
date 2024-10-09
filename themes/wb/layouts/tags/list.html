@@ -9,7 +9,7 @@
   <main class="container">
     <h1>#{{ .Title }}</h1>
     <div>
-      <ul id="content-list">
+      <ul class="content-list">
         {{ range .Pages.ByDate.Reverse }}
         <li>
           <a href="{{ .RelPermalink}}">{{ .Title }}</a>
@@ -17,7 +17,22 @@
         </li>
         {{ end }}
       </ul>
+
+      <h3>bookmarks</h2>
+      <ul class="content-list">
+        {{ $tag := .Title | strings.ToLower }}
+        {{ range .Site.Data.pinboard }}
+          {{ $tags := strings.Split .tags " " }}
+          {{ if collections.In $tags $tag}}
+            <li>
+              <a href="{{ .href }}">{{ .description }}</a>
+              <span class="date">{{ time.Format "January 2, 2006" .time }}</span>
+            </li>
+          {{ end }}
+        {{ end }}
+      </ul>
     </div>
+    
   </main>
 
   {{ partial "footer.html" . }}
