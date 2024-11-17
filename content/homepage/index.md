@@ -27,6 +27,7 @@
       <li><a href="https://ifconfig.co/">whats my ip</a></li>
       <li><a href="https://pinboard.in/">pinboard</a></li>
     </ul>
+    https://scour.emschwartz.me/u/williballenthin/posts
   </div>
 
   <div style="margin-left: auto;">
