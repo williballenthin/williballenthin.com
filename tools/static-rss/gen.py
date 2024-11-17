@@ -153,6 +153,7 @@ for feed in opml["feeds"]:
             category="rss",
             title=feed["title"],
             url=feed["url"],
+            homepage=feed.get("htmlUrl"),
         )
     )
 
