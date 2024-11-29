@@ -128,14 +128,40 @@
                 xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCYO_jab_esuFRV4b17AJtAw"
                 />
             <outline type="rss"
-                text="Filip Filmar"
+                text="Filip Filmar" title="Filip Filmar"
                 htmlUrl="https://hdlfactory.com/index.html"
                 xmlUrl="https://hdlfactory.com/index.xml"
+                />
+            <outline type="rss"
+                text="Mitchell Hashimoto" title="Mitchell Hashimoto"
+                htmlUrl="https://mitchellh.com/"
+                xmlUrl="https://mitchellh.com/feed.xml"
+                />
+            <outline type="rss"
+                text="Szymon Kaliski" title="Szymon Kaliski"
+                htmlUrl="https://szymonkaliski.com/"
+                xmlUrl="https://szymonkaliski.com/feed.xml"
+                />
+            <outline type="rss"
+                text="Jamie Brandon" title="Jamie Brandon"
+                htmlUrl="https://www.scattered-thoughts.net/"
+                xmlUrl="https://www.scattered-thoughts.net/atom.xml"
+                />
+            <outline type="rss"
+                text="Simon Hørup Eskildsen" title="Simon Hørup Eskildsen"
+                htmlUrl="https://sirupsen.com/"
+                xmlUrl="https://sirupsen.com/atom.xml"
+                />
+
+            <outline type="rss"
+                text="benji.dog" title="benji.dog"
+                htmlUrl="https://www.benji.dog/"
+                xmlUrl="https://www.benji.dog/feed.xml"
                 />
 
             <!--
             <outline type="rss"
-                text=""
+                text="" title=""
                 htmlUrl=""
                 xmlUrl=""
                 />
