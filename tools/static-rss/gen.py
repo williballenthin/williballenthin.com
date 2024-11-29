@@ -102,9 +102,20 @@ class Feed:
                 elif hasattr(entry, "summary"):
                     content_html = markdown.markdown(entry.summary)
 
+                elif hasattr(entry, "title"):
+                    content_html = "(empty)"
+
+                else:
+                    logger.warning("post has no content")
+                    continue
+
+                ts = entry.published if "published" in entry else entry.updated
+                # handle: dateutil.parser._parser.ParserError: hour must be in 0..23: Fri, 22 Nov 2024 24:00:00 GMT
+                # this is probably technically not correct, since it backdates the post by a day, but whatever.
+                ts = ts.replace(" 24:00:00", " 00:00:00")
 
                 yield Entry(
-                    timestamp=dateutil.parser.parse(entry.published if "published" in entry else entry.updated),
+                    timestamp=dateutil.parser.parse(ts),
                     title=entry.title,
                     link=entry.link,
                     content=content_html,
