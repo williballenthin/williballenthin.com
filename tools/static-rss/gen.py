@@ -9,7 +9,6 @@
 #  "markdown==3.7",
 #  "python-dateutil==2.9.0.post0",
 #  "requests==2.32.3",
-#  "listparser==0.20.0",
 # ]
 # ///
 
@@ -18,23 +17,20 @@ import html
 import logging
 import datetime
 import itertools
-from pathlib import Path
 from typing import Iterator, Optional
+from pathlib import Path
+from xml.etree import ElementTree
 from dataclasses import dataclass
 
 import markdown
 import requests
 import html2text
 import feedparser
-import listparser
 import dateutil.parser
 
 
 logger = logging.getLogger("gen")
 logging.basicConfig(level=logging.DEBUG)
-
-
-opml = listparser.parse(Path(sys.argv[1]).read_text(encoding="utf-8"))
 
 
 @dataclass
@@ -144,16 +140,14 @@ feeds = [
 ]
 
 
-for feed in opml["feeds"]:
-    if "a-quiet" not in feed["tags"]:
-        continue
-
+tree = ElementTree.fromstring(Path(sys.argv[1]).read_text(encoding="utf-8"))
+for node in tree.findall('.//outline[@title="a-quiet"]/outline[@type="rss"]'):
     feeds.append(
         Feed(
             category="rss",
-            title=feed["title"],
-            url=feed["url"],
-            homepage=feed.get("htmlUrl"),
+            title=node.attrib.get("title"),
+            url=node.attrib.get("xmlUrl"),
+            homepage=node.attrib.get("htmlUrl"),
         )
     )
 
