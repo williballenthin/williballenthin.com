@@ -21,6 +21,8 @@ import itertools
 import urllib.error
 from pathlib import Path
 from typing import Iterator, Optional
+from pathlib import Path
+from typing import Iterator, Optional
 from dataclasses import dataclass
 
 import markdown
@@ -106,10 +108,13 @@ class Feed:
 
                 elif hasattr(entry, "summary"):
                     content_html = markdown.markdown(entry.summary)
-                
-                else:
-                    content_html = "<i>no content</i>"
 
+                elif hasattr(entry, "title"):
+                    content_html = "<i>(empty)</i>"
+
+                else:
+                    logger.warning("post has no content")
+                    content_html = "<i>(empty)</i>"
 
                 yield Entry(
                     timestamp=dateutil.parser.parse(entry.published if "published" in entry else entry.updated),
