@@ -26,10 +26,22 @@ if va == 0x401000:
     breakpoint()
 ```
 
+**use ipdb to handle breakpoints**
+
+```
+$ export PYTHONBREAKPOINT="ipdb.set_trace"
+```
+
 **use `interact` to drop into IPython shell from ipdb**
 
 ```
 ipdb> interact
 *interactive*
 In [1]: r = 10
+```
+
+**run script via ipdb to break on exceptions**
+
+```
+$ python -m ipdb -c "c" script.py arg1 arg2
 ```
