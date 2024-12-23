@@ -159,6 +159,12 @@
                 xmlUrl="https://www.benji.dog/feed.xml"
                 />
 
+            <outline type="rss"
+                text="Evan Schwartz" title="Evan Schwartz"
+                htmlUrl="https://emschwartz.me"
+                xmlUrl="https://emschwartz.me/feed/?type=rss"
+                />
+
             <!--
             <outline type="rss"
                 text="" title=""
