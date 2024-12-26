@@ -18,6 +18,7 @@ import html
 import logging
 import datetime
 import itertools
+import urllib.error
 from pathlib import Path
 from typing import Iterator, Optional
 from dataclasses import dataclass
