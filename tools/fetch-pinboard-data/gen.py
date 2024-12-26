@@ -26,11 +26,11 @@ logging.basicConfig(level=logging.DEBUG)
 now = datetime.datetime.now()
 try:
     pb = pinboard.Pinboard(os.environ["PINBOARD_TOKEN"])
-	response = pb.posts.all(parse_response=False)
+    response = pb.posts.all(parse_response=False)
 except urllib.error.URLError:
-	logger.warning("pinboard is down")
-	print("{}")
-	sys.exit(0)
+    logger.warning("pinboard is down")
+    print("{}")
+    sys.exit(0)
 else:
-	print(response.read().decode("utf-8"))
-	sys.exit(0)
+    print(response.read().decode("utf-8"))
+    sys.exit(0)
