@@ -13,6 +13,7 @@ import sys
 import logging
 import datetime
 import itertools
+import urllib.error
 from typing import Iterator, Optional
 from dataclasses import dataclass
 
@@ -25,7 +26,9 @@ logging.basicConfig(level=logging.DEBUG)
 now = datetime.datetime.now()
 try:
     pb = pinboard.Pinboard(os.environ["PINBOARD_TOKEN"])
-   except urllib.error.URL
+except urllib.error.URLError:
+   print("<i>pinboard is down</i>")
+   sys.exit(0)
 
 # take the five most recent posts
 posts = pb.posts.recent()["posts"]
