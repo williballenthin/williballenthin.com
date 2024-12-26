@@ -25,7 +25,7 @@ logging.basicConfig(level=logging.DEBUG)
 now = datetime.datetime.now()
 try:
     pb = pinboard.Pinboard(os.environ["PINBOARD_TOKEN"])
-   except 
+   except urllib.error.URL
 
 # take the five most recent posts
 posts = pb.posts.recent()["posts"]
