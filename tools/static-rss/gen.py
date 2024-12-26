@@ -17,6 +17,8 @@ import html
 import logging
 import datetime
 import itertools
+import urllib.error
+from pathlib import Path
 from typing import Iterator, Optional
 from pathlib import Path
 from xml.etree import ElementTree
@@ -103,11 +105,11 @@ class Feed:
                     content_html = markdown.markdown(entry.summary)
 
                 elif hasattr(entry, "title"):
-                    content_html = "(empty)"
+                    content_html = "<i>(empty)</i>"
 
                 else:
                     logger.warning("post has no content")
-                    continue
+                    content_html = "<i>(empty)</i>"
 
                 ts = entry.published if "published" in entry else entry.updated
                 # handle: dateutil.parser._parser.ParserError: hour must be in 0..23: Fri, 22 Nov 2024 24:00:00 GMT
