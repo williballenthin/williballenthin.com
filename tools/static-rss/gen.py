@@ -106,6 +106,9 @@ class Feed:
 
                 elif hasattr(entry, "summary"):
                     content_html = markdown.markdown(entry.summary)
+                
+                else:
+                    content_html = "<i>no content</i>"
 
 
                 yield Entry(
