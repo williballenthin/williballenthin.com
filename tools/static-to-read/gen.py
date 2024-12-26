@@ -23,7 +23,9 @@ logger = logging.getLogger("gen")
 logging.basicConfig(level=logging.DEBUG)
 
 now = datetime.datetime.now()
-pb = pinboard.Pinboard(os.environ["PINBOARD_TOKEN"])
+try:
+    pb = pinboard.Pinboard(os.environ["PINBOARD_TOKEN"])
+   except 
 
 # take the five most recent posts
 posts = pb.posts.recent()["posts"]
