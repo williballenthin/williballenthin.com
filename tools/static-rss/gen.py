@@ -19,6 +19,7 @@ import logging
 import datetime
 import itertools
 import urllib.error
+import concurrent.futures
 from pathlib import Path
 from typing import Iterator, Optional
 from pathlib import Path
@@ -116,8 +117,16 @@ class Feed:
                     logger.warning("post has no content")
                     content_html = "<i>(empty)</i>"
 
+                ts = entry.published if "published" in entry else entry.updated
+                # handle:
+                #
+                #     dateutil.parser._parser.ParserError: hour must be in 0..23: Fri, 22 Nov 2024 24:00:00 GMT
+                #
+                # this is probably technically not correct, since it backdates the post by a day, but whatever.
+                ts = ts.replace(" 24:00:00", " 00:00:00")
+
                 yield Entry(
-                    timestamp=dateutil.parser.parse(entry.published if "published" in entry else entry.updated),
+                    timestamp=dateutil.parser.parse(ts),
                     title=entry.title,
                     link=entry.link,
                     content=content_html,
@@ -182,12 +191,13 @@ for repo in requests.get("https://api.github.com/users/williballenthin/starred?s
 # feeds = feeds[:3]
 
 entries = []
-for feed in feeds:
-    try:
-        entries.extend(feed.fetch())
-    except urllib.error.URLError:
-        logger.warning("failed to fetch: %s", feed.title)
-        continue
+with concurrent.futures.ThreadPoolExecutor(max_workers=32) as executor:
+    def doit(feed):
+        return list(feed.fetch())
+
+    futures = [executor.submit(doit, feed) for feed in feeds]
+    for future in concurrent.futures.as_completed(futures):
+        entries.extend(future.result())
 
 
 # only show entries within the past three days
