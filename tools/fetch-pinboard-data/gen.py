@@ -13,6 +13,7 @@ import sys
 import logging
 import datetime
 import itertools
+import urllib.error
 from typing import Iterator, Optional
 from dataclasses import dataclass
 
@@ -23,7 +24,10 @@ logger = logging.getLogger("gen")
 logging.basicConfig(level=logging.DEBUG)
 
 now = datetime.datetime.now()
-pb = pinboard.Pinboard(os.environ["PINBOARD_TOKEN"])
+try:
+    pb = pinboard.Pinboard(os.environ["PINBOARD_TOKEN"])
+except urllib.error.URLError:
+	
 
 # take the five most recent posts
 response = pb.posts.all(parse_response=False)
