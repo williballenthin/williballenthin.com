@@ -9,6 +9,7 @@
 #  "markdown==3.7",
 #  "python-dateutil==2.9.0.post0",
 #  "requests==2.32.3",
+#  "listparser==0.20.0",
 # ]
 # ///
 
@@ -17,20 +18,23 @@ import html
 import logging
 import datetime
 import itertools
-from typing import Iterator, Optional
 from pathlib import Path
-from xml.etree import ElementTree
+from typing import Iterator, Optional
 from dataclasses import dataclass
 
 import markdown
 import requests
 import html2text
 import feedparser
+import listparser
 import dateutil.parser
 
 
 logger = logging.getLogger("gen")
 logging.basicConfig(level=logging.DEBUG)
+
+
+opml = listparser.parse(Path(sys.argv[1]).read_text(encoding="utf-8"))
 
 
 @dataclass
@@ -102,20 +106,9 @@ class Feed:
                 elif hasattr(entry, "summary"):
                     content_html = markdown.markdown(entry.summary)
 
-                elif hasattr(entry, "title"):
-                    content_html = "(empty)"
-
-                else:
-                    logger.warning("post has no content")
-                    continue
-
-                ts = entry.published if "published" in entry else entry.updated
-                # handle: dateutil.parser._parser.ParserError: hour must be in 0..23: Fri, 22 Nov 2024 24:00:00 GMT
-                # this is probably technically not correct, since it backdates the post by a day, but whatever.
-                ts = ts.replace(" 24:00:00", " 00:00:00")
 
                 yield Entry(
-                    timestamp=dateutil.parser.parse(ts),
+                    timestamp=dateutil.parser.parse(entry.published if "published" in entry else entry.updated),
                     title=entry.title,
                     link=entry.link,
                     content=content_html,
@@ -151,14 +144,16 @@ feeds = [
 ]
 
 
-tree = ElementTree.fromstring(Path(sys.argv[1]).read_text(encoding="utf-8"))
-for node in tree.findall('.//outline[@title="a-quiet"]/outline[@type="rss"]'):
+for feed in opml["feeds"]:
+    if "a-quiet" not in feed["tags"]:
+        continue
+
     feeds.append(
         Feed(
             category="rss",
-            title=node.attrib.get("title"),
-            url=node.attrib.get("xmlUrl"),
-            homepage=node.attrib.get("htmlUrl"),
+            title=feed["title"],
+            url=feed["url"],
+            homepage=feed.get("htmlUrl"),
         )
     )
 
@@ -179,7 +174,11 @@ for repo in requests.get("https://api.github.com/users/williballenthin/starred?s
 
 entries = []
 for feed in feeds:
-    entries.extend(feed.fetch())
+    try:
+        entries.extend(feed.fetch())
+    except urllib.error.URLError:
+        logger.warning("failed to fetch: %s", feed.title)
+        continue
 
 
 # only show entries within the past three days
