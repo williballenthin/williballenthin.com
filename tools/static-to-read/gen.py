@@ -38,7 +38,7 @@ recent = list(toread[:5])
 
 print("<ol class='to-read'>")
 for post in recent:
-   print(f"  <li class='entry'><a href='{post.url}'>{post.description}</a></li>")
+    print(f"  <li class='entry'><a href='{post.url}'>{post.description}</a></li>")
 print("</ol>")
 print(f"<p class='to-read-metadata-generated'>generated: {now.strftime('%B %d, %Y at %H:%M:%S')}</p>")
        
