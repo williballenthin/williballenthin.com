@@ -1,6 +1,6 @@
 # You can invoke this script with `uv run` (v0.3+):
 #
-#     uv run tools/static-rss/gen.py
+#     uv run tools/static-rss/gen.py /path/to/opml
 #
 # /// script
 # dependencies = [
@@ -20,8 +20,6 @@ import datetime
 import itertools
 import urllib.error
 import concurrent.futures
-from pathlib import Path
-from typing import Iterator, Optional
 from pathlib import Path
 from typing import Iterator, Optional
 from dataclasses import dataclass
