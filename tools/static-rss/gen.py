@@ -199,6 +199,10 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=32) as executor:
     for future in concurrent.futures.as_completed(futures):
         entries.extend(future.result())
 
+# this nightly release is updated every day
+# ghostty-org/ghostty
+entries = [e for e in entries 
+           if "Ghostty Tip" not in e.title]
 
 # only show entries within the past three days
 now = datetime.datetime.now()
