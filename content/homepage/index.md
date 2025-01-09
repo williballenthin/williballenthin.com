@@ -39,7 +39,8 @@
 
   <div style="margin-left: auto;">
     <ul>
-      <li><a href="https://uptime.ferret-goblin.ts.net">uptime</a></li>
+      <li><a href="https://jellyfin.ferret-goblin.ts.net">jellyfin</a></li>
+      <li><a href="https://pinchflat.ferret-goblin.ts.net">pinchflat</a></li>
       <li><a href="https://metube.ferret-goblin.ts.net">metube</a></li>
       <li><a href="https://login.tailscale.com/admin/machines">tailscale</a></li>
       <li><a href="https://my.nextdns.io">nextdns</a></li>
