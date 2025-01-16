@@ -171,6 +171,12 @@
                 xmlUrl="https://blog.metabrainz.org/feed/"
                 />
 
+            <outline type="rss"
+                text="r/reverseengineering" title="r/reverseengineering"
+                htmlUrl="https://www.reddit.com/r/reverseengineering"
+                xmlUrl="https://www.reddit.com/r/reverseengineering/new/.rss?sort=new"
+                />
+
             <!--
             <outline type="rss"
                 text="" title=""
