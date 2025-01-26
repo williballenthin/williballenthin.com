@@ -177,6 +177,12 @@
                 xmlUrl="https://www.reddit.com/r/reverseengineering/new/.rss?sort=new"
                 />
 
+            <outline type="rss"
+                text="r/wiesbaden" title="r/wiesbaden"
+                htmlUrl="https://www.reddit.com/r/wiesbaden"
+                xmlUrl="https://www.reddit.com/r/wiesbaden/new/.rss?sort=new"
+                />
+
             <!--
             <outline type="rss"
                 text="" title=""
