@@ -30,6 +30,16 @@
         in
         pkgs.devshell.mkShell {
           imports = [ (pkgs.devshell.importTOML ./devshell.toml) ];
+          env = [
+            {
+              # fix errors like: ImportError: libstdc++.so.6: cannot open shared object file: No such file or directory
+              name = "LD_LIBRARY_PATH";
+              value = "${
+                nixpkgs.lib.makeLibraryPath
+                (with pkgs; [ stdenv.cc.cc ])
+              }:$LD_LIBRARY_PATH";
+            }
+          ];
         };
     });
 }

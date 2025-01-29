@@ -48,3 +48,4 @@ public/
 node_modules/
 static/fragments/homepage/to-read.html
 data/pinboard.json
+.aider*
