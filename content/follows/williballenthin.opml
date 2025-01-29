@@ -118,11 +118,6 @@
                 xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC_SLthyNX_ivd-dmsFgmJVg"
                 />
             <outline type="rss"
-                text="Cercle (YouTube)" title="Cercle (YouTube)"
-                htmlUrl="https://www.youtube.com/@Cercle"
-                xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCPKT_csvP72boVX0XrMtagQ"
-                />
-            <outline type="rss"
                 text="3Blue1Brown (YouTube)" title="3Blue1Brown (YouTube)"
                 htmlUrl="https://www.youtube.com/@3blue1brown"
                 xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCYO_jab_esuFRV4b17AJtAw"
