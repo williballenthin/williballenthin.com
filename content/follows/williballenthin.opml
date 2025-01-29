@@ -183,6 +183,12 @@
                 xmlUrl="https://www.reddit.com/r/wiesbaden/new/.rss?sort=new"
                 />
 
+            <outline type="rss"
+                text="Aider Blog" title="Aider Blog"
+                htmlUrl="https://aider.chat/blog/"
+                xmlUrl="https://aider.chat/feed.xml"
+                />
+
             <!--
             <outline type="rss"
                 text="" title=""
