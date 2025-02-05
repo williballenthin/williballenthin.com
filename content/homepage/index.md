@@ -22,7 +22,7 @@
 <div class="links" style="display: flex; flex-direction: row;">
   <div style="margin-right: 1em">
     <ul>
-      <li><a href="https://gemini.google.com/app">gemini</a></li>
+      <li><a href="https://marginalia-search.com">marginalia</a></li>
       <li><a href="https://search.nixos.org/packages?channel=unstable&show=mosh&from=0&size=50&sort=relevance&type=packages&query=">nixOS packages</a></li>
       <li><a href="https://ifconfig.co/">whats my ip</a></li>
       <li><a href="https://pinboard.in/">pinboard</a></li>
@@ -42,6 +42,7 @@
       <li><a href="https://jellyfin.ferret-goblin.ts.net">jellyfin</a></li>
       <li><a href="https://pinchflat.ferret-goblin.ts.net">pinchflat</a></li>
       <li><a href="https://metube.ferret-goblin.ts.net">metube</a></li>
+            <li><a href="https://archivebox.ferret-goblin.ts.net">archive</a></li>
       <li><a href="https://login.tailscale.com/admin/machines">tailscale</a></li>
       <li><a href="https://my.nextdns.io">nextdns</a></li>
     </ul>
