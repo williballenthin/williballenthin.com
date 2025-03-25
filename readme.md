@@ -1,3 +1,9 @@
+## new post
+
+```console
+hugo new content/posts/(date +%Y-%m-%d)-idapython-virtualenv.md
+```
+
 ## prepare
 
 ```console
