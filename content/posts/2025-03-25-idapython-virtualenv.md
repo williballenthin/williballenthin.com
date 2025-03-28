@@ -6,6 +6,8 @@ tags = ["ida", "python"]
 date = 2025-03-25T09:38:32+01:00
 +++
 
+([Discussion on community.hex-rays.com](https://community.hex-rays.com/t/using-a-virtualenv-for-idapython/261))
+
 I like to use a separate virtual environment for each of my Python projects and workspaces.
 This lets me isolate the packages and dependencies that I install,
  preventing versioning conflicts and generally keeping things more tidy.
@@ -44,6 +46,14 @@ The downside is that you have to remember to activate the environment every time
 Note: I'm not quite sure how IDA detects the "virtual environment interpreter", and this makes me think that perhaps
  we could just set the `$VIRTUAL_ENV` environment variable prior to launching IDA.
 I haven't tried this yet, because as just mentioned, its a little tough to only set the variable when launching IDA.
+
+*edit:* [@igor](https://community.hex-rays.com/u/igor/summary) confirmed:
+
+> You can check how it’s done in [the source code](https://github.com/idapython/src/blob/af978e79e68af701c45bab401afce5145aa4b80b/idapython.cpp#L890).
+> Basically, we’re mimicking what site.py does,
+> but we do support an override with `IDAPYTHON_VENV_EXECUTABLE` so perhaps it can be used in your situation.
+
+So, setting this variable before launching IDA should work, and on Linux you could probably update the XDG `.desktop` file so it takes effect from Gnome/krunner/etc.
 
 
 #### Option 2: Activate the environment from idapythonrc.py
@@ -109,7 +119,8 @@ cpython-3.12.7-macos-aarch64-none    ~/.local/share/uv/python/cpython-3.12.7/bin
 $ idapyswitch --force-path ~/.local/share/uv/python/cpython-3.12.7/lib/libpython3.12.dylib
 ```
 I found I was not able to use `idapyswitch --force-path` directly with the virtual environment contents,
- because IDA wants to reference the Python interpreter shared library, but the virtualenv doesn't have a copy of it.
+ because IDA wants to reference the Python interpreter shared library, but the virtualenv doesn't have a copy of it
+ (and the ultimate location for it is not in the virtual environment).
 
 Anyways, with this onetime setup of your `idapythonrc.py`, you can keep an isolated space for IDAPython.
 To install packages, you can either activate the environment (`source ~/.idapro/venv/bin/activate.fish`)
