@@ -49,3 +49,4 @@ node_modules/
 static/fragments/homepage/to-read.html
 data/pinboard.json
 .aider*
+content/posts/2025-05-15-github-ida-plugins/plugins.db

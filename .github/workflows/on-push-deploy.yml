@@ -25,6 +25,13 @@ jobs:
       uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
       with:
         python-version: "3.12"
+    - name: fetch gh ida database
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+      run: |
+        aws s3 cp s3://www.williballenthin.com/post/ida-pro-plugins-on-github/plugins.db content/posts/2025-05-15-github-ida-plugins/plugins.db
+        ls -lah content/posts/2025-05-15-github-ida-plugins/plugins.db
     - name: gen homepage to-read
       run: |
         pip install uv
