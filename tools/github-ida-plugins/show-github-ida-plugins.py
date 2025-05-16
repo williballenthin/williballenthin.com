@@ -9,8 +9,6 @@
 #    "jinja2>=3.1.0",
 # ]
 # ///
-# TODO:
-# - fix no js
 import sqlite3
 from pathlib import Path
 from datetime import datetime
@@ -98,9 +96,9 @@ PLUGIN_TEMPLATE = """
 </table>
 <p class='feed-metadata-generated'>generated: {{now.strftime('%B %d, %Y at %H:%M:%S')}}</p>
 
-<script src="https://code.jquery.com/jquery-3.7.1.js"   integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="   crossorigin="anonymous"></script>
-<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/2.3.1/css/dataTables.dataTables.min.css">
-<script src="//cdn.datatables.net/2.3.1/js/dataTables.min.js"></script>
+<script src="/js/jquery-3.7.1.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/dataTables.dataTables.min.css">
+<script src="/js/dataTables.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const dt = new DataTable('#plugins', {
