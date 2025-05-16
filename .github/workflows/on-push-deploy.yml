@@ -32,6 +32,9 @@ jobs:
       run: |
         aws s3 cp s3://www.williballenthin.com/post/ida-pro-plugins-on-github/plugins.db content/posts/2025-05-15-github-ida-plugins/plugins.db
         ls -lah content/posts/2025-05-15-github-ida-plugins/plugins.db
+        # now this will be re-uploaded once hugo builds content and mirrors
+        # if plugin is not included in the hugo build, then the s3 mirror
+        # will delete the plugins.db file, and this will fail
     - name: gen gh ida plugins
       run: |
         pip install uv 
