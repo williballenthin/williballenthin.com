@@ -32,6 +32,10 @@ jobs:
       run: |
         aws s3 cp s3://www.williballenthin.com/post/ida-pro-plugins-on-github/plugins.db content/posts/2025-05-15-github-ida-plugins/plugins.db
         ls -lah content/posts/2025-05-15-github-ida-plugins/plugins.db
+    - name: gen gh ida plugins
+      run: |
+        pip install uv 
+        uv run tools/github-ida-plugins/show-github-ida-plugins.py --html content/posts/2025-05-15-github-ida-plugins/ > static/fragments/github-ida-plugins/list.html
     - name: gen homepage to-read
       run: |
         pip install uv

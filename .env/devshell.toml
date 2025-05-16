@@ -7,6 +7,7 @@ help = "show profile (williballenthin.com)"
 
 [devshell]
 packages = [
+  "awscli",
   "uv",
   "just",
   "hugo",
