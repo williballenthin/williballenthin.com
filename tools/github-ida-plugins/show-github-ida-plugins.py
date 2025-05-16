@@ -9,6 +9,8 @@
 #    "jinja2>=3.1.0",
 # ]
 # ///
+# TODO:
+# - fix no js
 import sqlite3
 from pathlib import Path
 from datetime import datetime
@@ -24,11 +26,28 @@ from jinja2 import Template
 DATABASES_FILENAME = "plugins.db"
 logger = logging.getLogger(__name__)
 
-PLUGIN_TEMPLATE = """<table style="table-layout: fixed; width: 100%;">
+PLUGIN_TEMPLATE = """
+<div id="sort-links" class="no-js">
+  <span>Sort by:</span>
+  <a href="#" id="sort-repo">repo</a>
+  <a href="#" id="sort-stars">stars</a>
+  <a href="#" id="sort-forks">forks</a>
+  <a href="#" id="sort-created">created</a>
+  <a href="#" id="sort-pushed">pushed</a>*
+</div>
+
+<table id="plugins" class="no-js" style="table-layout: fixed; width: 100%;">
+<thead>
     <tr>
         <th></th>
-        <th width="75em"></th>
+        <th width="100px"></th>
+        <th>stars</th>
+        <th>forks</th>
+        <th>created</th>
+        <th>pushed</th>
     </tr>
+</thead>
+<tbody>
     {% for plugin in plugins %}
   <tr>
     <td>
@@ -69,9 +88,89 @@ PLUGIN_TEMPLATE = """<table style="table-layout: fixed; width: 100%;">
             <span class="decoration">{{ plugin.created_at.year }}</span>
         {% endif %}
     </td>
+    <td>{{plugin.stargazers_count}}</td>
+    <td>{{plugin.forks_count}}</td>
+    <td>{{plugin.created_at.date()}}</td>
+    <td>{{plugin.pushed_at.date()}}</td>
   </tr>
   {% endfor %}
-</table>"""
+  </tbody>
+</table>
+<p class='feed-metadata-generated'>generated: {{now.strftime('%B %d, %Y at %H:%M:%S')}}</p>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"   integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="   crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/2.3.1/css/dataTables.dataTables.min.css">
+<script src="//cdn.datatables.net/2.3.1/js/dataTables.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dt = new DataTable('#plugins', {
+            pageLength: -1,
+            layout: {
+                topStart: null,
+                topEnd: null,
+                bottomStart: null,
+                bottomEnd: null,
+            },
+            columnDefs: [
+                { width: '100px', targets: 1 },
+                { visible: false, targets: [2,3,4,5] }
+            ],
+            order: [[5, 'desc']],
+        });
+
+        $(".no-js").removeClass("no-js");
+        $("#plugins").addClass("has-js");
+
+        $('#sort-repo').click(function() {
+            dt.column(0).order('asc').draw();
+        });
+        $('#sort-stars').click(function() {
+            dt.column(2).order('desc').draw();
+        });
+        $('#sort-forks').click(function() {
+            dt.column(3).order('desc').draw();
+        });
+        $('#sort-created').click(function() {
+            dt.column(4).order('desc').draw();
+        });
+        $('#sort-pushed').click(function() {
+            dt.column(5).order('desc').draw();
+        });
+    });
+</script>
+<style>
+    #plugins.has-js thead {
+        display: none;
+    }
+
+    #plugins tr td,
+    table tr td {
+        padding: 0;
+        padding-top: 0.5em;
+        vertical-align: top;
+    }
+
+    table tr td:nth-last-child(1) {
+        text-align: right;
+    }
+
+    #plugins.no-js tr td:nth-last-child(1),
+    #plugins.no-js tr td:nth-last-child(2),
+    #plugins.no-js tr td:nth-last-child(3),
+    #plugins.no-js tr td:nth-last-child(4),
+    #plugins.no-js thead th:nth-last-child(1),
+    #plugins.no-js thead th:nth-last-child(2),
+    #plugins.no-js thead th:nth-last-child(3),
+    #plugins.no-js thead th:nth-last-child(4) {
+        display: none;
+    }
+
+    #sort-links.no-js {
+        display: none;
+    }
+</style>
+"""
+
 
 @dataclass
 class IdaPlugin:
@@ -88,6 +187,7 @@ class IdaPlugin:
     forks_count: int
     stargazers_count: int
 
+
 def load_plugin(row: tuple) -> IdaPlugin:
     return IdaPlugin(
         repository=row[0],
@@ -103,6 +203,7 @@ def load_plugin(row: tuple) -> IdaPlugin:
         forks_count=row[10],
         stargazers_count=row[11]
     )
+
 
 def render_plugins_console(plugins: list[IdaPlugin]) -> None:
     for plugin in plugins:
@@ -142,11 +243,12 @@ def render_plugins_console(plugins: list[IdaPlugin]) -> None:
 
         rich.print(table)
 
+
 def render_plugins_html(plugins: list[IdaPlugin]) -> None:
     now = datetime.now()
     template = Template(PLUGIN_TEMPLATE)
-    print(template.render(plugins=plugins))
-    print(f"<p class='feed-metadata-generated'>generated: {now.strftime('%B %d, %Y at %H:%M:%S')}</p>")
+    print(template.render(plugins=plugins, now=now))
+
 
 def main():
     import argparse
