@@ -24,7 +24,41 @@ from jinja2 import Template
 DATABASES_FILENAME = "plugins.db"
 logger = logging.getLogger(__name__)
 
+# we put the styles first because the body content can be pretty large (hundreds of KBs)
+# which takes a moment to load.
 PLUGIN_TEMPLATE = """
+<style>
+    #plugins.has-js thead {
+        display: none;
+    }
+
+    #plugins tr td,
+    table tr td {
+        padding: 0;
+        padding-top: 0.5em;
+        vertical-align: top;
+    }
+
+    table tr td:nth-last-child(1) {
+        text-align: right;
+    }
+
+    #plugins.no-js tr td:nth-last-child(1),
+    #plugins.no-js tr td:nth-last-child(2),
+    #plugins.no-js tr td:nth-last-child(3),
+    #plugins.no-js tr td:nth-last-child(4),
+    #plugins.no-js thead th:nth-last-child(1),
+    #plugins.no-js thead th:nth-last-child(2),
+    #plugins.no-js thead th:nth-last-child(3),
+    #plugins.no-js thead th:nth-last-child(4) {
+        display: none;
+    }
+
+    #sort-links.no-js {
+        display: none;
+    }
+</style>
+
 <div id="sort-links" class="no-js">
   <span>Sort by:</span>
   <a href="#" id="sort-repo">repo</a>
@@ -136,37 +170,6 @@ PLUGIN_TEMPLATE = """
         });
     });
 </script>
-<style>
-    #plugins.has-js thead {
-        display: none;
-    }
-
-    #plugins tr td,
-    table tr td {
-        padding: 0;
-        padding-top: 0.5em;
-        vertical-align: top;
-    }
-
-    table tr td:nth-last-child(1) {
-        text-align: right;
-    }
-
-    #plugins.no-js tr td:nth-last-child(1),
-    #plugins.no-js tr td:nth-last-child(2),
-    #plugins.no-js tr td:nth-last-child(3),
-    #plugins.no-js tr td:nth-last-child(4),
-    #plugins.no-js thead th:nth-last-child(1),
-    #plugins.no-js thead th:nth-last-child(2),
-    #plugins.no-js thead th:nth-last-child(3),
-    #plugins.no-js thead th:nth-last-child(4) {
-        display: none;
-    }
-
-    #sort-links.no-js {
-        display: none;
-    }
-</style>
 """
 
 
