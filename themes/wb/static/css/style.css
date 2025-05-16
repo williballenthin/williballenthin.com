@@ -54,6 +54,78 @@
 	--pico-font-family: var(--pico-font-family-serif);
 }
 
+/* ########### make things smaller ################# */ 
+/* ref: https://github.com/picocss/pico/discussions/482#discussioncomment-9043725 */
+
+:root {
+    --pico-font-size: 87.5%;
+    /* Original: 100% */
+    --pico-line-height: 1.25;
+    /* Original: 1.5 */
+    --pico-form-element-spacing-vertical: 0.5rem;
+    /* Original: 1rem */
+    --pico-form-element-spacing-horizontal: 1.0rem;
+    /* Original: 1.25rem */
+    --pico-border-radius: 0rem;
+    /* Original: 0.25rem */
+}
+
+@media (min-width: 576px) {
+    :root {
+        --pico-font-size: 87.5%;
+        /* Original: 106.25% */
+    }
+}
+
+@media (min-width: 768px) {
+    :root {
+        --pico-font-size: 87.5%;
+        /* Original: 112.5% */
+    }
+}
+
+@media (min-width: 1024px) {
+    :root {
+        --pico-font-size: 87.5%;
+        /* Original: 118.75% */
+    }
+}
+
+@media (min-width: 1280px) {
+    :root {
+        --pico-font-size: 87.5%;
+        /* Original: 125% */
+    }
+}
+
+@media (min-width: 1536px) {
+    :root {
+        --pico-font-size: 87.5%;
+        /* Original: 131.25% */
+    }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    --pico-font-weight: 600;
+    /* Original: 700 */
+}
+
+article {
+    border: 1px solid var(--pico-muted-border-color);
+    /* Original doesn't have a border */
+    border-radius: calc(var(--pico-border-radius) * 2);
+    /* Original: var(--pico-border-radius) */
+}
+
+article>footer {
+    border-radius: calc(var(--pico-border-radius) * 2);
+    /* Original: var(--pico-border-radius) */
+}
 
 /* ########### code blocks ################# */ 
 
@@ -93,6 +165,10 @@
 }
 
 /* ############# other elements ################## */
+
+code {
+	padding: .05rem .25rem;
+}
 
 nav {
 	padding-top: 12px;
@@ -165,7 +241,6 @@ body > footer {
 
 .decoration {
 	color: var(--main-decoration-color);
-	font-size: smaller;
 }
 
 /* hugo list templates */
@@ -177,7 +252,6 @@ body > footer {
 }
 
 .content-list li {
-	line-height: 1.0; 
 	margin-bottom: 1em;
 }
 
@@ -188,7 +262,6 @@ body > footer {
 }
 
 .content-list li span.date {
-	font-size: smaller;
 	color: grey;
 	font-variant: small-caps;
 }
@@ -197,6 +270,8 @@ body > footer {
 
 nav.container,
 main.container {
+	/* this feels right to me, number of characters across for text */
+	/* override per-page for wider content/diagrams/etc. */
 	max-width: 36em;
 }
 
@@ -205,13 +280,11 @@ main.container {
 }
 
 .post .post-date {
-	font-size: smaller;
 	font-variant: small-caps;
 }
 
 .post #post-tags {
 	display:  inline-block;
-	font-size: smaller;
 	font-family: var(--pico-font-family-sans-serif);
 }
 
