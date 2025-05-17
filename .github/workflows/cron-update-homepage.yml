@@ -33,6 +33,8 @@ jobs:
       run: |
         pip install uv
         uv run tools/github-ida-plugins/fetch-github-ida-plugins.py content/posts/2025-05-15-github-ida-plugins/
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     - name: gen gh ida plugins
       run: |
         pip install uv
