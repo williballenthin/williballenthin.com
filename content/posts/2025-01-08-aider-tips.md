@@ -75,3 +75,12 @@ This also means you may want to cleanup git history before contributing to exter
 ```
 aider --analytics-disable
 ```
+
+
+# Run subcommands using direnv configuration
+
+See here: https://github.com/direnv/direnv/issues/262
+
+```bash
+eval "$(direnv export zsh)" && just lint
+```
