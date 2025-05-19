@@ -260,6 +260,12 @@ def search_and_render_plugins(limit: int | None = None) -> None:
             logger.debug("skipping %s: no ida", result.html_url)
             continue
 
+        if result.repository.full_name in ("clovme/WTools", ):
+            # these are handpicked repos to ignore
+            # due to embedding the IDA SDK/example plugins
+            logger.debug("skipping %s: denylist", result.html_url)
+            continue
+
         props = extract_plugin_info(content)
 
         plugin = IdaPlugin(
