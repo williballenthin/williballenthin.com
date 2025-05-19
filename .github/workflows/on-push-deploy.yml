@@ -25,21 +25,12 @@ jobs:
       uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
       with:
         python-version: "3.12"
-    - name: fetch gh ida database
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: 'us-east-1'
-      run: |
-        aws s3 cp s3://www.williballenthin.com/post/ida-pro-plugins-on-github/plugins.db content/posts/2025-05-15-github-ida-plugins/plugins.db
-        ls -lah content/posts/2025-05-15-github-ida-plugins/plugins.db
-        # now this will be re-uploaded once hugo builds content and mirrors
-        # if plugin is not included in the hugo build, then the s3 mirror
-        # will delete the plugins.db file, and this will fail
     - name: gen gh ida plugins
       run: |
         pip install uv
-        uv run tools/github-ida-plugins/show-github-ida-plugins.py --html content/posts/2025-05-15-github-ida-plugins/ > static/fragments/github-ida-plugins/list.html
+        uv run tools/github-ida-plugins/fetch-github-ida-plugins.py > static/fragments/github-ida-plugins/list.html
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     - name: gen homepage to-read
       run: |
         pip install uv
