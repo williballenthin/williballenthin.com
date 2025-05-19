@@ -1,17 +1,19 @@
+import logging
 import sqlite3
 from pathlib import Path
-from datetime import datetime, date
+from datetime import date, datetime
 from collections import defaultdict
+from dataclasses import dataclass
+
 import rich
-from rich.table import Table
 from rich.text import Text
+from rich.table import Table
 from rich.console import Console
 from rich.logging import RichHandler
-import logging
-from dataclasses import dataclass
 
 DATABASES_FILENAME = "plugins.db"
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class IdaPlugin:
@@ -28,6 +30,7 @@ class IdaPlugin:
     forks_count: int
     stargazers_count: int
 
+
 def load_plugin(row: tuple) -> IdaPlugin:
     return IdaPlugin(
         repository=row[0],
@@ -41,8 +44,9 @@ def load_plugin(row: tuple) -> IdaPlugin:
         created_at=datetime.fromisoformat(row[8]),
         pushed_at=datetime.fromisoformat(row[9]),
         forks_count=row[10],
-        stargazers_count=row[11]
+        stargazers_count=row[11],
     )
+
 
 def timeline_plugins(db_path: Path) -> None:
     events_by_day: dict[str, list[tuple[IdaPlugin, str]]] = defaultdict(list)
@@ -86,15 +90,17 @@ def timeline_plugins(db_path: Path) -> None:
                 continue
             t.add_row(
                 "  " + plugin.repository + (" [grey69](created)[/grey69]" if label == "created" else ""),
-                plugin.file, 
-                f"{plugin.stargazers_count} [grey69]stars[/grey69]", 
-                f"  {plugin.forks_count} [grey69]forks[/grey69]"
+                plugin.file,
+                f"{plugin.stargazers_count} [grey69]stars[/grey69]",
+                f"  {plugin.forks_count} [grey69]forks[/grey69]",
             )
 
     rich.print(t)
 
+
 def main():
     import argparse
+
     parser = argparse.ArgumentParser(description="Show plugin activity timeline for last 3 months")
     parser.add_argument("path", type=Path, help="Path to directory containing database and repos")
     args = parser.parse_args()
@@ -104,5 +110,6 @@ def main():
     )
     timeline_plugins(args.path / DATABASES_FILENAME)
 
+
 if __name__ == "__main__":
-    main() 
+    main()

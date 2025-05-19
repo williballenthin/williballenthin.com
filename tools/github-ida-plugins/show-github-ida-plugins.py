@@ -9,17 +9,17 @@
 #    "jinja2>=3.1.0",
 # ]
 # ///
+import logging
 import sqlite3
 from pathlib import Path
 from datetime import datetime
+from dataclasses import dataclass
+
 import rich
+from jinja2 import Template
 from rich.table import Table
-from rich.text import Text
 from rich.console import Console
 from rich.logging import RichHandler
-import logging
-from dataclasses import dataclass
-from jinja2 import Template
 
 DATABASES_FILENAME = "plugins.db"
 logger = logging.getLogger(__name__)
@@ -202,7 +202,7 @@ def load_plugin(row: tuple) -> IdaPlugin:
         created_at=datetime.fromisoformat(row[8]),
         pushed_at=datetime.fromisoformat(row[9]),
         forks_count=row[10],
-        stargazers_count=row[11]
+        stargazers_count=row[11],
     )
 
 
@@ -233,7 +233,13 @@ def render_plugins_console(plugins: list[IdaPlugin]) -> None:
         t.add_column("created", width=10)
         t.add_column(width=3, style="grey69")
         t.add_column("pushed", width=10)
-        t.add_row(f"[link={plugin.url}]{plugin.file}[/link]", " ", str(plugin.created_at.date()), " → ", str(plugin.pushed_at.date()))
+        t.add_row(
+            f"[link={plugin.url}]{plugin.file}[/link]",
+            " ",
+            str(plugin.created_at.date()),
+            " → ",
+            str(plugin.pushed_at.date()),
+        )
         table.add_row("File", t)
 
         if plugin.wanted_name:
@@ -253,6 +259,7 @@ def render_plugins_html(plugins: list[IdaPlugin]) -> None:
 
 def main():
     import argparse
+
     parser = argparse.ArgumentParser(description="Display plugins from database")
     parser.add_argument("path", type=Path, help="Path to directory containing database and repos")
     parser.add_argument("--html", action="store_true", help="Output in HTML format")
@@ -273,4 +280,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main() 
+    main()
