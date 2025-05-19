@@ -93,7 +93,7 @@ class IdaPlugin:
     description: str
     file: str
     url: str
-    content: str
+    content: str | None  # DEPRECATED: No longer stored to save space, kept for schema compatibility
     wanted_name: str | None
     comment: str | None
     created_at: datetime
@@ -188,7 +188,7 @@ def store_plugin(conn: sqlite3.Connection, plugin: IdaPlugin) -> None:
             plugin.parent,
             plugin.description,
             plugin.url,
-            plugin.content,
+            None,  # No content to save space
             plugin.wanted_name,
             plugin.comment,
             plugin.created_at,
@@ -277,7 +277,7 @@ def fetch_plugins(path: Path, limit: int, fetch_zipball: bool) -> None:
                 description=result.repository.description,
                 file=result.path,
                 url=result.html_url,
-                content=content,
+                content=None,  # No longer storing content to save space
                 wanted_name=props.get("wanted_name"),
                 comment=props.get("comment"),
                 created_at=result.repository.created_at,
@@ -301,6 +301,14 @@ def fetch_plugins(path: Path, limit: int, fetch_zipball: bool) -> None:
                         store_repo_zip(path, owner, repo, zip_content)
 
 
+def clear_content_column(db_path: Path) -> None:
+    """Clear the content column in existing database to save space."""
+    logger.info("Clearing content column in database: %s", db_path)
+    with sqlite3.connect(db_path) as conn:
+        conn.execute("UPDATE plugins SET content = NULL")
+        conn.commit()
+
+
 def main():
     parser = argparse.ArgumentParser(description="Find IDA Pro plugins on GitHub")
     parser.add_argument("--limit", type=int, help="Limit the number of results")
@@ -313,7 +321,9 @@ def main():
         handlers=[RichHandler(console=Console(stderr=True))],
     )
 
-    init_db(args.path / DATABASES_FILENAME)
+    db_path = args.path / DATABASES_FILENAME
+    init_db(db_path)
+    clear_content_column(db_path)
     fetch_plugins(args.path, args.limit, args.fetch_zipball)
 
 
