@@ -1,0 +1,58 @@
+{{ partial "header.html" . }}
+
+<body lang="{{ .Site.LanguageCode }}">
+  <nav class="container">
+    <span class="breadcrumbs">
+      <a href="{{ .Site.Home.RelPermalink }}" id="site-name" class="breadcrumb">{{ .Site.Title }}</a>
+      {{ with .Site.GetPage "/links" }}
+      <a href="{{ .RelPermalink  }}" class="breadcrumb">bookmarks</a>
+      {{ end }}
+    </span>
+  </nav>
+
+  <main class="container link">
+    <h1 id="title"><a href="{{ .Params.url }}">{{ .Title }}</a></h1>
+
+
+    <span id="link-tags">
+        <span class="link-date decoration">
+            {{ .Date.Format "January 2, 2006" }}
+        </span>
+
+        &nbsp;
+
+        {{ $url := urls.Parse .Params.url }}
+        <a href="https://{{$url.Host}}">{{ $url.Host }}</a>
+
+        &nbsp;
+
+        <span class="link-tags">
+            {{ range (.GetTerms "tags") }}
+                <span class="link-tag">
+                    <a href="{{ .RelPermalink }}">
+                        #{{ lower .LinkTitle }}
+                    </a>
+                </span>
+                &nbsp;
+            {{ end }}
+        </span>
+    </span>
+
+    <div id="content" style="margin-top: 2em;">
+      {{ .Content }}
+    </div>
+
+    <!-- last modified note -->
+    <span
+      title="Lastmod: {{ .Lastmod.Format "January 2, 2006" }}. Published at: {{ .PublishDate.Format "2006-01-02" }}.">
+      {{ if ne .Lastmod .PublishDate }}
+      <span class="i">last modified</span> {{ dateFormat "January 2, 2006" .Lastmod }}
+      {{ end }}
+    </span>
+  </main>
+
+  {{ partial "footer.html" . }}
+</body>
+
+<!-- layout: links/single.html -->
+</html>

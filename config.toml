@@ -8,6 +8,8 @@ relativeURLs = true
 [permalinks]
   # use old post path to keep existing links working
   posts = "post/:slug"
+  # for consistency
+  links = "link/:slug"
 
 [sitemap]
   changefreq = 'monthly'

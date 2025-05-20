@@ -1,0 +1,41 @@
+{{ partial "header.html" . }}
+
+<body lang="{{ .Site.LanguageCode }}">
+  <nav class="container">
+    <span class="breadcrumbs">
+      <a href="{{ .Site.Home.RelPermalink }}" class="breadcrumb">{{ .Site.Title }}</a>
+      {{ with .Site.GetPage "/links" }}
+      <a href="{{ .RelPermalink  }}" class="breadcrumb">bookmarks</a>
+      {{ end }}
+    </span>
+  </nav>
+
+  <main class="container">
+    <div>
+      <ul class="content-list">
+        {{ range .Pages.ByDate.Reverse }}
+        <li>
+          <a href="{{ .RelPermalink}}" class="entry-link">{{ .Title }}</a>
+          <br/>
+          <span class="date">{{ .Date.Format "January 2, 2006" }}</span>
+          <span class="link-tags">
+              {{ range (.GetTerms "tags") }}
+                  <span class="link-tag">
+                      <a href="{{ .RelPermalink }}">
+                          #{{ lower .LinkTitle }}
+                      </a>
+                  </span>
+                  &nbsp;
+              {{ end }}
+          </span>
+        </li>
+        {{ end }}
+      </ul>
+    </div>
+  </main>
+
+  {{ partial "footer.html" . }}
+  </body>
+
+<!-- layout: links/list.html -->
+</html>

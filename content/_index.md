@@ -43,6 +43,9 @@ layout: single
   <h1>
     <a href="./posts/">blog</a>
   </h1>
+  <h1>
+    <a href="./links/">bookmarks</a>
+  </h1>
 </div>
 
 <div>

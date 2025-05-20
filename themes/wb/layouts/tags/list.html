@@ -14,28 +14,27 @@
     <div>
       <ul class="content-list">
         {{ range .Pages.ByDate.Reverse }}
+        {{ if eq .Type "posts" }}
         <li>
-          <a href="{{ .RelPermalink}}">{{ .Title }}</a>
+          <a href="{{ .RelPermalink}}">{{ .Title }}</a><br />
           <span class="date">{{ .Date.Format "January 2, 2006" }}</span>
         </li>
+        {{ end}}
         {{ end }}
       </ul>
 
       <h3>bookmarks</h2>
       <ul class="content-list">
-        {{ $tag := .Title | strings.ToLower }}
-        {{ range .Site.Data.pinboard }}
-          {{ $tags := strings.Split .tags " " }}
-          {{ if collections.In $tags $tag}}
-            <li>
-              <a href="{{ .href }}">{{ .description }}</a>
-              <span class="date">{{ time.Format "January 2, 2006" .time }}</span>
-            </li>
-          {{ end }}
+        {{ range .Pages.ByDate.Reverse }}
+        {{ if eq .Type "links" }}
+        <li>
+          <a href="{{ .RelPermalink}}">{{ .Title }}</a><br />
+          <span class="date">{{ .Date.Format "January 2, 2006" }}</span>
+        </li>
+        {{ end}}
         {{ end }}
       </ul>
     </div>
-    
   </main>
 
   {{ partial "footer.html" . }}
