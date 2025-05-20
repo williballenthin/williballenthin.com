@@ -1,0 +1,34 @@
+on:
+  schedule:
+    - cron: '0 * * * *'  # rebuild every hour
+  workflow_dispatch:
+
+name: sync pinboard links
+
+jobs:
+  sync:
+    runs-on: [ubuntu-latest]
+    steps:
+    - name: checkout
+      uses: actions/checkout@v1
+      with:
+        submodules: true
+    - name: Set up Python 3.12
+      uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+      with:
+        python-version: "3.12"
+    - name: sync pinboard links
+      run: |
+        pip install uv==0.3.3
+        uv run tools/fetch-pinboard-data/sync-pinboard-links.py
+      env:
+        PINBOARD_TOKEN: ${{ secrets.PINBOARD_TOKEN }}
+    - name: commit
+      run: |
+        git config --global user.email "bot@example.com"
+        git config --global user.name "Willi Ballenthin (GH Action)"
+        git add --all
+        git commit -m "update pinboard links" || echo "no changes"
+    - name: push
+      uses: ad-m/github-push-action@master
+ 
