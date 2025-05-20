@@ -251,17 +251,16 @@ body > footer {
 	padding-left: 0.5em;
 }
 
-.content-list li {
+.content-list > li {
 	margin-bottom: 1em;
 }
 
-.content-list li a {
+.content-list > li > a.entry-link {
 	font-size: larger;
 	display: inline-block;
-	width: 100%;
 }
 
-.content-list li span.date {
+.content-list > li > span.date {
 	color: grey;
 	font-variant: small-caps;
 }

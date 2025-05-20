@@ -13,7 +13,11 @@
 
     {{ partial "meta.html" . }}
 
+    {{ if eq .Type "tags" }}
+    <title>#{{ .Title | strings.ToLower }}</title>
+    {{ else }}
     <title>{{ .Title }}</title>
+    {{ end }}
     <link rel="canonical" href="{{ .Permalink }}" />
 {{ $title := .Title }}
 {{ with .OutputFormats.Get "RSS" }}

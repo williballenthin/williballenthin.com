@@ -51,22 +51,13 @@ layout: single
   </h1>
   <dl>
   <dt><a href="https://github.com/mandiant/capa">capa</a></dt>
-  <dd>malware capabilities</dd>
+  <dd>identify malware capabilities</dd>
 
   <dt><a href="https://github.com/mandiant/flare-floss">FLOSS</a></dt>
-  <dd>obfuscated strings</dd>
-
-  <dt><a href="https://github.com/williballenthin/python-idb">python-idb</a></dt>
-  <dd>IDA Pro analysis</dd>
-
-  <dt><a href="https://github.com/williballenthin/python-registry">python-registry</a></dt>
-  <dd>Registry parser</dd>
-
-  <dt><a href="https://github.com/williballenthin/INDXParse">INDXParse</a></dt>
-  <dd>NTFS artifacts</dd>
+  <dd>recover obfuscated strings</dd>
 
   <dt><a href="https://github.com/williballenthin/EVTXtract">EVTXtract</a></dt>
-  <dd>EVTX recovery</dd>
+  <dd>EVTX event log recovery</dd>
   </dl>
 </div>
 </div>
