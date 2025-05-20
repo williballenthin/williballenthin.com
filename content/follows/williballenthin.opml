@@ -6,7 +6,7 @@
     </head>
     <body>
         <outline text="a-quiet" title="a-quiet">
-            <outline type="rss" text="Willi Ballenthin" title="Willi Ballenthin" xmlUrl="http://www.williballenthin.com/index.xml" htmlUrl="http://www.williballenthin.com/"/>
+            <outline type="rss" text="Willi Ballenthin" title="Willi Ballenthin" xmlUrl="http://www.williballenthin.com/posts/index.xml" htmlUrl="http://www.williballenthin.com/"/>
             <outline type="rss" text="Jessitron" title="Jessitron" xmlUrl="http://blog.jessitron.com/feeds/posts/default" htmlUrl="https://jessitron.com"/>
             <outline type="rss" text="Without boats, dreams dry up" title="Without boats, dreams dry up" xmlUrl="https://without.boats/index.xml" htmlUrl="https://without.boats/"/>
             <outline type="rss" text="Register Spill" title="Register Spill" xmlUrl="https://registerspill.thorstenball.com/feed" htmlUrl="https://registerspill.thorstenball.com"/>
