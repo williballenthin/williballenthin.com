@@ -15,6 +15,7 @@
 #
 # requires env variable GITHUB_TOKEN to be set.
 import os
+import json
 import logging
 from datetime import datetime
 from dataclasses import dataclass
@@ -260,7 +261,7 @@ def search_and_render_plugins(limit: int | None = None) -> None:
             logger.debug("skipping %s: no ida", result.html_url)
             continue
 
-        if result.repository.full_name in ("clovme/WTools", ):
+        if result.repository.full_name in ("clovme/WTools",):
             # these are handpicked repos to ignore
             # due to embedding the IDA SDK/example plugins
             logger.debug("skipping %s: denylist", result.html_url)
@@ -290,11 +291,63 @@ def search_and_render_plugins(limit: int | None = None) -> None:
     print(template.render(plugins=plugins, now=now))
 
 
+def search_and_render_plugins_json(limit: int | None = None) -> None:
+    """Search for IDA plugins on GitHub and output JSONL (one JSON object per line)."""
+
+    auth = Auth.Token(os.getenv("GITHUB_TOKEN"))
+    g = Github(auth=auth)
+
+    query = 'language:python AND "def PLUGIN_ENTRY()" AND in:file'
+    logger.info("query: %s", query)
+
+    results = g.search_code(query=query)
+    logger.info("found %d IDA plugins", results.totalCount)
+
+    max_results = limit or results.totalCount
+
+    for result in results[:max_results]:
+        parent: str | None = None
+        if result.repository.fork:
+            if result.repository.parent:
+                parent = result.repository.parent.full_name
+
+        content = result.decoded_content.decode("utf-8")
+        if "ida" not in content:
+            logger.debug("skipping %s: no ida", result.html_url)
+            continue
+
+        if result.repository.full_name in ("clovme/WTools",):
+            # these are handpicked repos to ignore
+            # due to embedding the IDA SDK/example plugins
+            logger.debug("skipping %s: denylist", result.html_url)
+            continue
+
+        props = extract_plugin_info(content)
+
+        plugin = {
+            "repository": result.repository.full_name,
+            "parent": parent,
+            "description": result.repository.description,
+            "file": result.path,
+            "url": result.html_url,
+            "wanted_name": props.get("wanted_name"),
+            "comment": props.get("comment"),
+            "created_at": result.repository.created_at.isoformat(),
+            "pushed_at": result.repository.pushed_at.isoformat(),
+            "forks_count": result.repository.forks_count,
+            "stargazers_count": result.repository.stargazers_count,
+        }
+        print(json.dumps(plugin))
+
+
 def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Find IDA Pro plugins on GitHub and generate HTML")
     parser.add_argument("--limit", type=int, help="Limit the number of results")
+    parser.add_argument(
+        "--json", action="store_true", help="Output as JSONL instead of HTML (one JSON object per line)"
+    )
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -302,7 +355,10 @@ def main():
         handlers=[RichHandler(console=Console(stderr=True))],
     )
 
-    search_and_render_plugins(args.limit)
+    if args.json:
+        search_and_render_plugins_json(args.limit)
+    else:
+        search_and_render_plugins(args.limit)
 
 
 if __name__ == "__main__":
