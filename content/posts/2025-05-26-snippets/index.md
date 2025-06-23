@@ -21,6 +21,8 @@ draft: false
 - 3 𝗑 1:1 with Google colleagues to say goodbye
 - start this Snippets effort
   - symlink my Hugo [`posts` directory](https://github.com/williballenthin/williballenthin.com/tree/master/content/posts) into my Obsidian vault for WYSIWYG editing
+- PRs:
+  - [idalib#34](https://github.com/binarly-io/idalib/pull/34) (Rust bindings): make `StringList` iterable
 - read and recommend:
   - https://livestore.dev: next incarnation of [Riffle](https://riffle.systems): "Reactive Relational State for Local-First Applications"
 
@@ -59,3 +61,10 @@ draft: false
 >Signal: ..., email: ..., and `williballenthin` wherever you get your social media.
 >
 >~Willi
+  - https://lief.re/blog/2025-05-27-dwarf-editor/
+	- seems like a solid idea.  but do DWARF files compose well? can you diff them or otherwise manage conflicts? I guess that's up to Ghidra/BN/IDA.
+		- wonder if it can be pared down into a Python impl, except there are no DWARF serializers for Python. But the Rust [gimli](https://docs.rs/gimli/latest/gimli/write/index.html) crate might work.
+		- need IDA impl. 
+	- LIEF extended is only offered in binary form with no obvious license. it is [not open source](https://mastodon.social/@rh0main@infosec.exchange/114581226511721204).
+## Wednesday 2025-05-28
+- last day at Google
