@@ -22,15 +22,7 @@ Enjoy!
     <code><a href="https://github.com/search?q=%22def+PLUGIN_ENTRY%28%29%22+language%3APython&type=code&ref=advsearch">
       "def PLUGIN_ENTRY()" language:Python
     </a></code>
-    and stores the results in a
-    <a href="https://williballenthin.com/post/ida-pro-plugins-on-github/plugins.db">
-      SQLite database.
-    </a>
-    Then
-    <a href="https://github.com/williballenthin/williballenthin.com/blob/master/tools/github-ida-plugins/show-github-ida-plugins.py">
-      another script
-    </a>
-    periodically renders the results and updates this page's content.
+    renders the results and updates this page's content.
   </p>
 
   <p>
