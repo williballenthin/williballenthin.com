@@ -30,6 +30,10 @@ from rich.logging import RichHandler
 
 logger = logging.getLogger(__name__)
 
+# these are handpicked repos to ignore
+# due to embedding the IDA SDK/example plugins
+DENYLIST = ("clovme/WTools",)
+
 PY_LANGUAGE = Language(tspython.language())
 PY_PARSER = Parser(PY_LANGUAGE)
 
@@ -195,6 +199,7 @@ class IdaPlugin:
     pushed_at: datetime
     forks_count: int
     stargazers_count: int
+    language: str
 
 
 def extract_repo_info(repo_input: str) -> tuple[str, str]:
@@ -236,16 +241,13 @@ def extract_plugin_info(py_source: str) -> dict[str, str]:
     return props
 
 
-def search_and_render_plugins(limit: int | None = None) -> None:
-    """Search for IDA plugins on GitHub and render HTML directly."""
-    auth = Auth.Token(os.getenv("GITHUB_TOKEN"))
-    g = Github(auth=auth)
-
+def search_python_plugins(g: Github, limit: int | None = None) -> list[IdaPlugin]:
+    """Search for Python IDA plugins."""
     query = 'language:python AND "def PLUGIN_ENTRY()" AND in:file'
-    logger.info("query: %s", query)
+    logger.info("Python query: %s", query)
 
     results = g.search_code(query=query)
-    logger.info("found %d IDA plugins", results.totalCount)
+    logger.info("found %d Python IDA plugins", results.totalCount)
 
     plugins = []
     max_results = limit or results.totalCount
@@ -261,9 +263,7 @@ def search_and_render_plugins(limit: int | None = None) -> None:
             logger.debug("skipping %s: no ida", result.html_url)
             continue
 
-        if result.repository.full_name in ("clovme/WTools",):
-            # these are handpicked repos to ignore
-            # due to embedding the IDA SDK/example plugins
+        if result.repository.full_name in DENYLIST:
             logger.debug("skipping %s: denylist", result.html_url)
             continue
 
@@ -281,9 +281,69 @@ def search_and_render_plugins(limit: int | None = None) -> None:
             pushed_at=result.repository.pushed_at,
             forks_count=result.repository.forks_count,
             stargazers_count=result.repository.stargazers_count,
+            language="python",
         )
         plugins.append(plugin)
-        logger.info("Found plugin: %s", plugin.repository)
+        logger.info("Found Python plugin: %s", plugin.repository)
+
+    return plugins
+
+
+def search_cpp_plugins(g: Github, limit: int | None = None) -> list[IdaPlugin]:
+    """Search for C++ IDA plugins."""
+    query = '"idaapi init" AND in:file AND language:"C++"'
+    logger.info("C++ query: %s", query)
+
+    results = g.search_code(query=query)
+    logger.info("found %d C++ IDA plugins", results.totalCount)
+
+    plugins = []
+    max_results = limit or results.totalCount
+
+    for result in results[:max_results]:
+        parent: str | None = None
+        if result.repository.fork:
+            if result.repository.parent:
+                parent = result.repository.parent.full_name
+
+        if result.repository.full_name in DENYLIST:
+            logger.debug("skipping %s: denylist", result.html_url)
+            continue
+
+        plugin = IdaPlugin(
+            repository=result.repository.full_name,
+            parent=parent,
+            description=result.repository.description,
+            file=result.path,
+            url=result.html_url,
+            wanted_name=None,  # Don't parse C++ source for wanted_name
+            comment=None,      # Don't parse C++ source for comment
+            created_at=result.repository.created_at,
+            pushed_at=result.repository.pushed_at,
+            forks_count=result.repository.forks_count,
+            stargazers_count=result.repository.stargazers_count,
+            language="C++",
+        )
+        plugins.append(plugin)
+        logger.info("Found C++ plugin: %s", plugin.repository)
+
+    return plugins
+
+
+def search_and_render_plugins(limit: int | None = None) -> None:
+    """Search for IDA plugins on GitHub and render HTML directly."""
+    auth = Auth.Token(os.getenv("GITHUB_TOKEN"))
+    g = Github(auth=auth)
+
+    # Search for both Python and C++ plugins
+    python_plugins = search_python_plugins(g, limit)
+    cpp_plugins = search_cpp_plugins(g, limit)
+    
+    # Combine and sort by pushed_at date (descending)
+    plugins = sorted(python_plugins + cpp_plugins, key=lambda p: p.pushed_at, reverse=True)
+    
+    logger.info("Total plugins found: %d Python + %d C++ = %d", 
+                len(python_plugins), len(cpp_plugins), len(plugins))
 
     # Render HTML
     now = datetime.now()
@@ -293,51 +353,35 @@ def search_and_render_plugins(limit: int | None = None) -> None:
 
 def search_and_render_plugins_json(limit: int | None = None) -> None:
     """Search for IDA plugins on GitHub and output JSONL (one JSON object per line)."""
-
     auth = Auth.Token(os.getenv("GITHUB_TOKEN"))
     g = Github(auth=auth)
 
-    query = 'language:python AND "def PLUGIN_ENTRY()" AND in:file'
-    logger.info("query: %s", query)
+    # Search for both Python and C++ plugins
+    python_plugins = search_python_plugins(g, limit)
+    cpp_plugins = search_cpp_plugins(g, limit)
+    
+    # Combine and sort by pushed_at date (descending)
+    plugins = sorted(python_plugins + cpp_plugins, key=lambda p: p.pushed_at, reverse=True)
+    
+    logger.info("Total plugins found: %d Python + %d C++ = %d", 
+                len(python_plugins), len(cpp_plugins), len(plugins))
 
-    results = g.search_code(query=query)
-    logger.info("found %d IDA plugins", results.totalCount)
-
-    max_results = limit or results.totalCount
-
-    for result in results[:max_results]:
-        parent: str | None = None
-        if result.repository.fork:
-            if result.repository.parent:
-                parent = result.repository.parent.full_name
-
-        content = result.decoded_content.decode("utf-8")
-        if "ida" not in content:
-            logger.debug("skipping %s: no ida", result.html_url)
-            continue
-
-        if result.repository.full_name in ("clovme/WTools",):
-            # these are handpicked repos to ignore
-            # due to embedding the IDA SDK/example plugins
-            logger.debug("skipping %s: denylist", result.html_url)
-            continue
-
-        props = extract_plugin_info(content)
-
-        plugin = {
-            "repository": result.repository.full_name,
-            "parent": parent,
-            "description": result.repository.description,
-            "file": result.path,
-            "url": result.html_url,
-            "wanted_name": props.get("wanted_name"),
-            "comment": props.get("comment"),
-            "created_at": result.repository.created_at.isoformat(),
-            "pushed_at": result.repository.pushed_at.isoformat(),
-            "forks_count": result.repository.forks_count,
-            "stargazers_count": result.repository.stargazers_count,
+    for plugin in plugins:
+        plugin_dict = {
+            "repository": plugin.repository,
+            "parent": plugin.parent,
+            "description": plugin.description,
+            "file": plugin.file,
+            "url": plugin.url,
+            "wanted_name": plugin.wanted_name,
+            "comment": plugin.comment,
+            "created_at": plugin.created_at.isoformat(),
+            "pushed_at": plugin.pushed_at.isoformat(),
+            "forks_count": plugin.forks_count,
+            "stargazers_count": plugin.stargazers_count,
+            "language": plugin.language,
         }
-        print(json.dumps(plugin))
+        print(json.dumps(plugin_dict))
 
 
 def main():
