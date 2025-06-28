@@ -40,6 +40,7 @@ In my feed reader, I display the quiet feeds at the top, so I can catch up on "s
   - [James Sinclair](https://jrsinclair.com/)
   - [Mr. Money Mustache](https://www.mrmoneymustache.com)
   - [secret club](https://secret.club/)
+  - [Sketch.dev blog](https://sketch.dev/blog)
   - [Electric Fire Design](https://electricfiredesign.com)
   - [Stephen Diehl](http://www.stephendiehl.com)
   - [Lambda the Ultimate](http://lambda-the-ultimate.org)

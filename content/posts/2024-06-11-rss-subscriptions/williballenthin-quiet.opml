@@ -28,6 +28,7 @@
             <outline type="rss" text="James Sinclair" title="James Sinclair" xmlUrl="http://jrsinclair.com/index.rss" htmlUrl="https://jrsinclair.com/"/>
             <outline type="rss" text="Mr. Money Mustache" title="Mr. Money Mustache" xmlUrl="http://feeds.feedburner.com/MrMoneyMustache" htmlUrl="https://www.mrmoneymustache.com"/>
             <outline type="rss" text="secret club" title="secret club" xmlUrl="https://secret.club/feed.xml" htmlUrl="https://secret.club/"/>
+            <outline type="rss" text="Sketch.dev blog" title="Sketch.dev blog" xmlUrl="https://sketch.dev/atom.xml" htmlUrl="https://sketch.dev/blog"/>
             <outline type="rss" text="Electric Fire Design" title="Electric Fire Design" xmlUrl="https://electricfiredesign.com/feed/" htmlUrl="https://electricfiredesign.com"/>
             <outline type="rss" text="Stephen Diehl" title="Stephen Diehl" xmlUrl="http://www.stephendiehl.com/feed.rss" htmlUrl="http://www.stephendiehl.com"/>
             <outline type="rss" text="Lambda the Ultimate" title="Lambda the Ultimate" xmlUrl="http://lambda-the-ultimate.org/rss.xml" htmlUrl="http://lambda-the-ultimate.org"/>
