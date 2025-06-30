@@ -183,6 +183,11 @@
                 htmlUrl="https://aider.chat/blog/"
                 xmlUrl="https://aider.chat/feed.xml"
                 />
+            <outline type="rss"
+                text="Kevin Lynagh" title="Kevin Lynagh"
+                htmlUrl="https://kevinlynagh.com/newsletter/"
+                xmlUrl="https://kevinlynagh.com/feed.xml"
+                />
 
             <!--
             <outline type="rss"
