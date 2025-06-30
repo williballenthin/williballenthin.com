@@ -26,7 +26,7 @@
       <li><a href="https://search.nixos.org/packages?channel=unstable&show=mosh&from=0&size=50&sort=relevance&type=packages&query=">nixOS packages</a></li>
       <li><a href="https://ifconfig.co/">whats my ip</a></li>
       <li><a href="https://pinboard.in/">pinboard</a></li>
-      <li><a href="https://scour.ing/@williballenthin">scour</a></li>
+      <li><a href="https://scour.ing/@williballenthin?t=1w&all_feeds=true">scour</a></li>
       <li><a href="https://www.newsminimalist.com">news minimalist</a></li>
     </ul>
   </div>
