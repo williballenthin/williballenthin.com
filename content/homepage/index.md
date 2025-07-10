@@ -27,6 +27,7 @@
       <li><a href="https://ifconfig.co/">whats my ip</a></li>
       <li><a href="https://pinboard.in/">pinboard</a></li>
       <li><a href="https://scour.ing/@williballenthin?t=1w&all_feeds=true">scour</a></li>
+      <li><a href="https://kite.kagi.com/">kite</a></li>
       <li><a href="https://www.newsminimalist.com">news minimalist</a></li>
     </ul>
   </div>
