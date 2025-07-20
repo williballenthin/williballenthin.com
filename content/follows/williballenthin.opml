@@ -188,6 +188,11 @@
                 htmlUrl="https://kevinlynagh.com/newsletter/"
                 xmlUrl="https://kevinlynagh.com/feed.xml"
                 />
+            <outline type="rss"
+                text="rockorager's devlog" title="rockorager's devlog"
+                htmlUrl="https://rockorager.dev/log/"
+                xmlUrl="https://rockorager.dev/log/rss.xml"
+                />
 
             <!--
             <outline type="rss"
