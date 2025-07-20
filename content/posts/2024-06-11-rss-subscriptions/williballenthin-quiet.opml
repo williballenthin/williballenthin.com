@@ -58,6 +58,7 @@
             <outline type="rss" text="Project Zero" title="Project Zero" xmlUrl="http://googleprojectzero.blogspot.com/feeds/posts/default" htmlUrl="https://googleprojectzero.blogspot.com/"/>
             <outline type="rss" text="Papers We Love" title="Papers We Love" xmlUrl="http://paperswelove.org/feed.xml" htmlUrl="http://papers-we-love.github.io/"/>
             <outline type="rss" text="The Mad Ned Memo" title="The Mad Ned Memo" xmlUrl="https://madned.substack.com/feed/" htmlUrl="https://madned.substack.com"/>
+            <outline type="rss" text="Rock or Ager" title="Rock or Ager" xmlUrl="https://rockorager.dev/feed.xml" htmlUrl="https://rockorager.dev/log/"/>
         </outline>
     </body>
 </opml>

@@ -189,6 +189,12 @@
                 xmlUrl="https://kevinlynagh.com/feed.xml"
                 />
 
+            <outline type="rss"
+                text="Rock or Ager" title="Rock or Ager"
+                htmlUrl="https://rockorager.dev/log/"
+                xmlUrl="https://rockorager.dev/feed.xml"
+                />
+
             <!--
             <outline type="rss"
                 text="" title=""
