@@ -175,15 +175,24 @@ for feed in opml["feeds"]:
 
 
 # take the 20 most recently updated repos
-for repo in requests.get("https://api.github.com/users/williballenthin/starred?sort=updated&direction=desc&per_page=20").json():
-    title = repo["full_name"]
-    logger.debug("found repo: %s", title)
+try:
+    response = requests.get("https://api.github.com/users/williballenthin/starred?sort=updated&direction=desc&per_page=20")
+    if response.status_code == 200:
+        repos = response.json()
+        
+        for repo in repos:
+            title = repo["full_name"]
+            logger.debug("found repo: %s", title)
 
-    homepage = f"https://github.com/{title}"
-    url = homepage + "/releases.atom"
-    feeds.append(
-        Feed("release", url, homepage=homepage, title=title)
-    )
+            homepage = f"https://github.com/{title}"
+            url = homepage + "/releases.atom"
+            feeds.append(
+                Feed("release", url, homepage=homepage, title=title)
+            )
+    else:
+        logger.warning("failed to fetch GitHub starred repos: HTTP %d", response.status_code)
+except Exception as e:
+    logger.warning("failed to fetch GitHub starred repos: %s", e, exc_info=True)
 
 # TODO
 # feeds = feeds[:3]
