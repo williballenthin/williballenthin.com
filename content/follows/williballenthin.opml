@@ -155,6 +155,12 @@
                 />
 
             <outline type="rss"
+                text="Will McGugan" title="Will McGugan"
+                htmlUrl="http://willmcgugan.github.io/"
+                xmlUrl="http://willmcgugan.github.io/feed.xml"
+                />
+
+            <outline type="rss"
                 text="benji.dog" title="benji.dog"
                 htmlUrl="https://www.benji.dog/"
                 xmlUrl="https://www.benji.dog/feed.xml"
