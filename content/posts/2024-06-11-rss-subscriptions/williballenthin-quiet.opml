@@ -38,6 +38,8 @@
             <outline type="rss" text="Kalzumeus Software" title="Kalzumeus Software" xmlUrl="http://www.kalzumeus.com/feed/" htmlUrl="https://www.kalzumeus.com"/>
             <outline type="rss" text="HPy" title="HPy" xmlUrl="https://hpyproject.org/rss.xml" htmlUrl="https://hpyproject.org/"/>
             <outline type="rss" text="seanmonstar" title="seanmonstar" xmlUrl="http://seanmonstar.com/rss" htmlUrl="https://seanmonstar.com/"/>
+            <outline type="rss" text="Simon Willison" title="Simon Willison" xmlUrl="https://simonwillison.net/atom.xml" htmlUrl="https://simonwillison.net/"/>
+            <outline type="rss" text="Will McGugan" title="Will McGugan" xmlUrl="http://willmcgugan.github.io/feed.xml" htmlUrl="http://willmcgugan.github.io/"/>
             <outline type="rss" text="The Grumpy Economist" title="The Grumpy Economist" xmlUrl="http://johnhcochrane.blogspot.com/feeds/posts/default" htmlUrl="https://johnhcochrane.blogspot.com/"/>
             <outline type="rss" text="Cryptography &amp; Security Newsletter" title="Cryptography &amp; Security Newsletter" xmlUrl="https://www.feistyduck.com/bulletproof-tls-newsletter/feed" htmlUrl="https://www.feistyduck.com/newsletter/"/>
             <outline type="rss" text="Paul Khuong: some Lisp" title="Paul Khuong: some Lisp" xmlUrl="http://www.pvk.ca/atom.xml" htmlUrl="https://www.pvk.ca/"/>
