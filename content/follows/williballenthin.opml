@@ -149,6 +149,12 @@
                 />
 
             <outline type="rss"
+                text="Simon Willison" title="Simon Willison"
+                htmlUrl="https://simonwillison.net/"
+                xmlUrl="https://simonwillison.net/atom.xml"
+                />
+
+            <outline type="rss"
                 text="benji.dog" title="benji.dog"
                 htmlUrl="https://www.benji.dog/"
                 xmlUrl="https://www.benji.dog/feed.xml"
