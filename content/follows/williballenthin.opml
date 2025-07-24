@@ -151,7 +151,7 @@
             <outline type="rss"
                 text="Simon Willison" title="Simon Willison"
                 htmlUrl="https://simonwillison.net/"
-                xmlUrl="https://simonwillison.net/atom.xml"
+                xmlUrl="https://simonwillison.net/atom/entries/"
                 />
 
             <outline type="rss"
