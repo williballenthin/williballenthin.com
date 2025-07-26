@@ -30,6 +30,7 @@ import html2text
 import feedparser
 import listparser
 import dateutil.parser
+import xml.etree.ElementTree as ET
 
 
 logger = logging.getLogger("gen")
@@ -37,6 +38,33 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 opml = listparser.parse(Path(sys.argv[1]).read_text(encoding="utf-8"))
+
+
+def parse_opml_with_homepage(opml_path):
+    """Parse OPML file manually to extract homepage URLs that listparser misses"""
+    tree = ET.parse(opml_path)
+    root = tree.getroot()
+    
+    # Find all RSS outline elements
+    outlines = root.findall('.//outline[@type="rss"]')
+    
+    feeds_with_homepage = {}
+    for outline in outlines:
+        xml_url = outline.get("xmlUrl")
+        html_url = outline.get("htmlUrl")
+        title = outline.get("title")
+        
+        if xml_url:
+            feeds_with_homepage[xml_url] = {
+                'title': title,
+                'homepage': html_url
+            }
+    
+    return feeds_with_homepage
+
+
+# Parse OPML manually to get homepage URLs
+opml_homepage_map = parse_opml_with_homepage(Path(sys.argv[1]))
 
 
 @dataclass
@@ -164,12 +192,17 @@ for feed in opml["feeds"]:
     if "a-quiet" not in feed["tags"]:
         continue
 
+    # Get homepage URL from our manual OPML parsing
+    feed_url = feed["url"]
+    homepage_info = opml_homepage_map.get(feed_url, {})
+    homepage = homepage_info.get('homepage')
+
     feeds.append(
         Feed(
             category="rss",
             title=feed["title"],
             url=feed["url"],
-            homepage=feed.get("htmlUrl"),
+            homepage=homepage,
         )
     )
 
