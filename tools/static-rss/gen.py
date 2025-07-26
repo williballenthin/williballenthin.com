@@ -232,7 +232,7 @@ for day, entries in itertools.groupby(entries, lambda entry: entry.timestamp.dat
               <details>
                  <summary>
                      <span class="link"><a href="{entry.link}">🔗</a></span>
-                     <span class="feed"><a href="{entry.feed.homepage}">{entry.feed.title}</a></span>
+                     <span class="feed">{f'<a href="{entry.feed.homepage}">{entry.feed.title}</a>' if entry.feed.homepage else entry.feed.title}</span>
                      <span class="title">{entry.title}</span>
                      <span class="category">{entry.feed.category}</span>
                  </summary>
