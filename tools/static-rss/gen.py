@@ -9,7 +9,6 @@
 #  "markdown==3.7",
 #  "python-dateutil==2.9.0.post0",
 #  "requests==2.32.3",
-#  "listparser==0.20.0",
 # ]
 # ///
 
@@ -28,15 +27,53 @@ import markdown
 import requests
 import html2text
 import feedparser
-import listparser
 import dateutil.parser
+import xml.etree.ElementTree as ET
 
 
 logger = logging.getLogger("gen")
 logging.basicConfig(level=logging.DEBUG)
 
 
-opml = listparser.parse(Path(sys.argv[1]).read_text(encoding="utf-8"))
+def parse_opml(opml_path):
+    """Parse OPML file directly to extract feeds with all necessary information"""
+    tree = ET.parse(opml_path)
+    root = tree.getroot()
+    
+    # Find the "a-quiet" outline group
+    quiet_outline = None
+    for outline in root.findall('.//outline'):
+        if outline.get("title") == "a-quiet" or outline.get("text") == "a-quiet":
+            quiet_outline = outline
+            break
+    
+    if quiet_outline is None:
+        logger.warning("Could not find 'a-quiet' section in OPML")
+        return []
+    
+    # Find all RSS feeds within the a-quiet section
+    feeds = []
+    rss_outlines = quiet_outline.findall('./outline[@type="rss"]')
+    
+    for outline in rss_outlines:
+        xml_url = outline.get("xmlUrl")
+        html_url = outline.get("htmlUrl")
+        title = outline.get("title") or outline.get("text")
+        
+        if xml_url and title:
+            feed_data = {
+                "url": xml_url,
+                "title": title,
+                "homepage": html_url,
+                "tags": ["a-quiet"]  # All feeds in this section have this tag
+            }
+            feeds.append(feed_data)
+    
+    return feeds
+
+
+# Parse OPML file completely with direct XML parsing
+opml_feeds = parse_opml(Path(sys.argv[1]))
 
 
 @dataclass
@@ -160,16 +197,13 @@ feeds = [
 ]
 
 
-for feed in opml["feeds"]:
-    if "a-quiet" not in feed["tags"]:
-        continue
-
+for feed in opml_feeds:
     feeds.append(
         Feed(
             category="rss",
             title=feed["title"],
             url=feed["url"],
-            homepage=feed.get("htmlUrl"),
+            homepage=feed["homepage"],
         )
     )
 
@@ -232,7 +266,7 @@ for day, entries in itertools.groupby(entries, lambda entry: entry.timestamp.dat
               <details>
                  <summary>
                      <span class="link"><a href="{entry.link}">🔗</a></span>
-                     <span class="feed"><a href="{entry.feed.homepage}">{entry.feed.title}</a></span>
+                     <span class="feed">{f'<a href="{entry.feed.homepage}">{entry.feed.title}</a>' if entry.feed.homepage else entry.feed.title}</span>
                      <span class="title">{entry.title}</span>
                      <span class="category">{entry.feed.category}</span>
                  </summary>
