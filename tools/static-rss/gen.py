@@ -34,6 +34,9 @@ import xml.etree.ElementTree as ET
 logger = logging.getLogger("gen")
 logging.basicConfig(level=logging.DEBUG)
 
+# Configuration: Number of days to look back for recent entries
+RECENT_DAYS = 3
+
 
 def parse_opml(opml_path):
     """Parse OPML file directly to extract feeds with all necessary information"""
@@ -126,7 +129,7 @@ class Feed:
         total_entries = len(d.entries)
         entries_in_period = 0
         now = datetime.datetime.now()
-        three_days_ago = (now - datetime.timedelta(days=3)).date()
+        three_days_ago = (now - datetime.timedelta(days=RECENT_DAYS)).date()
 
         for entry in d.entries:
 
@@ -211,8 +214,8 @@ class Feed:
                 raise ValueError("unexpected category")
         
         # Log feed statistics
-        logger.info("feed %s: found %d total entries, %d entries in past 3 days", 
-                   self.title, total_entries, entries_in_period)
+        logger.info("feed %s: found %d total entries, %d entries in past %d days", 
+                   self.title, total_entries, entries_in_period, RECENT_DAYS)
 
 
 feeds = [
@@ -275,7 +278,7 @@ entries = [e for e in entries
 
 # only show entries within the past three days
 now = datetime.datetime.now()
-three_days_ago = (now - datetime.timedelta(days=3)).date()
+three_days_ago = (now - datetime.timedelta(days=RECENT_DAYS)).date()
 # TODO
 entries = list(filter(lambda entry: entry.timestamp.date() >= three_days_ago, entries))
 
