@@ -37,6 +37,9 @@ logging.basicConfig(level=logging.DEBUG)
 # Configuration: Number of days to look back for recent entries
 RECENT_DAYS = 3
 
+# Global list to track feeds with no entries for summary
+feeds_with_no_entries = []
+
 
 def parse_opml(opml_path):
     """Parse OPML file directly to extract feeds with all necessary information"""
@@ -216,6 +219,15 @@ class Feed:
         # Log feed statistics
         logger.info("feed %s: found %d total entries, %d entries in past %d days", 
                    self.title, total_entries, entries_in_period, RECENT_DAYS)
+        
+        # Track feeds with no entries for summary
+        if total_entries == 0 or entries_in_period == 0:
+            feeds_with_no_entries.append({
+                'title': self.title,
+                'total_entries': total_entries,
+                'recent_entries': entries_in_period,
+                'url': self.url
+            })
 
 
 feeds = [
@@ -313,4 +325,22 @@ for day, entries in itertools.groupby(entries, lambda entry: entry.timestamp.dat
 
 print("</ol>")
 print(f"<p class='feed-metadata-generated'>generated: {now.strftime('%B %d, %Y at %H:%M:%S')}</p>")
+
+# Summarize feeds with no entries
+if feeds_with_no_entries:
+    logger.info("=== FEEDS WITH NO ENTRIES SUMMARY ===")
+    no_total_entries = [f for f in feeds_with_no_entries if f['total_entries'] == 0]
+    no_recent_entries = [f for f in feeds_with_no_entries if f['total_entries'] > 0 and f['recent_entries'] == 0]
+    
+    if no_total_entries:
+        logger.info("Feeds with no total entries (%d):", len(no_total_entries))
+        for feed in no_total_entries:
+            logger.info("  - %s (%s)", feed['title'], feed['url'])
+    
+    if no_recent_entries:
+        logger.info("Feeds with no recent entries in past %d days (%d):", RECENT_DAYS, len(no_recent_entries))
+        for feed in no_recent_entries:
+            logger.info("  - %s (%d total entries) (%s)", feed['title'], feed['total_entries'], feed['url'])
+else:
+    logger.info("All feeds have recent entries")
        
