@@ -17,8 +17,9 @@
             <outline type="rss" text="Ted Kaminski" title="Ted Kaminski" xmlUrl="http://www.tedinski.com/feed.xml" htmlUrl="http://www.tedinski.com/"/>
             <outline type="rss" text="Zeus WPI" title="Zeus WPI" xmlUrl="https://zeus.ugent.be/feed.xml" htmlUrl="https://zeus.ugent.be/"/>
             <outline type="rss" text="Anton Zhiyanov" title="Anton Zhiyanov" xmlUrl="https://antonz.org/feed.xml" htmlUrl="https://antonz.org/"/>
-            <outline type="rss" text="SparkFun Tutorials" title="SparkFun Tutorials" xmlUrl="http://www.sparkfun.com/feeds/tutorials" htmlUrl="https://learn.sparkfun.com/tutorials"/>
-            <outline type="rss" text="the morning paper" title="the morning paper" xmlUrl="http://blog.acolyer.org/feed/" htmlUrl="https://blog.acolyer.org"/>
+            <outline type="rss" text="SparkFun Tutorials" title="SparkFun Tutorials" xmlUrl="https://learn.sparkfun.com/feeds/tutorials" htmlUrl="https://learn.sparkfun.com/tutorials"/>
+            <!-- <outline type="rss" text="the morning paper" title="the morning paper" xmlUrl="http://blog.acolyer.org/feed/" htmlUrl="https://blog.acolyer.org"/> -->
+            <!-- Commented out: The Morning Paper blog has been discontinued -->
             <outline type="rss" text="Arne Bahlo" title="Arne Bahlo" xmlUrl="https://arne.me/feed.xml" htmlUrl="https://arne.me"/>
             <outline type="rss" text="Andrew Ayer - Blog" title="Andrew Ayer - Blog" xmlUrl="https://www.agwa.name/blog/feed" htmlUrl="https://www.agwa.name/blog"/>
             <outline type="rss" text="g/ianguid/o.today" title="g/ianguid/o.today" xmlUrl="https://g7o.today/feed.xml" htmlUrl="https://g7o.today/"/>
@@ -28,7 +29,7 @@
             <outline type="rss" text="Mr. Money Mustache" title="Mr. Money Mustache" xmlUrl="http://feeds.feedburner.com/MrMoneyMustache" htmlUrl="https://www.mrmoneymustache.com"/>
             <outline type="rss" text="secret club" title="secret club" xmlUrl="https://secret.club/feed.xml" htmlUrl="https://secret.club/"/>
             <outline type="rss" text="Electric Fire Design" title="Electric Fire Design" xmlUrl="https://electricfiredesign.com/feed/" htmlUrl="https://electricfiredesign.com"/>
-            <outline type="rss" text="Stephen Diehl" title="Stephen Diehl" xmlUrl="http://www.stephendiehl.com/feed.rss" htmlUrl="http://www.stephendiehl.com"/>
+            <outline type="rss" text="Stephen Diehl" title="Stephen Diehl" xmlUrl="https://www.stephendiehl.com/feed.xml" htmlUrl="https://www.stephendiehl.com"/>
             <outline type="rss" text="Lambda the Ultimate" title="Lambda the Ultimate" xmlUrl="http://lambda-the-ultimate.org/rss.xml" htmlUrl="http://lambda-the-ultimate.org"/>
             <outline type="rss" text="srcbeat" title="srcbeat" xmlUrl="http://www.srcbeat.com/index.xml" htmlUrl="https://www.srcbeat.com/"/>
             <outline type="rss" text="jank blog" title="jank blog" xmlUrl="https://jank-lang.org/blog/feed.xml" htmlUrl="https://jank-lang.org/blog/"/>
@@ -52,7 +53,7 @@
             <outline type="rss" text="Articles by thoughtram" title="Articles by thoughtram" xmlUrl="http://feeds.feedburner.com/thoughtram" htmlUrl="http://blog.thoughtram.io/"/>
             <outline type="rss" text="Julia Evans" title="Julia Evans" xmlUrl="http://jvns.ca/atom.xml" htmlUrl="http://jvns.ca"/>
             <outline type="rss" text="Stavros' Stuff Latest Posts" title="Stavros' Stuff Latest Posts" xmlUrl="http://feeds.feedburner.com/stavrosstuff" htmlUrl="http://www.stavros.io/"/>
-            <outline type="rss" text="Drew DeVault's blog" title="Drew DeVault's blog" xmlUrl="https://drewdevault.com/feed.xml" htmlUrl="https://drewdevault.com"/>
+            <outline type="rss" text="Drew DeVault's blog" title="Drew DeVault's blog" xmlUrl="https://drewdevault.com/blog/index.xml" htmlUrl="https://drewdevault.com"/>
             <outline type="rss" text="Project Zero" title="Project Zero" xmlUrl="http://googleprojectzero.blogspot.com/feeds/posts/default" htmlUrl="https://googleprojectzero.blogspot.com/"/>
             <outline type="rss" text="Papers We Love" title="Papers We Love" xmlUrl="http://paperswelove.org/feed.xml" htmlUrl="http://papers-we-love.github.io/"/>
             <outline type="rss" text="The Mad Ned Memo" title="The Mad Ned Memo" xmlUrl="https://madned.substack.com/feed/" htmlUrl="https://madned.substack.com"/>
@@ -207,11 +208,12 @@
                 xmlUrl="https://kevinlynagh.com/feed.xml"
                 />
 
-            <outline type="rss"
+            <!-- <outline type="rss"
                 text="Rock or Ager" title="Rock or Ager"
                 htmlUrl="https://rockorager.dev/log/"
                 xmlUrl="https://rockorager.dev/feed.xml"
-                />
+                /> -->
+            <!-- Commented out: RSS feed not found at specified URL -->
 
             <!--
             <outline type="rss"
