@@ -115,8 +115,18 @@ class Feed:
         try:
             d = feedparser.parse(self.url)
         except Exception as e:
-            logger.warn("failed to fetch: %s", self.title, exc_info=True)
+            logger.error("failed to fetch feed %s: %s", self.title, e, exc_info=True)
             return
+
+        # Check for feed parsing errors
+        if hasattr(d, 'bozo') and d.bozo and hasattr(d, 'bozo_exception'):
+            logger.error("failed to parse feed %s: %s", self.title, d.bozo_exception)
+            
+        # Track entries for logging
+        total_entries = len(d.entries)
+        entries_in_period = 0
+        now = datetime.datetime.now()
+        three_days_ago = (now - datetime.timedelta(days=3)).date()
 
         for entry in d.entries:
 
@@ -160,13 +170,20 @@ class Feed:
                 # this is probably technically not correct, since it backdates the post by a day, but whatever.
                 ts = ts.replace(" 24:00:00", " 00:00:00")
 
-                yield Entry(
+                entry_obj = Entry(
                     timestamp=dateutil.parser.parse(ts),
                     title=entry.title,
                     link=entry.link,
                     content=content_html,
                     feed=self,
                 )
+                
+                # Check if entry is within the 3-day period for logging
+                entry_date = entry_obj.timestamp.date() if entry_obj.timestamp.tzinfo is None else entry_obj.timestamp.astimezone().date()
+                if entry_date >= three_days_ago:
+                    entries_in_period += 1
+                
+                yield entry_obj
 
             elif self.category == "mastodon":
                 # mastodon post RSS feed
@@ -174,7 +191,7 @@ class Feed:
                 content_md = html2text.html2text(entry.summary)
                 content_html = markdown.markdown(content_md)
             
-                yield Entry(
+                entry_obj = Entry(
                     timestamp=dateutil.parser.parse(entry.published if "published" in entry else entry.updated),
                     # use first line of content
                     title=content_md.partition("\n")[0],
@@ -182,9 +199,20 @@ class Feed:
                     content=content_html,
                     feed=self,
                 )
+                
+                # Check if entry is within the 3-day period for logging
+                entry_date = entry_obj.timestamp.date() if entry_obj.timestamp.tzinfo is None else entry_obj.timestamp.astimezone().date()
+                if entry_date >= three_days_ago:
+                    entries_in_period += 1
+                
+                yield entry_obj
 
             else:
                 raise ValueError("unexpected category")
+        
+        # Log feed statistics
+        logger.info("feed %s: found %d total entries, %d entries in past 3 days", 
+                   self.title, total_entries, entries_in_period)
 
 
 feeds = [
