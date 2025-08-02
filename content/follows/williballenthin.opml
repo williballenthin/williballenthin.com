@@ -191,6 +191,12 @@
                 />
 
             <outline type="rss"
+                text="r/LocalLLaMA" title="r/LocalLLaMA"
+                htmlUrl="https://www.reddit.com/r/LocalLLaMA"
+                xmlUrl="https://www.reddit.com/r/LocalLLaMA/top/.rss?t=day"
+                />
+
+            <outline type="rss"
                 text="Aider Blog" title="Aider Blog"
                 htmlUrl="https://aider.chat/blog/"
                 xmlUrl="https://aider.chat/feed.xml"
