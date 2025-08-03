@@ -194,7 +194,7 @@
             <outline type="rss"
                 text="r/LocalLLaMA" title="r/LocalLLaMA"
                 htmlUrl="https://www.reddit.com/r/LocalLLaMA"
-                xmlUrl="https://www.reddit.com/r/LocalLLaMA/top/.rss?t=day"
+                xmlUrl="https://www.reddit.com/r/LocalLLaMA/top/.rss?t=week"
                 />
 
             <outline type="rss"
