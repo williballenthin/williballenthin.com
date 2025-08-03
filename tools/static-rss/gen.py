@@ -119,7 +119,17 @@ class Feed:
         logger.debug("fetching feed: %s", self.title)
 
         try:
-            d = feedparser.parse(self.url)
+            # Use proper User-Agent headers, especially important for Reddit feeds
+            if 'reddit.com' in self.url.lower():
+                import requests
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                }
+                response = requests.get(self.url, headers=headers, timeout=30)
+                response.raise_for_status()
+                d = feedparser.parse(response.text)
+            else:
+                d = feedparser.parse(self.url)
         except Exception as e:
             logger.error("failed to fetch feed %s: %s", self.title, e, exc_info=True)
             return
