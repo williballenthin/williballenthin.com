@@ -208,12 +208,11 @@
                 xmlUrl="https://kevinlynagh.com/feed.xml"
                 />
 
-            <!-- <outline type="rss"
+            <outline type="rss"
                 text="Rock or Ager" title="Rock or Ager"
                 htmlUrl="https://rockorager.dev/log/"
-                xmlUrl="https://rockorager.dev/feed.xml"
-                /> -->
-            <!-- Commented out: RSS feed not found at specified URL -->
+                xmlUrl="https://rockorager.dev/log/rss.xml"
+                />
 
             <!--
             <outline type="rss"
