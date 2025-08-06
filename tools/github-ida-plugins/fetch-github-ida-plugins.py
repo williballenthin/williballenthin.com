@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 # these are handpicked repos to ignore
 # due to embedding the IDA SDK/example plugins
-DENYLIST = ("clovme/WTools", "zoronikkill/idk", "BraveCattle/ctf", "vAlerainTech/vAlerain-Ark", "carsond135/malwareanalysis", "Ph0en1x-XMU/Ph0en1x-Team", "zmrbak/IDAPython", "Russinovich/IDA7.5_SDK", "cedricp/ddt4all")
+DENYLIST = ("clovme/WTools", "zoronikkill/idk", "BraveCattle/ctf", "vAlerainTech/vAlerain-Ark", "carsond135/malwareanalysis", "Ph0en1x-XMU/Ph0en1x-Team", "zmrbak/IDAPython", "Russinovich/IDA7.5_SDK", "cedricp/ddt4all", "williballenthin/williballenthin.com")
 
 # we put the styles first because the body content can be pretty large (hundreds of KBs)
 # which takes a moment to load.
