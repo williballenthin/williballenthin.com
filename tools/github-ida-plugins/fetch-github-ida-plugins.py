@@ -295,6 +295,11 @@ def collect_search_results(token: str, limit: int | None = None) -> list[SearchR
     
     for result in python_results:
         repo_name = result["repository"]["full_name"]
+        file_path = result["path"]
+
+        if "ddt4" in repo_name.lower() or "ddt4" in file_path.lower():
+            logger.debug("skipping %s: contains 'ddt4'", result["html_url"])
+            continue
         
         if repo_name in DENYLIST:
             logger.debug("skipping %s: denylist", result["html_url"])
@@ -317,6 +322,11 @@ def collect_search_results(token: str, limit: int | None = None) -> list[SearchR
     
     for result in cpp_results:
         repo_name = result["repository"]["full_name"]
+        file_path = result["path"]
+
+        if "ddt4" in repo_name.lower() or "ddt4" in file_path.lower():
+            logger.debug("skipping %s: contains 'ddt4'", result["html_url"])
+            continue
         
         if repo_name in DENYLIST:
             logger.debug("skipping %s: denylist", result["html_url"])
