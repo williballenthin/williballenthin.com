@@ -67,6 +67,8 @@ PLUGIN_TEMPLATE = """
     }
 </style>
 
+<p><strong>{{ plugins|length }} IDA Pro plugins found</strong>, generated: {{now.strftime('%B %d, %Y at %H:%M:%S')}}</p>
+
 <div id="sort-links" class="no-js">
   <span>Sort by:</span>
   <a href="#" id="sort-repo">repo</a>
@@ -123,7 +125,6 @@ PLUGIN_TEMPLATE = """
   {% endfor %}
   </tbody>
 </table>
-<p class='feed-metadata-generated'>Generated: {{now.strftime('%B %d, %Y at %H:%M:%S')}}, {{ plugins|length }} IDA Pro plugins found</p>
 
 <script src="/js/jquery-3.7.1.js"></script>
 <link rel="stylesheet" type="text/css" href="/css/dataTables.dataTables.min.css">
