@@ -215,6 +215,12 @@
                 xmlUrl="https://rockorager.dev/log/rss.xml"
                 />
 
+            <outline type="rss"
+                text="Ampcode News" title="Ampcode News"
+                xmlUrl="https://ampcode.com/news.rss"
+                htmlUrl="https://ampcode.com/news"
+                />
+
             <!--
             <outline type="rss"
                 text="" title=""
