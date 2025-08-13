@@ -1,0 +1,43 @@
+on:
+  schedule:
+    - cron: '30 6 * * *'  # rebuild daily at 6:30 UTC
+  workflow_dispatch:
+
+name: sync IDA plugin activity
+
+jobs:
+  sync:
+    runs-on: [ubuntu-latest]
+    steps:
+    - name: checkout
+      uses: actions/checkout@v1
+      with:
+        submodules: true
+    - name: Set up Python 3.12
+      uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+      with:
+        python-version: "3.12"
+    - name: fetch IDA plugins and generate activity report
+      run: |
+        pip install uv==0.3.3
+        # Create temporary database file
+        DB_FILE=$(mktemp ida-plugins-XXXXXX.db)
+        
+        # Fetch plugins to database
+        uv run tools/github-ida-plugins/fetch-github-ida-plugins.py --database "$DB_FILE"
+        
+        # Generate activity report
+        uv run tools/github-ida-plugins/render-plugin-activity.py "$DB_FILE" .
+        
+        # Clean up database file
+        rm "$DB_FILE"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: commit
+      run: |
+        git config --global user.email "bot@example.com"
+        git config --global user.name "Willi Ballenthin (GH Action)"
+        git add content/ida/plugins/activity/
+        git commit -m "update IDA plugin activity" || echo "no changes"
+    - name: push
+      uses: ad-m/github-push-action@master
