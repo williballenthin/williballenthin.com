@@ -1,0 +1,53 @@
+{{ partial "header.html" . }}
+
+<body lang="{{ .Site.LanguageCode }}">
+  <nav class="container">
+    <span class="breadcrumbs">
+      <a href="{{ .Site.Home.RelPermalink }}" class="breadcrumb">{{ .Site.Title }}</a>
+      
+      <!-- Build breadcrumb path based on URL segments, excluding the final segment -->
+      {{ $pathSegments := split (strings.TrimPrefix "/" (strings.TrimSuffix "/" .RelPermalink)) "/" }}
+      {{ $currentPath := "" }}
+      {{ $site := .Site }}
+      {{ $currentPermalink := .RelPermalink }}
+      
+      {{ range $index, $segment := $pathSegments }}
+        {{ if and (ne $segment "") (lt $index (sub (len $pathSegments) 1)) }}
+          {{ $currentPath = printf "%s/%s" $currentPath $segment }}
+          {{ $page := $site.GetPage $currentPath }}
+          
+          <!-- Check if segment is a year (4 digits), month (2 digits), or ida -->
+          {{ $isYear := and (eq (len $segment) 4) (strings.HasPrefix $segment "20") }}
+          {{ $isMonth := false }}
+          {{ if eq (len $segment) 2 }}
+            {{ $segmentInt := 0 }}
+            {{ if strings.HasPrefix $segment "0" }}
+              {{ $segmentInt = int (strings.TrimPrefix $segment "0") }}
+            {{ else }}
+              {{ $segmentInt = int $segment }}
+            {{ end }}
+            {{ $isMonth = and (ge $segmentInt 1) (le $segmentInt 12) }}
+          {{ end }}
+          {{ $isIda := eq $segment "ida" }}
+          
+          {{ if and $page (not $isYear) (not $isMonth) (not $isIda) }}
+            <a href="{{ $page.RelPermalink }}" class="breadcrumb">{{ $segment }}</a>
+          {{ else }}
+            <span class="breadcrumb">{{ $segment }}</span>
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    </span>
+  </nav>
+
+  <main class="container">
+    <div>
+      {{ .Content }}
+    </div>
+  </main>
+
+  {{ partial "footer.html" . }}
+  </body>
+
+<!-- layout: ida/single.html -->
+</html>
