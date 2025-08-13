@@ -16,6 +16,7 @@ import os
 import json
 import logging
 import requests
+import sqlite3
 import time
 from datetime import datetime
 from dataclasses import dataclass
@@ -547,6 +548,79 @@ def search_and_render_plugins_json(limit: int | None = None) -> None:
         print(json.dumps(plugin_dict))
 
 
+def init_database(db_path: str) -> None:
+    """Initialize the SQLite database with the repositories table."""
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS repositories (
+            org TEXT NOT NULL,
+            repository TEXT NOT NULL,
+            created_at DATETIME NOT NULL,
+            added DATETIME NOT NULL,
+            UNIQUE(org, repository)
+        )
+    """)
+    
+    conn.commit()
+    conn.close()
+
+
+def search_and_update_plugins_database(db_path: str, limit: int | None = None) -> None:
+    """Search for IDA plugins on GitHub and update the SQLite database."""
+    token = os.getenv("GITHUB_TOKEN")
+    if not token:
+        raise ValueError("GITHUB_TOKEN environment variable is required")
+    
+    # Initialize database if it doesn't exist
+    init_database(db_path)
+    
+    # Phase 1: Collect search results
+    logger.info("Phase 1: Collecting search results...")
+    search_results = collect_search_results(token, limit)
+    
+    if not search_results:
+        logger.warning("No search results found")
+        return
+    
+    # Phase 2: Batch fetch repository metadata
+    logger.info("Phase 2: Batch fetching repository metadata...")
+    repo_names = {result.repository for result in search_results}
+    repo_data = batch_fetch_repositories(token, repo_names)
+    
+    # Phase 3: Combine results
+    logger.info("Phase 3: Combining results...")
+    plugins = combine_results(search_results, repo_data)
+    
+    # Phase 4: Update database
+    logger.info("Phase 4: Updating database...")
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    
+    added_count = 0
+    current_time = datetime.now()
+    
+    for plugin in plugins:
+        org, repo = plugin.repository.split('/', 1)
+        
+        try:
+            cursor.execute("""
+                INSERT INTO repositories (org, repository, created_at, added)
+                VALUES (?, ?, ?, ?)
+            """, (org, repo, plugin.created_at, current_time))
+            added_count += 1
+            logger.info("Added new repository: %s", plugin.repository)
+        except sqlite3.IntegrityError:
+            # Repository already exists, skip
+            logger.debug("Repository already exists: %s", plugin.repository)
+    
+    conn.commit()
+    conn.close()
+    
+    logger.info("Database updated: %d new repositories added", added_count)
+
+
 def main():
     import argparse
 
@@ -555,6 +629,9 @@ def main():
     parser.add_argument(
         "--json", action="store_true", help="Output as JSONL instead of HTML (one JSON object per line)"
     )
+    parser.add_argument(
+        "--database", type=str, help="Path to SQLite database to update with repository information"
+    )
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -562,7 +639,9 @@ def main():
         handlers=[RichHandler(console=Console(stderr=True))],
     )
 
-    if args.json:
+    if args.database:
+        search_and_update_plugins_database(args.database, args.limit)
+    elif args.json:
         search_and_render_plugins_json(args.limit)
     else:
         search_and_render_plugins(args.limit)
