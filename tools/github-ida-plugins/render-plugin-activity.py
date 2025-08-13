@@ -84,6 +84,104 @@ def get_plugins_from_database(db_path: str) -> List[Dict[str, Any]]:
     return plugins
 
 
+def build_prefilter_query(repositories: List[str]) -> str:
+    """Build a GraphQL query to fetch pushedAt timestamps for multiple repositories"""
+    query_parts = ["query("]
+    variables_parts = []
+    query_body_parts = []
+    
+    for i, repo in enumerate(repositories):
+        owner, name = repo.split('/', 1)
+        alias = f"repo{i}"
+        
+        variables_parts.extend([
+            f"${alias}Owner: String!",
+            f"${alias}Name: String!"
+        ])
+        
+        query_body_parts.append(f"""
+        {alias}: repository(owner: ${alias}Owner, name: ${alias}Name) {{
+          nameWithOwner
+          pushedAt
+        }}""")
+    
+    query_parts.append(", ".join(variables_parts))
+    query_parts.append(") {")
+    query_parts.extend(query_body_parts)
+    query_parts.append("""
+      rateLimit {
+        remaining
+        limit
+      }
+    }""")
+    
+    return "".join(query_parts)
+
+
+def fetch_repositories_timestamps_batch(token: str, repositories: List[str]) -> Dict[str, Optional[datetime]]:
+    """Fetch pushedAt timestamps for multiple repositories in a single GraphQL query"""
+    if not repositories:
+        return {}
+    
+    query = build_prefilter_query(repositories)
+    variables = build_batch_variables(repositories)
+    
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+    
+    attempt = 1
+    while attempt <= 5:
+        if attempt > 1:
+            time.sleep(2)
+        
+        response = requests.post(
+            "https://api.github.com/graphql",
+            json={"query": query, "variables": variables},
+            headers=headers
+        )
+        
+        log_rate_limit_status(response)
+        
+        if response.status_code == 200:
+            break
+        elif handle_rate_limit_response(response, attempt):
+            attempt += 1
+            continue
+        else:
+            logger.error("Prefilter GraphQL request failed after retries: %s", response.text)
+            return {}
+    
+    if response.status_code != 200:
+        logger.error("Failed to fetch repository timestamps: %s", response.text)
+        return {}
+    
+    data = response.json()
+    if "errors" in data:
+        logger.error("GraphQL errors in prefilter request: %s", data["errors"])
+        return {}
+    
+    results = {}
+    for i, repository in enumerate(repositories):
+        alias = f"repo{i}"
+        repo_data = data["data"].get(alias)
+        
+        if not repo_data:
+            logger.warning("Repository %s not found or inaccessible", repository)
+            results[repository] = None
+            continue
+        
+        pushed_at_str = repo_data.get("pushedAt")
+        if pushed_at_str:
+            pushed_at = datetime.fromisoformat(pushed_at_str.replace("Z", "+00:00"))
+            results[repository] = pushed_at
+        else:
+            results[repository] = None
+    
+    return results
+
+
 def build_batch_query(repositories: List[str], since_date: datetime) -> str:
     """Build a GraphQL query to fetch activity for multiple repositories at once"""
     since_iso = since_date.isoformat()
@@ -353,22 +451,70 @@ def main():
     plugins = get_plugins_from_database(args.database)
     logger.info("Found %d plugins in database", len(plugins))
     
+    start_time = time.time()
     activity_data = []
     
     # if the batch is too large, then we get HTTP 502
     batch_size = 50
     repo_names = [plugin['full_name'] for plugin in plugins]
     
+    # Step 1: Pre-filter repositories by checking their pushedAt timestamps
+    logger.info("Pre-filtering repositories by last push timestamp...")
+    prefilter_start = time.time()
+    all_timestamps = {}
+    
     for i in range(0, len(repo_names), batch_size):
         batch_repos = repo_names[i:i + batch_size]
-        logger.info("Processing batch %d/%d (%d repositories)", 
+        logger.info("Fetching timestamps for batch %d/%d (%d repositories)", 
                    i // batch_size + 1, 
                    (len(repo_names) + batch_size - 1) // batch_size,
                    len(batch_repos))
         
+        batch_timestamps = fetch_repositories_timestamps_batch(token, batch_repos)
+        all_timestamps.update(batch_timestamps)
+    
+    prefilter_time = time.time() - prefilter_start
+    logger.info("Pre-filtering took %.2f seconds", prefilter_time)
+    
+    # Filter to only repositories that were pushed to on or after the target date
+    end_date = target_date + timedelta(days=1)
+    candidate_repos = []
+    candidate_plugins = []
+    
+    for plugin in plugins:
+        repo_name = plugin['full_name']
+        pushed_at = all_timestamps.get(repo_name)
+        
+        # Include repository if:
+        # 1. It was pushed to on or after target date, OR
+        # 2. It was added on the target date (new plugin), OR
+        # 3. We couldn't get its timestamp (to be safe)
+        added_date = datetime.fromisoformat(plugin['added_at'])
+        is_new_plugin = added_date.date() == target_date.date()
+        
+        if (pushed_at is None or 
+            pushed_at >= target_date or 
+            is_new_plugin):
+            candidate_repos.append(repo_name)
+            candidate_plugins.append(plugin)
+    
+    logger.info("Filtered from %d to %d repositories that might have activity (%.1f%% reduction)", 
+               len(repo_names), len(candidate_repos), 
+               100 * (1 - len(candidate_repos) / len(repo_names)))
+    
+    # Step 2: Fetch detailed activity for candidate repositories only
+    detail_start = time.time()
+    for i in range(0, len(candidate_repos), batch_size):
+        batch_repos = candidate_repos[i:i + batch_size]
+        batch_plugins = candidate_plugins[i:i + batch_size]
+        logger.info("Processing detailed activity for batch %d/%d (%d repositories)", 
+                   i // batch_size + 1, 
+                   (len(candidate_repos) + batch_size - 1) // batch_size,
+                   len(batch_repos))
+        
         batch_results = fetch_repositories_activity_batch(token, batch_repos, target_date)
         
-        for plugin in plugins[i:i + batch_size]:
+        for plugin in batch_plugins:
             repo_name = plugin['full_name']
             
             added_date = datetime.fromisoformat(plugin['added_at'])
@@ -387,6 +533,11 @@ def main():
                 activity_data.append(plugin_activity)
                 logger.info("Found activity for %s: %d commits, %d releases, new: %s",
                            repo_name, len(activity["commits"]), len(activity["releases"]), is_new_plugin)
+    
+    detail_time = time.time() - detail_start
+    total_time = time.time() - start_time
+    logger.info("Detailed activity fetching took %.2f seconds", detail_time)
+    logger.info("Total processing time: %.2f seconds", total_time)
     
     if activity_data:
         logger.info("Generating activity report for %d repositories", len(activity_data))
