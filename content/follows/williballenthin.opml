@@ -221,6 +221,12 @@
                 htmlUrl="https://ampcode.com/news"
                 />
 
+            <outline type="rss"
+                text="IDA Plugin Updates" title="IDA Plugin Updates"
+                htmlUrl="https://williballenthin.com/ida/plugins/activity/"
+                xmlUrl="https://williballenthin.com/ida/plugins/activity/index.xml"
+                />
+
             <!--
             <outline type="rss"
                 text="" title=""
