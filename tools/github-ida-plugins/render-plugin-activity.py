@@ -118,6 +118,19 @@ def build_prefilter_query(repositories: List[str]) -> str:
     return "".join(query_parts)
 
 
+def build_batch_variables(repositories: List[str]) -> Dict[str, str]:
+    """Build variables for the batch GraphQL query"""
+    variables = {}
+    
+    for i, repo in enumerate(repositories):
+        owner, name = repo.split('/', 1)
+        alias = f"repo{i}"
+        variables[f"{alias}Owner"] = owner
+        variables[f"{alias}Name"] = name
+    
+    return variables
+
+
 def fetch_repositories_timestamps_batch(token: str, repositories: List[str]) -> Dict[str, Optional[datetime]]:
     """Fetch pushedAt timestamps for multiple repositories in a single GraphQL query"""
     if not repositories:
@@ -235,19 +248,6 @@ def build_batch_query(repositories: List[str], since_date: datetime) -> str:
     }""")
     
     return "".join(query_parts)
-
-
-def build_batch_variables(repositories: List[str]) -> Dict[str, str]:
-    """Build variables for the batch GraphQL query"""
-    variables = {}
-    
-    for i, repo in enumerate(repositories):
-        owner, name = repo.split('/', 1)
-        alias = f"repo{i}"
-        variables[f"{alias}Owner"] = owner
-        variables[f"{alias}Name"] = name
-    
-    return variables
 
 
 def fetch_repositories_activity_batch(token: str, repositories: List[str], since_date: datetime) -> Dict[str, Dict[str, Any]]:
@@ -498,9 +498,9 @@ def main():
             candidate_repos.append(repo_name)
             candidate_plugins.append(plugin)
     
+    reduction_pct = 100 * (1 - len(candidate_repos) / len(repo_names)) if len(repo_names) > 0 else 0
     logger.info("Filtered from %d to %d repositories that might have activity (%.1f%% reduction)", 
-               len(repo_names), len(candidate_repos), 
-               100 * (1 - len(candidate_repos) / len(repo_names)))
+               len(repo_names), len(candidate_repos), reduction_pct)
     
     # Step 2: Fetch detailed activity for candidate repositories only
     detail_start = time.time()
