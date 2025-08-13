@@ -312,12 +312,11 @@ def update_draft_status(output_dir: Path, target_date: datetime) -> None:
         file_path = content_dir / year / month / f"{day}.md"
         
         if file_path.exists():
-            logger.info("Updating draft status for %s", file_path)
-            
             with open(file_path, 'r') as f:
                 content = f.read()
             
             if "draft: true" in content:
+                logger.info("Updating draft status for %s", file_path)
                 content = content.replace("draft: true", "draft: false")
                 
                 with open(file_path, 'w') as f:
