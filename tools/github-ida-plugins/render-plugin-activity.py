@@ -346,7 +346,7 @@ def main():
     if args.date:
         target_date = datetime.strptime(args.date, '%Y-%m-%d').replace(tzinfo=timezone.utc)
     else:
-        target_date = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+        target_date = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
     
     logger.info("Processing activity for date: %s", target_date.strftime('%Y-%m-%d'))
     
