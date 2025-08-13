@@ -65,9 +65,9 @@ def get_plugins_from_database(db_path: str) -> List[Dict[str, Any]]:
     cursor = conn.cursor()
     
     cursor.execute("""
-        SELECT org, repository, created_at, added
+        SELECT org, repository, created_at, added_at
         FROM repositories
-        ORDER BY added DESC
+        ORDER BY added_at DESC
     """)
     
     plugins = []
@@ -77,7 +77,7 @@ def get_plugins_from_database(db_path: str) -> List[Dict[str, Any]]:
             'repository': row['repository'],
             'full_name': f"{row['org']}/{row['repository']}",
             'created_at': row['created_at'],
-            'added': row['added']
+            'added_at': row['added_at']
         })
     
     conn.close()
@@ -88,7 +88,6 @@ def build_batch_query(repositories: List[str], since_date: datetime) -> str:
     """Build a GraphQL query to fetch activity for multiple repositories at once"""
     since_iso = since_date.isoformat()
     
-    # Start building the query
     query_parts = ["query("]
     variables_parts = []
     query_body_parts = []
@@ -97,13 +96,11 @@ def build_batch_query(repositories: List[str], since_date: datetime) -> str:
         owner, name = repo.split('/', 1)
         alias = f"repo{i}"
         
-        # Add variables for this repository
         variables_parts.extend([
             f"${alias}Owner: String!",
             f"${alias}Name: String!"
         ])
         
-        # Add query body for this repository
         query_body_parts.append(f"""
         {alias}: repository(owner: ${alias}Owner, name: ${alias}Name) {{
           nameWithOwner
@@ -129,7 +126,6 @@ def build_batch_query(repositories: List[str], since_date: datetime) -> str:
           }}
         }}""")
     
-    # Combine all parts
     query_parts.append(", ".join(variables_parts))
     query_parts.append(") {")
     query_parts.extend(query_body_parts)
@@ -161,7 +157,6 @@ def fetch_repositories_activity_batch(token: str, repositories: List[str], since
     if not repositories:
         return {}
     
-    # Build the batched GraphQL query
     query = build_batch_query(repositories, since_date)
     variables = build_batch_variables(repositories)
     
@@ -201,7 +196,6 @@ def fetch_repositories_activity_batch(token: str, repositories: List[str], since
         logger.error("GraphQL errors in batch request: %s", data["errors"])
         return {}
     
-    # Process the batch response
     results = {}
     for i, repository in enumerate(repositories):
         alias = f"repo{i}"
@@ -212,15 +206,20 @@ def fetch_repositories_activity_batch(token: str, repositories: List[str], since
             results[repository] = {"commits": [], "releases": []}
             continue
         
+        # Filter commits to only include those from the target day
         commits = []
         if repo_data["object"] and repo_data["object"]["history"]:
-            commits = repo_data["object"]["history"]["nodes"]
+            end_date = since_date + timedelta(days=1)
+            for commit in repo_data["object"]["history"]["nodes"]:
+                commit_date = datetime.fromisoformat(commit["committedDate"].replace("Z", "+00:00"))
+                if since_date <= commit_date < end_date:
+                    commits.append(commit)
         
-        # Filter releases to only include those created since the date
+        # Filter releases to only include those created on the target day
         releases = []
         for release in repo_data["releases"]["nodes"]:
             release_date = datetime.fromisoformat(release["createdAt"].replace("Z", "+00:00"))
-            if release_date >= since_date:
+            if since_date <= release_date < end_date:
                 releases.append(release)
         
         results[repository] = {"commits": commits, "releases": releases}
@@ -234,13 +233,19 @@ def generate_markdown_content(activity_data: List[PluginActivity], target_date: 
     
     # Hugo frontmatter
     date_str = target_date.strftime('%Y-%m-%d')
+    current_date = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    is_draft = target_date >= current_date
+    title = f"IDA Plugin Activity on {date_str}"
+    
     content.append("---")
-    content.append(f"date: {date_str}")
-    content.append("draft: true")
+    content.append(f"title: \"{title}\"")
+    content.append(f"date: {date_str}T23:59:59")
+    content.append(f"draft: {str(is_draft).lower()}")
     content.append("---")
     content.append("")
+    content.append(f"# {title}")
+    content.append("")
     
-    # New plugins section (sorted by repository name)
     new_plugins = [p for p in activity_data if p.new_plugin]
     if new_plugins:
         new_plugins.sort(key=lambda p: p.repository.lower())
@@ -250,7 +255,6 @@ def generate_markdown_content(activity_data: List[PluginActivity], target_date: 
             content.append(f"  - [{plugin.name}]({repo_url})")
         content.append("")
     
-    # New releases section (sorted by repository name)
     releases_data = []
     for plugin in activity_data:
         for release in plugin.releases:
@@ -265,7 +269,6 @@ def generate_markdown_content(activity_data: List[PluginActivity], target_date: 
             content.append(f"  - [{plugin.name}]({repo_url}) [{release_name}]({release['url']})")
         content.append("")
     
-    # Activity section (sorted by repository name)
     plugins_with_commits = [p for p in activity_data if p.commits]
     if plugins_with_commits:
         plugins_with_commits.sort(key=lambda p: p.repository.lower())
@@ -280,6 +283,15 @@ def generate_markdown_content(activity_data: List[PluginActivity], target_date: 
                 message = commit["messageHeadline"]
                 content.append(f"    - [{short_hash}]({commit_url}): {message}")
         content.append("")
+
+    content.append("<style>")
+    content.append("/* wider content, default is 36em, which is a better text reading width */")
+    content.append("nav.container,")
+    content.append("main.container {")
+    content.append("  max-width: 42em;")
+    content.append("}")
+    content.append("")
+    content.append("</style>")
     
     return "\n".join(content)
 
@@ -300,15 +312,12 @@ def update_draft_status(output_dir: Path, target_date: datetime) -> None:
         if file_path.exists():
             logger.info("Updating draft status for %s", file_path)
             
-            # Read the file
             with open(file_path, 'r') as f:
                 content = f.read()
             
-            # Update draft status
             if "draft: true" in content:
                 content = content.replace("draft: true", "draft: false")
                 
-                # Write back to file
                 with open(file_path, 'w') as f:
                     f.write(content)
                 
@@ -332,7 +341,6 @@ def main():
     if not token:
         raise ValueError("GITHUB_TOKEN environment variable is required")
     
-    # Parse target date
     if args.date:
         target_date = datetime.strptime(args.date, '%Y-%m-%d').replace(tzinfo=timezone.utc)
     else:
@@ -340,14 +348,13 @@ def main():
     
     logger.info("Processing activity for date: %s", target_date.strftime('%Y-%m-%d'))
     
-    # Get plugins from database
     logger.info("Reading plugins from database: %s", args.database)
     plugins = get_plugins_from_database(args.database)
     logger.info("Found %d plugins in database", len(plugins))
     
     activity_data = []
     
-    # Process repositories in batches of 50 (to stay within GraphQL complexity limits)
+    # if the batch is too large, then we get HTTP 502
     batch_size = 50
     repo_names = [plugin['full_name'] for plugin in plugins]
     
@@ -358,19 +365,14 @@ def main():
                    (len(repo_names) + batch_size - 1) // batch_size,
                    len(batch_repos))
         
-        # Fetch activity for this batch
         batch_results = fetch_repositories_activity_batch(token, batch_repos, target_date)
         
-        # Process results for this batch
         for plugin in plugins[i:i + batch_size]:
             repo_name = plugin['full_name']
             
-            # Check if this is a new plugin (added on target date, but exclude 2025-08-13 bulk import)
-            added_date = datetime.fromisoformat(plugin['added'])
-            bulk_import_date = datetime(2025, 8, 13).date()
-            is_new_plugin = added_date.date() == target_date.date() and added_date.date() != bulk_import_date
+            added_date = datetime.fromisoformat(plugin['added_at'])
+            is_new_plugin = added_date.date() == target_date.date()
             
-            # Get activity from batch results
             activity = batch_results.get(repo_name, {"commits": [], "releases": []})
             
             if activity["commits"] or activity["releases"] or is_new_plugin:
@@ -384,16 +386,10 @@ def main():
                 activity_data.append(plugin_activity)
                 logger.info("Found activity for %s: %d commits, %d releases, new: %s",
                            repo_name, len(activity["commits"]), len(activity["releases"]), is_new_plugin)
-        
-        # Small delay between batches to be nice to the API
-        if i + batch_size < len(repo_names):
-            time.sleep(1)
     
-    # Generate output if there's any activity
     if activity_data:
         logger.info("Generating activity report for %d repositories", len(activity_data))
         
-        # Create output directory structure
         output_dir = Path(args.output_dir)
         year = target_date.strftime('%Y')
         month = target_date.strftime('%m')
@@ -402,17 +398,14 @@ def main():
         content_dir = output_dir / "content" / "ida" / "plugins" / year / month
         content_dir.mkdir(parents=True, exist_ok=True)
         
-        # Generate markdown content
         markdown_content = generate_markdown_content(activity_data, target_date)
         
-        # Write the file
         output_file = content_dir / f"{day}.md"
         with open(output_file, 'w') as f:
             f.write(markdown_content)
         
         logger.info("Activity report written to: %s", output_file)
         
-        # Update draft status for previous days
         update_draft_status(output_dir, target_date)
         
     else:

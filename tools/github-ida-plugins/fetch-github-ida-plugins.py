@@ -558,7 +558,7 @@ def init_database(db_path: str) -> None:
             org TEXT NOT NULL,
             repository TEXT NOT NULL,
             created_at DATETIME NOT NULL,
-            added DATETIME NOT NULL,
+            added_at DATETIME NOT NULL,
             UNIQUE(org, repository)
         )
     """)
@@ -606,7 +606,7 @@ def search_and_update_plugins_database(db_path: str, limit: int | None = None) -
         
         try:
             cursor.execute("""
-                INSERT INTO repositories (org, repository, created_at, added)
+                INSERT INTO repositories (org, repository, created_at, added_at)
                 VALUES (?, ?, ?, ?)
             """, (org, repo, plugin.created_at, current_time))
             added_count += 1
