@@ -35,3 +35,10 @@ relativeURLs = true
     noHl = false
     style = 'modus-operandi'
     tabWidth = 4
+
+# RSS configuration
+rssLimit = 100  # Show more posts in RSS feeds
+
+[params]
+  # RSS feeds should include full content for IDA plugins section
+  rssFullText = true

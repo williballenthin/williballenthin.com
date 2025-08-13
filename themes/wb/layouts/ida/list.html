@@ -23,6 +23,35 @@
       </div>
       {{ end }}
 
+      {{ if eq .RelPermalink "/ida/plugins/activity/" }}
+      <!-- Group pages by month for the plugin activity listing -->
+      {{ $pages := .Site.GetPage "/ida/plugins/activity" }}
+      {{ $byMonth := dict }}
+      {{ range $pages.RegularPagesRecursive }}
+        {{ $monthKey := .Date.Format "2006-01" }}
+        {{ $monthName := .Date.Format "January 2006" }}
+        {{ $existing := index $byMonth $monthKey }}
+        {{ if $existing }}
+          {{ $byMonth = merge $byMonth (dict $monthKey (dict "name" $monthName "pages" (append $existing.pages .))) }}
+        {{ else }}
+          {{ $byMonth = merge $byMonth (dict $monthKey (dict "name" $monthName "pages" (slice .))) }}
+        {{ end }}
+      {{ end }}
+
+      {{ range $monthKey, $monthData := $byMonth }}
+        {{ $sortedPages := sort $monthData.pages ".Date" "desc" }}
+        <h2>{{ $monthData.name }}</h2>
+        <ul class="content-list">
+          {{ range $sortedPages }}
+          <li>
+            <a href="{{ .RelPermalink}}" class="entry-link">{{ .Date.Format "January 2, 2006" }}</a>
+          </li>
+          {{ end }}
+        </ul>
+      {{ end }}
+
+      {{ else }}
+      <!-- For other ida sections, show regular listing -->
       {{ if .Pages }}
       <ul class="content-list">
         {{ range .Pages.ByDate.Reverse }}
@@ -35,7 +64,7 @@
       {{ end }}
 
       {{ if .Sections }}
-      <h2>Browse by Date</h2>
+      <h2>Browse by Section</h2>
       <ul class="content-list">
         {{ range .Sections.ByTitle }}
         <li>
@@ -43,6 +72,7 @@
         </li>
         {{ end }}
       </ul>
+      {{ end }}
       {{ end }}
     </div>
   </main>

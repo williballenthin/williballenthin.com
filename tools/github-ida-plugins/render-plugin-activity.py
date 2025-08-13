@@ -235,7 +235,7 @@ def generate_markdown_content(activity_data: List[PluginActivity], target_date: 
     date_str = target_date.strftime('%Y-%m-%d')
     current_date = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     is_draft = target_date >= current_date
-    title = f"IDA Plugin Activity on {date_str}"
+    title = f"IDA Plugin Updates on {date_str}"
     
     content.append("---")
     content.append(f"title: \"{title}\"")
@@ -249,7 +249,7 @@ def generate_markdown_content(activity_data: List[PluginActivity], target_date: 
     new_plugins = [p for p in activity_data if p.new_plugin]
     if new_plugins:
         new_plugins.sort(key=lambda p: p.repository.lower())
-        content.append("# New Plugins:")
+        content.append("## New Plugins:")
         for plugin in new_plugins:
             repo_url = f"https://github.com/{plugin.repository}"
             content.append(f"  - [{plugin.name}]({repo_url})")
@@ -262,7 +262,7 @@ def generate_markdown_content(activity_data: List[PluginActivity], target_date: 
     
     if releases_data:
         releases_data.sort(key=lambda item: item[0].repository.lower())
-        content.append("# New Releases:")
+        content.append("## New Releases:")
         for plugin, release in releases_data:
             repo_url = f"https://github.com/{plugin.repository}"
             release_name = release.get("name") or release.get("tagName", "Unknown")
@@ -272,7 +272,7 @@ def generate_markdown_content(activity_data: List[PluginActivity], target_date: 
     plugins_with_commits = [p for p in activity_data if p.commits]
     if plugins_with_commits:
         plugins_with_commits.sort(key=lambda p: p.repository.lower())
-        content.append("# Activity:")
+        content.append("## Activity:")
         for plugin in plugins_with_commits:
             repo_url = f"https://github.com/{plugin.repository}"
             content.append(f"  - [{plugin.name}]({repo_url})")
@@ -296,9 +296,11 @@ def generate_markdown_content(activity_data: List[PluginActivity], target_date: 
     return "\n".join(content)
 
 
+
+
 def update_draft_status(output_dir: Path, target_date: datetime) -> None:
     """Update draft status for previous days' documents"""
-    content_dir = output_dir / "content" / "ida" / "plugins"
+    content_dir = output_dir / "content" / "ida" / "plugins" / "activity"
     
     # Look for files in the last 7 days
     for days_back in range(1, 8):
@@ -395,7 +397,8 @@ def main():
         month = target_date.strftime('%m')
         day = target_date.strftime('%d')
         
-        content_dir = output_dir / "content" / "ida" / "plugins" / year / month
+        
+        content_dir = output_dir / "content" / "ida" / "plugins" / "activity" / year / month
         content_dir.mkdir(parents=True, exist_ok=True)
         
         markdown_content = generate_markdown_content(activity_data, target_date)
