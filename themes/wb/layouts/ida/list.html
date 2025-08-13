@@ -1,0 +1,54 @@
+{{ partial "header.html" . }}
+
+<body lang="{{ .Site.LanguageCode }}">
+  <nav class="container">
+    <span class="breadcrumbs">
+      <a href="{{ .Site.Home.RelPermalink }}" class="breadcrumb">{{ .Site.Title }}</a>
+      {{ with .Site.GetPage "/ida" }}
+      <a href="{{ .RelPermalink  }}" class="breadcrumb">ida</a>
+      {{ end }}
+      {{ if ne .RelPermalink "/ida/" }}
+      <span class="breadcrumb">{{ .Title }}</span>
+      {{ end }}
+    </span>
+  </nav>
+
+  <main class="container">
+    <div>
+      <h1>{{ .Title }}</h1>
+      
+      {{ with .Content }}
+      <div class="content">
+        {{ . }}
+      </div>
+      {{ end }}
+
+      {{ if .Pages }}
+      <ul class="content-list">
+        {{ range .Pages.ByDate.Reverse }}
+        <li>
+          <a href="{{ .RelPermalink}}" class="entry-link">{{ .Title }}</a><br/>
+          <span class="date">{{ .Date.Format "January 2, 2006" }}</span>
+        </li>
+        {{ end }}
+      </ul>
+      {{ end }}
+
+      {{ if .Sections }}
+      <h2>Browse by Date</h2>
+      <ul class="content-list">
+        {{ range .Sections.ByTitle }}
+        <li>
+          <a href="{{ .RelPermalink}}" class="entry-link">{{ .Title }}</a>
+        </li>
+        {{ end }}
+      </ul>
+      {{ end }}
+    </div>
+  </main>
+
+  {{ partial "footer.html" . }}
+  </body>
+
+<!-- layout: ida/list.html -->
+</html>
