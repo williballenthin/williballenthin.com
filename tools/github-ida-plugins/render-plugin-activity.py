@@ -381,15 +381,6 @@ def generate_markdown_content(activity_data: List[PluginActivity], target_date: 
                 message = commit["messageHeadline"]
                 content.append(f"    - [{short_hash}]({commit_url}): {message}")
         content.append("")
-
-    content.append("<style>")
-    content.append("/* wider content, default is 36em, which is a better text reading width */")
-    content.append("nav.container,")
-    content.append("main.container {")
-    content.append("  max-width: 42em;")
-    content.append("}")
-    content.append("")
-    content.append("</style>")
     
     return "\n".join(content)
 
