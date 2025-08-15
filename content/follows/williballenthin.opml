@@ -181,6 +181,12 @@
                 />
 
             <outline type="rss"
+                text="muffinman" title="muffinman"
+                htmlUrl="https://muffinman.io/blog/"
+                xmlUrl="https://muffinman.io/atom.xml"
+                />
+
+            <outline type="rss"
                 text="r/reverseengineering" title="r/reverseengineering"
                 htmlUrl="https://www.reddit.com/r/reverseengineering"
                 xmlUrl="https://www.reddit.com/r/reverseengineering/new/.rss?sort=new"
