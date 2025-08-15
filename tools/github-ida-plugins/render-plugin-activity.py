@@ -346,7 +346,7 @@ def generate_markdown_content(activity_data: List[PluginActivity], target_date: 
     
     new_plugins = [p for p in activity_data if p.new_plugin]
     if new_plugins:
-        new_plugins.sort(key=lambda p: p.repository.lower())
+        new_plugins.sort(key=lambda p: p.name.lower())
         content.append("### New Plugins:")
         for plugin in new_plugins:
             repo_url = f"https://github.com/{plugin.repository}"
@@ -359,7 +359,7 @@ def generate_markdown_content(activity_data: List[PluginActivity], target_date: 
             releases_data.append((plugin, release))
     
     if releases_data:
-        releases_data.sort(key=lambda item: item[0].repository.lower())
+        releases_data.sort(key=lambda item: item[0].name.lower())
         content.append("### New Releases:")
         for plugin, release in releases_data:
             repo_url = f"https://github.com/{plugin.repository}"
@@ -369,7 +369,7 @@ def generate_markdown_content(activity_data: List[PluginActivity], target_date: 
     
     plugins_with_commits = [p for p in activity_data if p.commits]
     if plugins_with_commits:
-        plugins_with_commits.sort(key=lambda p: p.repository.lower())
+        plugins_with_commits.sort(key=lambda p: p.name.lower())
         content.append("### Activity:")
         for plugin in plugins_with_commits:
             repo_url = f"https://github.com/{plugin.repository}"
