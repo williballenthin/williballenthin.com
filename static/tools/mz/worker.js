@@ -1,4 +1,4 @@
-importScripts("https://cdn.jsdelivr.net/pyodide/v0.23.2/full/pyodide.js");
+importScripts("/vendor/pyodide/pyodide.js");
 
 async function main() {
     // pump log messages up to the main application,
