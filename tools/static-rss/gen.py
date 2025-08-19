@@ -244,7 +244,6 @@ feeds = [
     Feed.from_mastodon("@cxiao@infosec.exchange"),
     Feed.from_mastodon("@malcat@infosec.exchange"),
     Feed.from_mastodon("@pnx@infosec.exchange"),
-    Feed.from_mastodon("@trailofbits@infosec.exchange"),
     Feed.from_mastodon("@HexRaysSA@infosec.exchange"),
     Feed.from_mastodon("@binaryninja@infosec.exchange"),
 ]
