@@ -1,6 +1,8 @@
 on:
   push:
     branches: [ master ]
+  schedule:
+    - cron: '0 9 * * *'  # rebuild daily at 0900 UTC
 
 name: rebuild and deploy site
 
