@@ -229,8 +229,8 @@
 
             <outline type="rss"
                 text="IDA Plugin Updates" title="IDA Plugin Updates"
-                htmlUrl="https://williballenthin.com/ida/plugins/activity/"
-                xmlUrl="https://williballenthin.com/ida/plugins/activity/index.xml"
+                htmlUrl="https://www.williballenthin.com/ida/plugins/activity/"
+                xmlUrl="https://www.williballenthin.com/ida/plugins/activity/index.xml"
                 />
 
             <!--
