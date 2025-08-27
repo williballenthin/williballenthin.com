@@ -233,6 +233,12 @@
                 xmlUrl="https://www.williballenthin.com/ida/plugins/activity/index.xml"
                 />
 
+            <outline type="rss"
+                text="Lubeno" title="Lubeno"
+                htmlUrl="https://lubeno.dev/blog"
+                xmlUrl="https://lubeno.dev/feed.xml"
+                />
+
             <!--
             <outline type="rss"
                 text="" title=""
