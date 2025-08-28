@@ -236,7 +236,7 @@
             <outline type="rss"
                 text="Lubeno" title="Lubeno"
                 htmlUrl="https://lubeno.dev/blog"
-                xmlUrl="https://lubeno.dev/feed.xml"
+                xmlUrl="https://lubeno.dev/blog/feed/"
                 />
 
             <!--
