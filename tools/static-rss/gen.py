@@ -19,6 +19,7 @@ import datetime
 import itertools
 import urllib.error
 import concurrent.futures
+import re
 from pathlib import Path
 from typing import Iterator, Optional
 from dataclasses import dataclass
@@ -39,6 +40,23 @@ RECENT_DAYS = 3
 
 # Global list to track feeds with no entries for summary
 feeds_with_no_entries = []
+
+
+def remove_heading_links(html_content):
+    """
+    Remove anchor links from headings (h1-h6) in HTML content.
+    This preserves the heading text but removes any nested anchor links.
+    """
+    # Pattern to match headings with anchor links
+    heading_link_pattern = r'(<h[1-6][^>]*>)\s*<a[^>]*>([^<]*)</a>\s*(</h[1-6]>)'
+    
+    def replace_heading_link(match):
+        opening_tag = match.group(1)
+        text_content = match.group(2)
+        closing_tag = match.group(3)
+        return f"{opening_tag}{text_content}{closing_tag}"
+    
+    return re.sub(heading_link_pattern, replace_heading_link, html_content, flags=re.IGNORECASE)
 
 
 def parse_opml(opml_path):
@@ -155,8 +173,11 @@ class Feed:
 
                             # danger: injection
                             # content_html = html.unescape(content.value)
+                            
+                            # Remove anchor links from headings before processing
+                            cleaned_content = remove_heading_links(content.value)
 
-                            content_md = html2text.html2text(content.value)
+                            content_md = html2text.html2text(cleaned_content)
                             content_html = markdown.markdown(content_md)
 
                         elif content.type == "text/plain":
@@ -169,7 +190,9 @@ class Feed:
                         break
 
                 elif hasattr(entry, "summary"):
-                    content_html = markdown.markdown(entry.summary)
+                    # Remove anchor links from headings in summary as well
+                    cleaned_summary = remove_heading_links(entry.summary)
+                    content_html = markdown.markdown(cleaned_summary)
 
                 elif hasattr(entry, "title"):
                     content_html = "<i>(empty)</i>"
@@ -203,8 +226,10 @@ class Feed:
 
             elif self.category == "mastodon":
                 # mastodon post RSS feed
-
-                content_md = html2text.html2text(entry.summary)
+                
+                # Remove anchor links from headings before processing
+                cleaned_summary = remove_heading_links(entry.summary)
+                content_md = html2text.html2text(cleaned_summary)
                 content_html = markdown.markdown(content_md)
             
                 entry_obj = Entry(
