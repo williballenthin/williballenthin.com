@@ -46,17 +46,53 @@ def remove_heading_links(html_content):
     """
     Remove anchor links from headings (h1-h6) in HTML content.
     This preserves the heading text but removes any nested anchor links.
+    Must handle both wrapped links and empty anchor tags that become problematic in markdown.
     """
-    # Pattern to match headings with anchor links
-    heading_link_pattern = r'(<h[1-6][^>]*>)\s*<a[^>]*>([^<]*)</a>\s*(</h[1-6]>)'
+    # Handle HTML anchor links that wrap heading text
+    wrapped_link_pattern = r'(<h[1-6][^>]*>)\s*<a[^>]*>([^<]*)</a>\s*(</h[1-6]>)'
     
-    def replace_heading_link(match):
+    def replace_wrapped_link(match):
         opening_tag = match.group(1)
         text_content = match.group(2)
         closing_tag = match.group(3)
         return f"{opening_tag}{text_content}{closing_tag}"
     
-    return re.sub(heading_link_pattern, replace_heading_link, html_content, flags=re.IGNORECASE)
+    content = re.sub(wrapped_link_pattern, replace_wrapped_link, html_content, flags=re.IGNORECASE)
+    
+    # Handle empty anchor tags within headings (critical for Rust Blog and similar)
+    # Pattern: <h4 id="..."><a class="anchor" href="..."></a>\n text content</h4>
+    empty_anchor_pattern = r'(<h[1-6][^>]*>)\s*<a[^>]*></a>\s*([\s\S]*?)(</h[1-6]>)'
+    
+    def replace_empty_anchor(match):
+        opening_tag = match.group(1)
+        text_content = match.group(2)
+        closing_tag = match.group(3)
+        # Clean up whitespace and newlines in the text content
+        clean_text = re.sub(r'\s+', ' ', text_content.strip())
+        return f"{opening_tag}{clean_text}{closing_tag}"
+    
+    content = re.sub(empty_anchor_pattern, replace_empty_anchor, content, flags=re.IGNORECASE | re.DOTALL)
+    
+    return content
+
+
+def clean_markdown_links_from_headings(html_content):
+    """
+    Clean up any malformed markdown links in headings after markdown processing.
+    This handles cases where html2text->markdown conversion created problems.
+    """
+    # Pattern: heading with [](...) that may be broken across elements
+    markdown_link_pattern = r'(<h[1-6][^>]*>)\s*\[\]\([^)]*\)\s*(.*?)(</h[1-6]>)'
+    
+    def replace_markdown_link(match):
+        opening_tag = match.group(1)
+        text_content = match.group(2)
+        closing_tag = match.group(3)
+        # Remove any remaining markup and clean text
+        clean_text = re.sub(r'<[^>]*>', '', text_content).strip()
+        return f"{opening_tag}{clean_text}{closing_tag}"
+    
+    return re.sub(markdown_link_pattern, replace_markdown_link, html_content, flags=re.IGNORECASE | re.DOTALL)
 
 
 def parse_opml(opml_path):
@@ -179,6 +215,9 @@ class Feed:
 
                             content_md = html2text.html2text(cleaned_content)
                             content_html = markdown.markdown(content_md)
+                            
+                            # Clean up any remaining malformed markdown links in headings
+                            content_html = clean_markdown_links_from_headings(content_html)
 
                         elif content.type == "text/plain":
                             content_html = markdown.markdown(content.value)
@@ -193,6 +232,9 @@ class Feed:
                     # Remove anchor links from headings in summary as well
                     cleaned_summary = remove_heading_links(entry.summary)
                     content_html = markdown.markdown(cleaned_summary)
+                    
+                    # Clean up any remaining malformed markdown links in headings
+                    content_html = clean_markdown_links_from_headings(content_html)
 
                 elif hasattr(entry, "title"):
                     content_html = "<i>(empty)</i>"
@@ -231,6 +273,9 @@ class Feed:
                 cleaned_summary = remove_heading_links(entry.summary)
                 content_md = html2text.html2text(cleaned_summary)
                 content_html = markdown.markdown(content_md)
+                
+                # Clean up any remaining malformed markdown links in headings
+                content_html = clean_markdown_links_from_headings(content_html)
             
                 entry_obj = Entry(
                     timestamp=dateutil.parser.parse(entry.published if "published" in entry else entry.updated),
