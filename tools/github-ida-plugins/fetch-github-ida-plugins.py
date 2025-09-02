@@ -298,61 +298,68 @@ def collect_search_results(token: str, limit: int | None = None) -> list[SearchR
     """Collect search results using direct API calls."""
     results = []
     
-    # Search for Python plugins
-    python_query = 'language:python AND "def PLUGIN_ENTRY()" AND in:file'
-    logger.info("Python query: %s", python_query)
+    # Define search configurations
+    search_configs = [
+        {
+            'query': 'language:python AND "def PLUGIN_ENTRY()" AND in:file',
+            'language': 'python',
+            'description': 'Python IDA plugins'
+        },
+        {
+            'query': '"idaapi init" AND in:file AND language:"C++"',
+            'language': 'C++',
+            'description': 'C++ IDA plugins'
+        },
+        {
+            'query': 'language:python AND "ida_domain" AND in:file',
+            'language': 'python',
+            'description': 'Python files with ida_domain'
+        }
+    ]
     
-    python_results = search_github_code(token, python_query, limit)
-    logger.info("found %d Python IDA plugins", len(python_results))
-    
-    for result in python_results:
-        repo_name = result["repository"]["full_name"]
-        file_path = result["path"]
-
-        if "ddt4" in repo_name.lower() or "ddt4" in file_path.lower():
-            logger.debug("skipping %s: contains 'ddt4'", result["html_url"])
-            continue
+    # Process each search configuration
+    for config in search_configs:
+        query = config['query']
+        language = config['language']
+        description = config['description']
         
-        if repo_name in DENYLIST:
-            logger.debug("skipping %s: denylist", result["html_url"])
-            continue
-            
-        results.append(SearchResult(
-            repository=repo_name,
-            file=result["path"],
-            url=result["html_url"],
-            language="python"
-        ))
-        logger.info("Found Python plugin: %s", repo_name)
-    
-    # Search for C++ plugins
-    cpp_query = '"idaapi init" AND in:file AND language:"C++"'
-    logger.info("C++ query: %s", cpp_query)
-    
-    cpp_results = search_github_code(token, cpp_query, limit)
-    logger.info("found %d C++ IDA plugins", len(cpp_results))
-    
-    for result in cpp_results:
-        repo_name = result["repository"]["full_name"]
-        file_path = result["path"]
-
-        if "ddt4" in repo_name.lower() or "ddt4" in file_path.lower():
-            logger.debug("skipping %s: contains 'ddt4'", result["html_url"])
-            continue
+        logger.info("%s query: %s", description, query)
         
-        if repo_name in DENYLIST:
-            logger.debug("skipping %s: denylist", result["html_url"])
-            continue
-            
-        results.append(SearchResult(
-            repository=repo_name,
-            file=result["path"],
-            url=result["html_url"],
-            language="C++"
-        ))
-        logger.info("Found C++ plugin: %s", repo_name)
+        search_results = search_github_code(token, query, limit)
+        logger.info("found %d %s", len(search_results), description)
+        
+        for result in search_results:
+            repo_name = result["repository"]["full_name"]
+            file_path = result["path"]
+
+            # Apply filtering logic
+            if should_skip_result(repo_name, file_path, result["html_url"]):
+                continue
+                
+            results.append(SearchResult(
+                repository=repo_name,
+                file=result["path"],
+                url=result["html_url"],
+                language=language
+            ))
+            logger.info("Found %s: %s", description.lower(), repo_name)
     
     return results
+
+
+def should_skip_result(repo_name: str, file_path: str, html_url: str) -> bool:
+    """Determine if a search result should be skipped based on filtering criteria."""
+    # Skip repositories containing 'ddt4'
+    if "ddt4" in repo_name.lower() or "ddt4" in file_path.lower():
+        logger.debug("skipping %s: contains 'ddt4'", html_url)
+        return True
+    
+    # Skip repositories in the denylist
+    if repo_name in DENYLIST:
+        logger.debug("skipping %s: denylist", html_url)
+        return True
+    
+    return False
 
 
 def batch_fetch_repositories(token: str, repo_names: set[str]) -> dict[str, dict]:
