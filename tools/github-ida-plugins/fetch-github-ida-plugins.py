@@ -42,6 +42,7 @@ DENYLIST = (
     "Russinovich/IDA7.5_SDK",
     "cedricp/ddt4all",
     "williballenthin/williballenthin.com",
+    "datahaven-net/zenaida",
 )
 
 # we put the styles first because the body content can be pretty large (hundreds of KBs)
