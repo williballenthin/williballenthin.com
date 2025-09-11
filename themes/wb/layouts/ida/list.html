@@ -71,7 +71,15 @@
         {{ end }}
       {{ end }}
 
+      <!-- Extract and sort month keys in descending order -->
+      {{ $monthKeys := slice }}
       {{ range $monthKey, $monthData := $byMonth }}
+        {{ $monthKeys = $monthKeys | append $monthKey }}
+      {{ end }}
+      {{ $sortedMonthKeys := sort $monthKeys "" "desc" }}
+      
+      {{ range $monthKey := $sortedMonthKeys }}
+        {{ $monthData := index $byMonth $monthKey }}
         {{ $sortedPages := sort $monthData.pages ".Date" "desc" }}
         <h2>{{ $monthData.name }}</h2>
         <ul class="content-list">
