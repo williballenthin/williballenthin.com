@@ -233,6 +233,12 @@
                 xmlUrl="https://www.williballenthin.com/ida/plugins/activity/index.xml"
                 />
 
+            <outline type="rss"
+                text="Sketch Blog" title="Sketch Blog"
+                htmlUrl="https://sketch.dev/blog"
+                xmlUrl="https://sketch.dev/atom.xml"
+                />
+
             <!--
             <outline type="rss"
                 text="" title=""
