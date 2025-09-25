@@ -73,6 +73,20 @@ def remove_heading_links(html_content):
     
     content = re.sub(empty_anchor_pattern, replace_empty_anchor, content, flags=re.IGNORECASE | re.DOTALL)
     
+    # Handle anchor links at the end of headings (common pattern: heading text <a href="#anchor">#</a>)
+    # Pattern: <h4 id="...">text content<a href="...">link text</a></h4>
+    trailing_anchor_pattern = r'(<h[1-6][^>]*>)([\s\S]*?)<a[^>]*>[^<]*</a>\s*(</h[1-6]>)'
+    
+    def replace_trailing_anchor(match):
+        opening_tag = match.group(1)
+        text_content = match.group(2)
+        closing_tag = match.group(3)
+        # Clean up whitespace and remove any remaining anchor artifacts
+        clean_text = re.sub(r'\s+', ' ', text_content.strip())
+        return f"{opening_tag}{clean_text}{closing_tag}"
+    
+    content = re.sub(trailing_anchor_pattern, replace_trailing_anchor, content, flags=re.IGNORECASE | re.DOTALL)
+    
     return content
 
 
@@ -92,7 +106,26 @@ def clean_markdown_links_from_headings(html_content):
         clean_text = re.sub(r'<[^>]*>', '', text_content).strip()
         return f"{opening_tag}{clean_text}{closing_tag}"
     
-    return re.sub(markdown_link_pattern, replace_markdown_link, html_content, flags=re.IGNORECASE | re.DOTALL)
+    content = re.sub(markdown_link_pattern, replace_markdown_link, html_content, flags=re.IGNORECASE | re.DOTALL)
+    
+    # Handle any remaining markdown link artifacts in headings
+    # Pattern: heading with markdown link remnants like [text](url) or [](...)
+    general_markdown_pattern = r'(<h[1-6][^>]*>)([\s\S]*?)\[[^\]]*\]\([^\)]*\)([\s\S]*?)(</h[1-6]>)'
+    
+    def replace_general_markdown(match):
+        opening_tag = match.group(1)
+        text_before = match.group(2)
+        text_after = match.group(3)
+        closing_tag = match.group(4)
+        # Combine text content, removing the markdown link
+        combined_text = (text_before + text_after).strip()
+        clean_text = re.sub(r'<[^>]*>', '', combined_text).strip()
+        clean_text = re.sub(r'\s+', ' ', clean_text)
+        return f"{opening_tag}{clean_text}{closing_tag}"
+    
+    content = re.sub(general_markdown_pattern, replace_general_markdown, content, flags=re.IGNORECASE | re.DOTALL)
+    
+    return content
 
 
 def parse_opml(opml_path):
@@ -218,6 +251,9 @@ class Feed:
                             
                             # Clean up any remaining malformed markdown links in headings
                             content_html = clean_markdown_links_from_headings(content_html)
+                            
+                            # Fix any headings that got broken across elements
+                            content_html = fix_broken_heading_elements(content_html)
 
                         elif content.type == "text/plain":
                             content_html = markdown.markdown(content.value)
@@ -235,6 +271,9 @@ class Feed:
                     
                     # Clean up any remaining malformed markdown links in headings
                     content_html = clean_markdown_links_from_headings(content_html)
+                    
+                    # Fix any headings that got broken across elements
+                    content_html = fix_broken_heading_elements(content_html)
 
                 elif hasattr(entry, "title"):
                     content_html = "<i>(empty)</i>"
@@ -276,6 +315,9 @@ class Feed:
                 
                 # Clean up any remaining malformed markdown links in headings
                 content_html = clean_markdown_links_from_headings(content_html)
+                
+                # Fix any headings that got broken across elements
+                content_html = fix_broken_heading_elements(content_html)
             
                 entry_obj = Entry(
                     timestamp=dateutil.parser.parse(entry.published if "published" in entry else entry.updated),
@@ -424,3 +466,28 @@ if feeds_with_no_entries:
 else:
     logger.info("All feeds have recent entries")
        
+
+
+def fix_broken_heading_elements(html_content):
+    """
+    Fix headings that got broken across multiple HTML elements.
+    This handles cases where heading content got split, like:
+    <h2>Text [ __](url-part-</h2><p>url-continued)</p>
+    """
+    # Pattern: heading with markdown link ending in dash, followed by paragraph with closing parenthesis
+    # This specifically targets the issue we saw with Servo blog entries
+    broken_heading_pattern = r'(<h[1-6][^>]*>)(.*?)\[[^\]]*\]\([^)]*-(</h[1-6]>)\s*<p>([^)]*\)[^<]*)</p>'
+    
+    def fix_broken_heading(match):
+        opening_tag = match.group(1)   # <h2>
+        heading_text = match.group(2)  # 'Highlights '
+        closing_tag = match.group(3)   # </h2>
+        # group(4) is the <p> content with the URL continuation - we ignore it
+        
+        # Clean up the heading text by removing any remaining HTML and extra whitespace
+        clean_text = re.sub(r'<[^>]*>', '', heading_text).strip()
+        clean_text = re.sub(r'\s+', ' ', clean_text)
+        
+        return f"{opening_tag}{clean_text}{closing_tag}"
+    
+    return re.sub(broken_heading_pattern, fix_broken_heading, html_content, flags=re.IGNORECASE | re.DOTALL)
