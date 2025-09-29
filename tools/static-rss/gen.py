@@ -128,6 +128,31 @@ def clean_markdown_links_from_headings(html_content):
     return content
 
 
+def fix_broken_heading_elements(html_content):
+    """
+    Fix headings that got broken across multiple HTML elements.
+    This handles cases where heading content got split, like:
+    <h2>Text [ __](url-part-</h2><p>url-continued)</p>
+    """
+    # Pattern: heading with markdown link ending in dash, followed by paragraph with closing parenthesis
+    # This specifically targets the issue we saw with Servo blog entries
+    broken_heading_pattern = r'(<h[1-6][^>]*>)(.*?)\[[^\]]*\]\([^)]*-(</h[1-6]>)\s*<p>([^)]*\)[^<]*)</p>'
+    
+    def fix_broken_heading(match):
+        opening_tag = match.group(1)   # <h2>
+        heading_text = match.group(2)  # 'Highlights '
+        closing_tag = match.group(3)   # </h2>
+        # group(4) is the <p> content with the URL continuation - we ignore it
+        
+        # Clean up the heading text by removing any remaining HTML and extra whitespace
+        clean_text = re.sub(r'<[^>]*>', '', heading_text).strip()
+        clean_text = re.sub(r'\s+', ' ', clean_text)
+        
+        return f"{opening_tag}{clean_text}{closing_tag}"
+    
+    return re.sub(broken_heading_pattern, fix_broken_heading, html_content, flags=re.IGNORECASE | re.DOTALL)
+
+
 def parse_opml(opml_path):
     """Parse OPML file directly to extract feeds with all necessary information"""
     tree = ET.parse(opml_path)
@@ -465,29 +490,3 @@ if feeds_with_no_entries:
             logger.info("  - %s (%d total entries) (%s)", feed['title'], feed['total_entries'], feed['url'])
 else:
     logger.info("All feeds have recent entries")
-       
-
-
-def fix_broken_heading_elements(html_content):
-    """
-    Fix headings that got broken across multiple HTML elements.
-    This handles cases where heading content got split, like:
-    <h2>Text [ __](url-part-</h2><p>url-continued)</p>
-    """
-    # Pattern: heading with markdown link ending in dash, followed by paragraph with closing parenthesis
-    # This specifically targets the issue we saw with Servo blog entries
-    broken_heading_pattern = r'(<h[1-6][^>]*>)(.*?)\[[^\]]*\]\([^)]*-(</h[1-6]>)\s*<p>([^)]*\)[^<]*)</p>'
-    
-    def fix_broken_heading(match):
-        opening_tag = match.group(1)   # <h2>
-        heading_text = match.group(2)  # 'Highlights '
-        closing_tag = match.group(3)   # </h2>
-        # group(4) is the <p> content with the URL continuation - we ignore it
-        
-        # Clean up the heading text by removing any remaining HTML and extra whitespace
-        clean_text = re.sub(r'<[^>]*>', '', heading_text).strip()
-        clean_text = re.sub(r'\s+', ' ', clean_text)
-        
-        return f"{opening_tag}{clean_text}{closing_tag}"
-    
-    return re.sub(broken_heading_pattern, fix_broken_heading, html_content, flags=re.IGNORECASE | re.DOTALL)
