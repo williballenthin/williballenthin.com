@@ -235,8 +235,8 @@
 
             <outline type="rss"
                 text="HexRaysSA/plugin-repository commits" title="HexRaysSA/plugin-repository commits"
-                htmlUrl="https://github.com/HexRaysSA/plugin-repository/commits/master"
-                xmlUrl="https://github.com/HexRaysSA/plugin-repository/commits/master.atom"
+                htmlUrl="https://github.com/HexRaysSA/plugin-repository/commits/v1"
+                xmlUrl="https://github.com/HexRaysSA/plugin-repository/commits/v1.atom"
                 />
 
             <outline type="rss"
