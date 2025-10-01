@@ -234,6 +234,12 @@
                 />
 
             <outline type="rss"
+                text="HexRaysSA/plugin-repository commits" title="HexRaysSA/plugin-repository commits"
+                htmlUrl="https://github.com/HexRaysSA/plugin-repository/commits/v1"
+                xmlUrl="https://github.com/HexRaysSA/plugin-repository/commits/v1.atom"
+                />
+
+            <outline type="rss"
                 text="Sketch Blog" title="Sketch Blog"
                 htmlUrl="https://sketch.dev/blog"
                 xmlUrl="https://sketch.dev/atom.xml"
