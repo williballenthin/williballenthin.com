@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Voice Note</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+```
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a1a;
+  color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.status {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.status.recording {
+  color: #ff4444;
+}
+
+.status.error {
+  color: #ff8800;
+}
+
+.timer {
+  font-size: 48px;
+  font-weight: 200;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 30px;
+  color: #ffffff;
+}
+
+.stop-button {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #ff3b30;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(255, 59, 48, 0.4);
+  transition: transform 0.1s, box-shadow 0.1s;
+  margin-bottom: 30px;
+}
+
+.stop-button:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 10px rgba(255, 59, 48, 0.3);
+}
+
+.stop-button .stop-icon {
+  width: 36px;
+  height: 36px;
+  background: #ffffff;
+  border-radius: 6px;
+}
+
+.stop-button:disabled {
+  background: #666;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.transcript-container {
+  width: 100%;
+  max-width: 400px;
+  max-height: 200px;
+  overflow-y: auto;
+  background: #2a2a2a;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 20px;
+}
+
+.transcript-label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.transcript-text {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #ddd;
+  min-height: 24px;
+}
+
+.transcript-text .interim {
+  color: #888;
+}
+
+.pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.start-prompt {
+  text-align: center;
+}
+
+.start-button {
+  padding: 16px 32px;
+  font-size: 18px;
+  background: #007aff;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.start-button:active {
+  background: #0056b3;
+}
+
+.hidden {
+  display: none !important;
+}
+```
+
+  </style>
+</head>
+<body>
+  <!-- Initial start screen (needed for user gesture to enable permissions) -->
+  <div id="startScreen" class="start-prompt">
+    <p style="margin-bottom: 20px; color: #888;">Tap to start recording</p>
+    <button class="start-button" id="startButton">Start Recording</button>
+  </div>
+
+  <!-- Recording screen -->
+
+  <div id="recordingScreen" class="hidden">
+    <div class="status" id="status">Initializing...</div>
+    <div class="timer" id="timer">0:00</div>
+    <button class="stop-button" id="stopButton" disabled>
+      <div class="stop-icon"></div>
+    </button>
+    <div class="transcript-container">
+      <div class="transcript-label">Live Transcript</div>
+      <div class="transcript-text" id="transcript">
+        <span class="interim">Listening...</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let recognition = null;
+    let finalTranscript = '';
+    let interimTranscript = '';
+    let startTime = null;
+    let timerInterval = null;
+
+    // DOM Elements
+    const startScreen = document.getElementById('startScreen');
+    const recordingScreen = document.getElementById('recordingScreen');
+    const startButton = document.getElementById('startButton');
+    const stopButton = document.getElementById('stopButton');
+    const statusEl = document.getElementById('status');
+    const timerEl = document.getElementById('timer');
+    const transcriptEl = document.getElementById('transcript');
+
+    // Format time as M:SS
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // Update timer display
+    function updateTimer() {
+      if (startTime) {
+        const elapsed = (Date.now() - startTime) / 1000;
+        timerEl.textContent = formatTime(elapsed);
+      }
+    }
+
+    // Generate ISO 8601 filename
+    function generateFilename() {
+      const now = new Date();
+      const iso = now.toISOString().replace(/[:.]/g, '-').slice(0, -5);
+      return `${iso}-transcription`;
+    }
+
+    // Update transcript display
+    function updateTranscriptDisplay() {
+      if (finalTranscript || interimTranscript) {
+        transcriptEl.innerHTML = finalTranscript + 
+          (interimTranscript ? `<span class="interim">${interimTranscript}</span>` : '');
+      } else {
+        transcriptEl.innerHTML = '<span class="interim">Listening...</span>';
+      }
+    }
+
+    // Initialize speech recognition
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      
+      if (!SpeechRecognition) {
+        console.warn('Speech recognition not supported');
+        return null;
+      }
+
+      const recog = new SpeechRecognition();
+      recog.continuous = true;
+      recog.interimResults = true;
+      recog.lang = 'en-US';
+
+      recog.onresult = (event) => {
+        interimTranscript = '';
+        
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const result = event.results[i];
+          if (result.isFinal) {
+            finalTranscript += result[0].transcript + ' ';
+          } else {
+            interimTranscript += result[0].transcript;
+          }
+        }
+        
+        updateTranscriptDisplay();
+      };
+
+      recog.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        if (event.error === 'no-speech') {
+          // Restart on no-speech timeout
+          try {
+            recog.stop();
+            setTimeout(() => {
+              if (mediaRecorder && mediaRecorder.state === 'recording') {
+                recog.start();
+              }
+            }, 100);
+          } catch (e) {}
+        }
+      };
+
+      recog.onend = () => {
+        // Auto-restart if still recording
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+          try {
+            recog.start();
+          } catch (e) {}
+        }
+      };
+
+      return recog;
+    }
+
+    // Start recording
+    async function startRecording() {
+      try {
+        // Switch screens
+        startScreen.classList.add('hidden');
+        recordingScreen.classList.remove('hidden');
+        
+        statusEl.textContent = 'Requesting microphone access...';
+        
+        // Get microphone access
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            sampleRate: 44100
+          } 
+        });
+
+        // Determine supported MIME type
+        let mimeType = 'audio/mp4';
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          mimeType = 'audio/webm;codecs=opus';
+          if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'audio/webm';
+          }
+        }
+
+        // Initialize MediaRecorder
+        mediaRecorder = new MediaRecorder(stream, { mimeType });
+        audioChunks = [];
+
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunks.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = async () => {
+          // Stop all tracks
+          stream.getTracks().forEach(track => track.stop());
+          
+          // Process and share
+          await processAndShare();
+        };
+
+        // Start recording
+        mediaRecorder.start(1000); // Capture in 1-second chunks
+        
+        // Start timer
+        startTime = Date.now();
+        timerInterval = setInterval(updateTimer, 100);
+
+        // Initialize and start speech recognition
+        recognition = initSpeechRecognition();
+        if (recognition) {
+          recognition.start();
+        }
+
+        // Update UI
+        statusEl.textContent = 'Recording';
+        statusEl.classList.add('recording', 'pulse');
+        stopButton.disabled = false;
+
+      } catch (error) {
+        console.error('Error starting recording:', error);
+        statusEl.textContent = `Error: ${error.message}`;
+        statusEl.classList.add('error');
+        
+        // Show start screen again
+        setTimeout(() => {
+          recordingScreen.classList.add('hidden');
+          startScreen.classList.remove('hidden');
+        }, 2000);
+      }
+    }
+
+    // Stop recording
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        // Stop speech recognition
+        if (recognition) {
+          recognition.stop();
+        }
+        
+        // Stop timer
+        clearInterval(timerInterval);
+        
+        // Update UI
+        statusEl.textContent = 'Processing...';
+        statusEl.classList.remove('recording', 'pulse');
+        stopButton.disabled = true;
+        
+        // Stop recording (triggers onstop handler)
+        mediaRecorder.stop();
+      }
+    }
+
+    // Process recording and share
+    async function processAndShare() {
+      try {
+        statusEl.textContent = 'Preparing to share...';
+        
+        // Create audio blob
+        const mimeType = mediaRecorder.mimeType;
+        const audioBlob = new Blob(audioChunks, { type: mimeType });
+        
+        // Determine file extension
+        const ext = mimeType.includes('mp4') ? 'm4a' : 'webm';
+        const filename = `${generateFilename()}.${ext}`;
+        
+        // Create file
+        const audioFile = new File([audioBlob], filename, { type: mimeType });
+        
+        // Prepare transcript
+        const transcriptText = finalTranscript.trim() || '(No transcript captured)';
+        
+        // Check if we can share files
+        if (navigator.canShare && navigator.canShare({ files: [audioFile] })) {
+          await navigator.share({
+            files: [audioFile],
+            title: 'Voice Note',
+            text: `Transcript:\n${transcriptText}`
+          });
+          statusEl.textContent = 'Shared successfully!';
+        } else {
+          // Fallback: offer download
+          statusEl.textContent = 'Share not supported, downloading...';
+          const url = URL.createObjectURL(audioBlob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          a.click();
+          URL.revokeObjectURL(url);
+          
+          // Also show transcript
+          alert(`Transcript:\n\n${transcriptText}`);
+        }
+        
+        // Reset for next recording
+        setTimeout(() => {
+          resetState();
+        }, 1500);
+        
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          statusEl.textContent = 'Share cancelled';
+        } else {
+          console.error('Error sharing:', error);
+          statusEl.textContent = `Error: ${error.message}`;
+        }
+        
+        setTimeout(() => {
+          resetState();
+        }, 1500);
+      }
+    }
+
+    // Reset to initial state
+    function resetState() {
+      mediaRecorder = null;
+      audioChunks = [];
+      recognition = null;
+      finalTranscript = '';
+      interimTranscript = '';
+      startTime = null;
+      
+      timerEl.textContent = '0:00';
+      transcriptEl.innerHTML = '<span class="interim">Listening...</span>';
+      statusEl.classList.remove('recording', 'pulse', 'error');
+      
+      recordingScreen.classList.add('hidden');
+      startScreen.classList.remove('hidden');
+    }
+
+    // Event listeners
+    startButton.addEventListener('click', startRecording);
+    stopButton.addEventListener('click', stopRecording);
+
+    // Prevent accidental navigation
+    window.addEventListener('beforeunload', (e) => {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
+  </script>
+
+</body>
+</html>
