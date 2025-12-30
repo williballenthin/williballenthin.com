@@ -1,0 +1,49 @@
+on:
+  schedule:
+    - cron: '0 6 * * *'  # Generate daily at 0600 UTC (early morning)
+  workflow_dispatch:
+
+name: generate reading list PDF
+
+jobs:
+  generate:
+    name: generate reading list
+    runs-on: [ubuntu-latest]
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+    
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    
+    - name: Install percollate
+      run: |
+        npm install -g percollate
+        # Install Chrome dependencies for PDF generation
+        sudo apt-get update
+        sudo apt-get install -y \
+          libasound2t64 libxss1 libatk-bridge2.0-0 libdrm2 \
+          libxkbcommon0 libxcomposite1 libxdamage1 libxrandr2 \
+          libgbm1 libgtk-3-0 
+    
+    - name: Generate reading list PDF
+      run: |
+        mkdir -p static/homepage/reading-list
+        cd tools/reading-list
+        python3 generate-reading-pdf.py 10 ../../static/homepage/reading-list/recent10.pdf --exclude-tags read
+    
+    - name: Upload to S3
+      run: |
+        aws s3 cp static/homepage/reading-list/recent10.pdf s3://www.williballenthin.com/homepage/reading-list/recent10.pdf
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: 'us-east-1'

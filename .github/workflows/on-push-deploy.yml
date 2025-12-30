@@ -49,6 +49,21 @@ jobs:
         uv run tools/fetch-pinboard-data/gen.py > data/pinboard.json
       env:
         PINBOARD_TOKEN: ${{ secrets.PINBOARD_TOKEN }}
+    - name: install percollate
+      run: |
+        npm install -g percollate
+        # Install Chrome dependencies for PDF generation
+        sudo apt-get update
+        sudo apt-get install -y \
+          libasound2t64 libxss1 libatk-bridge2.0-0 libdrm2 \
+          libxkbcommon0 libxcomposite1 libxdamage1 libxrandr2 \
+          libgbm1 libgtk-3-0
+    - name: generate reading list PDF
+      continue-on-error: true
+      run: |
+        mkdir -p static/homepage/reading-list
+        cd tools/reading-list
+        python3 generate-reading-pdf.py 10 ../../static/homepage/reading-list/recent10.pdf --exclude-tags read
     - name: hugo
       uses: peaceiris/actions-hugo@v2
       with:
