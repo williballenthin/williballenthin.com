@@ -1,89 +1,127 @@
 #!/usr/bin/env python3
 """
-Generate a PDF reading list from Pinboard RSS feed for Remarkable 2.
+Generate a PDF reading list from local link Markdown files for Remarkable 2.
 
 This script:
-1. Fetches the latest entries from the Pinboard RSS feed
-2. Extracts the top N URLs
-3. Uses percollate to generate an A4 PDF suitable for Remarkable 2
+1. Scans the local 'content/links' directory for Markdown files
+2. Extracts metadata (title, url, date, tags) from frontmatter
+3. Sorts by date descending
+4. Extracts the top N URLs
+5. Uses percollate to generate an A4 PDF suitable for Remarkable 2
 
 Requires:
 - percollate (npm install -g percollate)
 - Python 3 with standard library
 """
 
-import xml.etree.ElementTree as ET
-import urllib.request
-import urllib.parse
 import sys
-import json
 import subprocess
-import tempfile
 import os
+import glob
+import re
+from pathlib import Path
 from datetime import datetime, timezone
 
+# Define paths relative to the script location
+HERE = Path(__file__).parent
+ROOT = HERE.parent.parent
+LINKS_DIR = ROOT / "content" / "links"
 
-def fetch_pinboard_rss(username="williballenthin"):
-    """Fetch the RSS feed from Pinboard."""
-    url = f"https://feeds.pinboard.in/rss/u:{username}/"
-    print(f"Fetching RSS feed from {url}")
+def parse_frontmatter(content):
+    """
+    Parse simple YAML frontmatter using regex to avoid external dependencies.
+    Extracts title, date, url, and tags.
+    """
+    # Extract the frontmatter block
+    # Robustly split by '---'
+    parts = content.split('---')
+    if len(parts) < 3:
+        return None
     
-    with urllib.request.urlopen(url) as response:
-        return response.read().decode('utf-8')
+    fm_text = parts[1]
 
+    # Extract fields
+    title_match = re.search(r'^title:\s*(.+)$', fm_text, re.MULTILINE)
+    title = title_match.group(1).strip() if title_match else "Untitled"
 
-def parse_rss_urls(rss_content, limit=10, exclude_tags=None):
-    """Parse RSS content and extract URLs with metadata."""
+    date_match = re.search(r'^date:\s*(.+)$', fm_text, re.MULTILINE)
+    date_str = date_match.group(1).strip() if date_match else None
+
+    # URL is usually nested under params
+    url_match = re.search(r'^\s+url:\s*(.+)$', fm_text, re.MULTILINE)
+    url = url_match.group(1).strip() if url_match else None
+
+    # Fallback if url is top-level (unlikely based on known structure but safe to have)
+    if not url:
+        top_url_match = re.search(r'^url:\s*(.+)$', fm_text, re.MULTILINE)
+        if top_url_match:
+            url = top_url_match.group(1).strip()
+
+    # Extract tags
+    tags = []
+    # Find the tags block
+    tags_match = re.search(r'^tags:\s*\n((?:\s*-\s*.+\n)+)', fm_text, re.MULTILINE)
+    if tags_match:
+        tag_lines = tags_match.group(1).strip().split('\n')
+        for line in tag_lines:
+            tag_match = re.search(r'^\s*-\s*(.+)$', line)
+            if tag_match:
+                tags.append(tag_match.group(1).strip())
+
+    # Parse date
+    date_val = datetime.min.replace(tzinfo=timezone.utc)
+    if date_str:
+        try:
+            # Handle potential quotes
+            date_str = date_str.strip('"\'')
+            date_val = datetime.fromisoformat(date_str)
+        except ValueError:
+            print(f"Warning: could not parse date {date_str}")
+
+    return {
+        'title': title,
+        'url': url,
+        'date': date_val,
+        'tags': tags
+    }
+
+def get_local_links(limit=10, exclude_tags=None):
+    """
+    Scan content/links directory and return sorted list of items.
+    """
     exclude_tags = exclude_tags or []
-    root = ET.fromstring(rss_content)
-    
-    # Handle RSS 1.0 format (what Pinboard uses)
     items = []
     
-    # Find all item elements
-    for item in root.findall('.//{http://purl.org/rss/1.0/}item'):
-        title_elem = item.find('.//{http://purl.org/rss/1.0/}title')
-        link_elem = item.find('.//{http://purl.org/rss/1.0/}link')
-        desc_elem = item.find('.//{http://purl.org/rss/1.0/}description')
-        subject_elem = item.find('.//{http://purl.org/dc/elements/1.1/}subject')
-        date_elem = item.find('.//{http://purl.org/dc/elements/1.1/}date')
+    if not LINKS_DIR.exists():
+        print(f"Error: Links directory not found at {LINKS_DIR}")
+        return []
         
-        # Extract tags
-        tags = []
-        if subject_elem is not None and subject_elem.text:
-            tags = [tag.strip() for tag in subject_elem.text.split()]
-        
-        # Check if any excluded tags are present
-        if exclude_tags and any(tag in exclude_tags for tag in tags):
-            continue
-        
-        if link_elem is not None:
-            url = link_elem.text
-            title = title_elem.text if title_elem is not None else url
-            description = desc_elem.text if desc_elem is not None else ""
-            
-            # Default to min date with UTC timezone to avoid comparison errors with aware datetimes
-            date_val = datetime.min.replace(tzinfo=timezone.utc)
-            if date_elem is not None and date_elem.text:
-                try:
-                    date_val = datetime.fromisoformat(date_elem.text)
-                except ValueError:
-                    print(f"Warning: could not parse date {date_elem.text}")
+    print(f"Scanning files in {LINKS_DIR}...")
 
-            items.append({
-                'url': url,
-                'title': title,
-                'description': description,
-                'tags': tags,
-                'date': date_val
-            })
-    
+    files = list(LINKS_DIR.glob("*.md"))
+    print(f"Found {len(files)} markdown files.")
+
+    for file_path in files:
+        try:
+            content = file_path.read_text(encoding='utf-8')
+            meta = parse_frontmatter(content)
+
+            if not meta or not meta['url']:
+                continue
+
+            # Check exclusions
+            if exclude_tags and any(tag in exclude_tags for tag in meta['tags']):
+                continue
+
+            items.append(meta)
+        except Exception as e:
+            print(f"Error processing {file_path.name}: {e}")
+            
     # Sort by date descending
     items.sort(key=lambda x: x['date'], reverse=True)
 
-    print(f"Found {len(items)} items in RSS feed (after filtering)")
+    print(f"Found {len(items)} valid items (after filtering)")
     return items[:limit]
-
 
 def generate_pdf(urls, output_path="reading-list.pdf"):
     """Use percollate to generate A4 PDF from URLs."""
@@ -126,7 +164,6 @@ def generate_pdf(urls, output_path="reading-list.pdf"):
         print(f"Error running percollate: {e}")
         return False
 
-
 def main():
     try:
         # Parse command line arguments
@@ -166,12 +203,11 @@ def main():
         if exclude_tags:
             print(f"Excluding articles with tags: {', '.join(exclude_tags)}")
         
-        # Fetch and parse RSS
-        rss_content = fetch_pinboard_rss()
-        urls = parse_rss_urls(rss_content, num_articles, exclude_tags)
+        # Fetch local links
+        urls = get_local_links(num_articles, exclude_tags)
         
         if not urls:
-            print("No URLs found in RSS feed after filtering")
+            print("No URLs found in content/links")
             return 1
         
         # Print what we found
@@ -179,6 +215,7 @@ def main():
         for i, item in enumerate(urls, 1):
             print(f"{i:2}. {item['title']}")
             print(f"    {item['url']}")
+            print(f"    Date: {item['date']}")
             if item['tags']:
                 print(f"    Tags: {', '.join(item['tags'])}")
         
@@ -195,7 +232,6 @@ def main():
     except Exception as e:
         print(f"Error: {e}")
         return 1
-
 
 if __name__ == "__main__":
     sys.exit(main())
