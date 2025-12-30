@@ -20,7 +20,7 @@ import json
 import subprocess
 import tempfile
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def fetch_pinboard_rss(username="williballenthin"):
@@ -46,6 +46,7 @@ def parse_rss_urls(rss_content, limit=10, exclude_tags=None):
         link_elem = item.find('.//{http://purl.org/rss/1.0/}link')
         desc_elem = item.find('.//{http://purl.org/rss/1.0/}description')
         subject_elem = item.find('.//{http://purl.org/dc/elements/1.1/}subject')
+        date_elem = item.find('.//{http://purl.org/dc/elements/1.1/}date')
         
         # Extract tags
         tags = []
@@ -61,13 +62,25 @@ def parse_rss_urls(rss_content, limit=10, exclude_tags=None):
             title = title_elem.text if title_elem is not None else url
             description = desc_elem.text if desc_elem is not None else ""
             
+            # Default to min date with UTC timezone to avoid comparison errors with aware datetimes
+            date_val = datetime.min.replace(tzinfo=timezone.utc)
+            if date_elem is not None and date_elem.text:
+                try:
+                    date_val = datetime.fromisoformat(date_elem.text)
+                except ValueError:
+                    print(f"Warning: could not parse date {date_elem.text}")
+
             items.append({
                 'url': url,
                 'title': title,
                 'description': description,
-                'tags': tags
+                'tags': tags,
+                'date': date_val
             })
     
+    # Sort by date descending
+    items.sort(key=lambda x: x['date'], reverse=True)
+
     print(f"Found {len(items)} items in RSS feed (after filtering)")
     return items[:limit]
 
