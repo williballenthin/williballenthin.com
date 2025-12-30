@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# /// script
+# dependencies = [
+#  "PyYAML==6.0.1",
+# ]
+# ///
+
 """
 Generate a PDF reading list from local link Markdown files for Remarkable 2.
 
@@ -11,7 +17,7 @@ This script:
 
 Requires:
 - percollate (npm install -g percollate)
-- Python 3 with standard library
+- Python 3 with standard library + PyYAML (via uv)
 """
 
 import sys
@@ -19,6 +25,7 @@ import subprocess
 import os
 import glob
 import re
+import yaml
 from pathlib import Path
 from datetime import datetime, timezone
 
@@ -29,7 +36,7 @@ LINKS_DIR = ROOT / "content" / "links"
 
 def parse_frontmatter(content):
     """
-    Parse simple YAML frontmatter using regex to avoid external dependencies.
+    Parse YAML frontmatter using PyYAML.
     Extracts title, date, url, and tags.
     """
     # Extract the frontmatter block
@@ -37,46 +44,51 @@ def parse_frontmatter(content):
     parts = content.split('---')
     if len(parts) < 3:
         return None
-    
+
     fm_text = parts[1]
 
-    # Extract fields
-    title_match = re.search(r'^title:\s*(.+)$', fm_text, re.MULTILINE)
-    title = title_match.group(1).strip() if title_match else "Untitled"
+    try:
+        data = yaml.safe_load(fm_text)
+    except yaml.YAMLError as e:
+        print(f"Warning: could not parse YAML: {e}")
+        return None
 
-    date_match = re.search(r'^date:\s*(.+)$', fm_text, re.MULTILINE)
-    date_str = date_match.group(1).strip() if date_match else None
+    if not isinstance(data, dict):
+        return None
+
+    title = data.get('title', 'Untitled')
 
     # URL is usually nested under params
-    url_match = re.search(r'^\s+url:\s*(.+)$', fm_text, re.MULTILINE)
-    url = url_match.group(1).strip() if url_match else None
+    url = None
+    params = data.get('params')
+    if isinstance(params, dict):
+        url = params.get('url')
 
-    # Fallback if url is top-level (unlikely based on known structure but safe to have)
+    # Fallback if url is top-level
     if not url:
-        top_url_match = re.search(r'^url:\s*(.+)$', fm_text, re.MULTILINE)
-        if top_url_match:
-            url = top_url_match.group(1).strip()
+        url = data.get('url')
 
     # Extract tags
-    tags = []
-    # Find the tags block
-    tags_match = re.search(r'^tags:\s*\n((?:\s*-\s*.+\n)+)', fm_text, re.MULTILINE)
-    if tags_match:
-        tag_lines = tags_match.group(1).strip().split('\n')
-        for line in tag_lines:
-            tag_match = re.search(r'^\s*-\s*(.+)$', line)
-            if tag_match:
-                tags.append(tag_match.group(1).strip())
+    tags = data.get('tags', [])
+    if not isinstance(tags, list):
+        tags = []
 
     # Parse date
     date_val = datetime.min.replace(tzinfo=timezone.utc)
-    if date_str:
+    date_obj = data.get('date')
+
+    if isinstance(date_obj, datetime):
+        # PyYAML parsed it as datetime
+        if date_obj.tzinfo is None:
+            # Assume UTC if naive, or whatever policy (here just safe default)
+            date_val = date_obj.replace(tzinfo=timezone.utc)
+        else:
+            date_val = date_obj
+    elif isinstance(date_obj, str):
         try:
-            # Handle potential quotes
-            date_str = date_str.strip('"\'')
-            date_val = datetime.fromisoformat(date_str)
+            date_val = datetime.fromisoformat(date_obj)
         except ValueError:
-            print(f"Warning: could not parse date {date_str}")
+            print(f"Warning: could not parse date string {date_obj}")
 
     return {
         'title': title,
