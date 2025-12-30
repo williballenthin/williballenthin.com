@@ -54,6 +54,10 @@
 
 <hr />
 
+<div style="margin-bottom: 1em;">
+  <a href="https://www.williballenthin.com/homepage/pinboard-recent.pdf">📄 Recent Links PDF</a>
+</div>
+
 {{< includeHtml file="static/fragments/homepage/to-read.html" >}}
 
 <style>

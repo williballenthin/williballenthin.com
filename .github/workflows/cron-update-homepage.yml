@@ -34,6 +34,11 @@ jobs:
       run: |
         pip install uv==0.3.3
         uv run tools/static-rss/gen.py content/follows/williballenthin.opml > static/fragments/homepage/feed.html
+    - name: gen pinboard pdf
+      run: |
+        npm install -g percollate
+        mkdir -p static/homepage
+        uv run tools/get-pinboard-urls.py | xargs percollate pdf --output static/homepage/pinboard-recent.pdf --no-sandbox --css "@page { size: A4 }"
     - name: hugo
       uses: peaceiris/actions-hugo@v2
       with:
@@ -44,6 +49,7 @@ jobs:
       run: |
         aws s3 cp ./public/homepage/index.html s3://www.williballenthin.com/homepage/index.html
         aws s3 cp ./public/post/ida-pro-plugins-on-github/index.html s3://www.williballenthin.com/post/ida-pro-plugins-on-github/index.html
+        aws s3 cp ./public/homepage/pinboard-recent.pdf s3://www.williballenthin.com/homepage/pinboard-recent.pdf
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
