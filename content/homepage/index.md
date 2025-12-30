@@ -26,7 +26,6 @@
       <li><a href="https://search.nixos.org/packages?channel=unstable&show=mosh&from=0&size=50&sort=relevance&type=packages&query=">nixOS packages</a></li>
       <li><a href="https://ifconfig.co/">whats my ip</a></li>
       <li><a href="https://pinboard.in/">pinboard</a></li>
-      <li><a href="/homepage/reading-list/recent10.pdf">📚 reading list</a></li>
       <li><a href="https://scour.ing/@williballenthin?t=1w&all_feeds=true">scour</a></li>
       <li><a href="https://kite.kagi.com/">kite</a></li>
       <li><a href="https://www.newsminimalist.com">news minimalist</a></li>
@@ -56,6 +55,8 @@
 <hr />
 
 {{< includeHtml file="static/fragments/homepage/to-read.html" >}}
+
+<p><a href="/homepage/reading-list/recent10.pdf">📚 Download reading list PDF</a> (latest 10 articles from Pinboard, A4 format for Remarkable 2)</p>
 
 <style>
   p.to-read-metadata-generated {
