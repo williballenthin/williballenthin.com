@@ -36,9 +36,9 @@ jobs:
     
     - name: Generate reading list PDF
       run: |
+        pip install uv
         mkdir -p static/homepage/reading-list
-        cd tools/reading-list
-        python3 generate-reading-pdf.py 10 ../../static/homepage/reading-list/recent10.pdf --exclude-tags read
+        uv run tools/reading-list/generate-reading-pdf.py 10 static/homepage/reading-list/recent10.pdf --exclude-tags read
     
     - name: Upload to S3
       run: |
