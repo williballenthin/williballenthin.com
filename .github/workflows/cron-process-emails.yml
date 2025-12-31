@@ -2,7 +2,7 @@ name: process emails
 
 on:
   schedule:
-    - cron: '0 */3 * * *'  # every 3 hours
+    - cron: '0 * * * *'  # every hour
   workflow_dispatch:
 
 jobs:
@@ -28,6 +28,7 @@ jobs:
           IMAP_USERNAME: ${{ secrets.IMAP_USERNAME }}
           IMAP_PASSWORD: ${{ secrets.IMAP_PASSWORD }}
           ALLOWED_SENDER: ${{ secrets.ALLOWED_SENDER }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
         run: |
           uv run tools/email-to-links/process_emails.py
 
