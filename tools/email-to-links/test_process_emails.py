@@ -152,3 +152,103 @@ def test_extract_url_and_tags_edge_cases():
     url, tags = process_emails_module.extract_url_and_tags(body)
     assert url == "https://example.com"
     assert tags == ["tag"]
+
+def test_parse_tag_command():
+    # Basic untag command
+    result = process_emails_module.parse_tag_command("link: untag: to-read: https://example.com")
+    assert result == ("untag", "to-read", "https://example.com")
+
+    # Basic tag command
+    result = process_emails_module.parse_tag_command("link: tag: favorite: https://example.com/page")
+    assert result == ("tag", "favorite", "https://example.com/page")
+
+    # Case insensitive
+    result = process_emails_module.parse_tag_command("LINK: UNTAG: to-read: https://example.com")
+    assert result == ("untag", "to-read", "https://example.com")
+
+    # With extra whitespace
+    result = process_emails_module.parse_tag_command("  link:   untag:   my-tag:   https://example.com  ")
+    assert result == ("untag", "my-tag", "https://example.com")
+
+    # Not a tag command (regular link)
+    result = process_emails_module.parse_tag_command("link: Cool Article")
+    assert result is None
+
+    # Not a tag command (no link prefix)
+    result = process_emails_module.parse_tag_command("untag: to-read: https://example.com")
+    assert result is None
+
+    # Empty subject
+    result = process_emails_module.parse_tag_command("")
+    assert result is None
+
+    result = process_emails_module.parse_tag_command(None)
+    assert result is None
+
+def test_find_link_by_url(tmp_path):
+    # Create a test links directory
+    links_dir = tmp_path / "links"
+    links_dir.mkdir()
+
+    # Create a test link file
+    link_content = """---
+title: Test Link
+slug: 20240101T120000
+date: '2024-01-01T12:00:00+00:00'
+params:
+  url: https://example.com/test
+tags:
+- test
+- to-read
+---
+"""
+    (links_dir / "20240101T120000.md").write_text(link_content)
+
+    # Should find the link
+    result = process_emails_module.find_link_by_url("https://example.com/test", str(links_dir))
+    assert result == str(links_dir / "20240101T120000.md")
+
+    # Should not find non-existent URL
+    result = process_emails_module.find_link_by_url("https://notfound.com", str(links_dir))
+    assert result is None
+
+    # Should not find partial URL match
+    result = process_emails_module.find_link_by_url("https://example.com", str(links_dir))
+    assert result is None
+
+def test_modify_link_tags(tmp_path):
+    # Create a test link file
+    link_content = """---
+title: Test Link
+slug: 20240101T120000
+date: '2024-01-01T12:00:00+00:00'
+params:
+  url: https://example.com/test
+tags:
+- test
+- to-read
+---
+"""
+    link_file = tmp_path / "test_link.md"
+    link_file.write_text(link_content)
+
+    # Test untag
+    result = process_emails_module.modify_link_tags(str(link_file), "untag", "to-read")
+    assert result is True
+    content = link_file.read_text()
+    assert "to-read" not in content
+    assert "- test" in content
+
+    # Test untag again (should return False, no change)
+    result = process_emails_module.modify_link_tags(str(link_file), "untag", "to-read")
+    assert result is False
+
+    # Test tag (add new tag)
+    result = process_emails_module.modify_link_tags(str(link_file), "tag", "favorite")
+    assert result is True
+    content = link_file.read_text()
+    assert "- favorite" in content
+
+    # Test tag again (should return False, already exists)
+    result = process_emails_module.modify_link_tags(str(link_file), "tag", "favorite")
+    assert result is False

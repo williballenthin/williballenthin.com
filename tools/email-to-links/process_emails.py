@@ -44,6 +44,98 @@ def clean_subject(subject):
     cleaned = pattern.sub('', subject).strip()
     return cleaned if cleaned else "No Title"
 
+def parse_tag_command(subject):
+    """
+    Parse subject for tag/untag commands.
+    Format: link: tag: <tag-name>: <url>
+            link: untag: <tag-name>: <url>
+
+    Returns (command, tag_name, url) or None if not a tag command.
+    """
+    if not subject:
+        return None
+
+    # Pattern: link: (tag|untag): <tag-name>: <url>
+    pattern = re.compile(
+        r'^\s*link:\s*(tag|untag):\s*([^:]+):\s*(.+?)\s*$',
+        re.IGNORECASE
+    )
+    match = pattern.match(subject)
+    if match:
+        command = match.group(1).lower()  # 'tag' or 'untag'
+        tag_name = match.group(2).strip()
+        url = match.group(3).strip()
+        return (command, tag_name, url)
+    return None
+
+def find_link_by_url(url, links_dir="content/links"):
+    """
+    Search all link markdown files for one containing the given URL.
+    Returns the filepath if found, None otherwise.
+    """
+    if not os.path.exists(links_dir):
+        return None
+
+    for filename in os.listdir(links_dir):
+        if not filename.endswith('.md'):
+            continue
+        filepath = os.path.join(links_dir, filename)
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                content = f.read()
+            # Check if URL appears in the file (in params.url)
+            if url in content:
+                # Parse YAML to verify it's in params.url
+                parts = content.split('---')
+                if len(parts) >= 3:
+                    frontmatter = yaml.safe_load(parts[1])
+                    if frontmatter and frontmatter.get('params', {}).get('url') == url:
+                        return filepath
+        except Exception:
+            continue
+    return None
+
+def modify_link_tags(filepath, command, tag_name):
+    """
+    Modify tags in a link markdown file.
+    command: 'tag' to add, 'untag' to remove
+    Returns True if modified, False otherwise.
+    """
+    with open(filepath, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    # Parse frontmatter
+    parts = content.split('---')
+    if len(parts) < 3:
+        return False
+
+    frontmatter = yaml.safe_load(parts[1])
+    if not frontmatter:
+        return False
+
+    tags = frontmatter.get('tags', [])
+    if tags is None:
+        tags = []
+
+    modified = False
+    if command == 'untag':
+        if tag_name in tags:
+            tags.remove(tag_name)
+            modified = True
+    elif command == 'tag':
+        if tag_name not in tags:
+            tags.append(tag_name)
+            modified = True
+
+    if modified:
+        frontmatter['tags'] = tags
+        yaml_content = yaml.dump(frontmatter, default_flow_style=False, allow_unicode=True)
+        new_content = f"---\n{yaml_content}---\n"
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(new_content)
+
+    return modified
+
 def extract_url_from_html(body):
     """
     Extract URL from HTML content, preferring href attributes in <a> tags.
@@ -186,6 +278,25 @@ def main():
 
             for msg in messages:
                 try:
+                    # Check if this is a tag command (link: tag: or link: untag:)
+                    tag_cmd = parse_tag_command(msg.subject)
+                    if tag_cmd:
+                        command, tag_name, url = tag_cmd
+                        logger.info(f"Processing tag command: {command} '{tag_name}' on {url}")
+
+                        filepath = find_link_by_url(url)
+                        if filepath:
+                            if modify_link_tags(filepath, command, tag_name):
+                                logger.info(f"Modified tags in {filepath}: {command} '{tag_name}'")
+                            else:
+                                logger.info(f"No change needed for {filepath}")
+                        else:
+                            logger.warning(f"No link found for URL: {url}")
+
+                        mailbox.flag(msg.uid, '\\Seen', True)
+                        continue
+
+                    # Otherwise, process as a new link
                     # 1. Parse Date
                     date_obj = msg.date
                     # Ensure timezone (msg.date from imap_tools is usually aware)
