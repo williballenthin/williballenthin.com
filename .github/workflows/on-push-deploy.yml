@@ -61,9 +61,9 @@ jobs:
     - name: generate reading list PDF
       continue-on-error: true
       run: |
+        pip install uv
         mkdir -p static/homepage/reading-list
-        cd tools/reading-list
-        python3 generate-reading-pdf.py 10 ../../static/homepage/reading-list/recent10.pdf --exclude-tags read
+        uv run tools/reading-list/generate-reading-pdf.py 10 static/homepage/reading-list/recent10.pdf --exclude-tags read
     - name: hugo
       uses: peaceiris/actions-hugo@v2
       with:
