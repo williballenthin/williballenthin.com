@@ -148,7 +148,7 @@ def generate_pdf(urls, output_path="reading-list.pdf"):
         'percollate', 'pdf',
         '--no-sandbox',  # Required for running as root
         '--output', output_path,
-        '--css', '@page { size: A4; margin: 2cm }',
+        '--css', '@page { size: A4; margin: 0.5cm }',
         '--title', f'Reading List - {datetime.now().strftime("%Y-%m-%d")}',
         '--author', 'williballenthin via Pinboard',
         '--toc',  # Generate table of contents
