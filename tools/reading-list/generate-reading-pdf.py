@@ -22,12 +22,16 @@ Requires:
 
 import sys
 import subprocess
+import logging
 import os
 import glob
 import re
 import yaml
 from pathlib import Path
 from datetime import datetime, timezone
+
+# Configure logger
+logger = logging.getLogger(__name__)
 
 # Define paths relative to the script location
 HERE = Path(__file__).parent
@@ -177,6 +181,7 @@ def generate_pdf(urls, output_path="reading-list.pdf"):
         return False
 
 def main():
+    logging.basicConfig(level=logging.INFO)
     try:
         # Parse command line arguments
         if len(sys.argv) > 1 and sys.argv[1] in ['-h', '--help']:
@@ -225,6 +230,7 @@ def main():
         # Print what we found
         print("\nArticles to include:")
         for i, item in enumerate(urls, 1):
+            logger.info(f"Article chosen: {item['title']}")
             print(f"{i:2}. {item['title']}")
             print(f"    {item['url']}")
             print(f"    Date: {item['date']}")
@@ -235,6 +241,8 @@ def main():
         success = generate_pdf(urls, output_file)
         
         if success:
+            size = os.path.getsize(output_file)
+            logger.info(f"Generated PDF size: {size} bytes")
             print(f"\nSuccess! PDF generated: {output_file}")
             return 0
         else:
