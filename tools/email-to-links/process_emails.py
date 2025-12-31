@@ -13,7 +13,7 @@ import re
 import sys
 import logging
 import yaml
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from imap_tools import MailBox, AND
 from bs4 import BeautifulSoup
 
@@ -27,6 +27,10 @@ def get_env_var(name):
         logger.error(f"Environment variable {name} is not set.")
         sys.exit(1)
     return value
+
+def get_optional_env_var(name):
+    """Get an optional environment variable, returning None if not set."""
+    return os.environ.get(name) or None
 
 def clean_subject(subject):
     """
@@ -151,14 +155,23 @@ def main():
     username = get_env_var("IMAP_USERNAME")
     password = get_env_var("IMAP_PASSWORD")
     allowed_sender = get_env_var("ALLOWED_SENDER")
+    recipient_email = get_optional_env_var("RECIPIENT_EMAIL")
 
     logger.info(f"Connecting to {imap_server} as {username}")
+    if recipient_email:
+        logger.info(f"Filtering by recipient: {recipient_email}")
 
     try:
         with MailBox(imap_server).login(username, password, initial_folder='INBOX') as mailbox:
-            # Fetch UNSEEN messages from ALLOWED_SENDER
-            # We strictly filter by sender to avoid processing spam or other emails
-            criteria = AND(seen=False, from_=allowed_sender)
+            # Only process messages from the last 24 hours
+            since_date = (datetime.now(timezone.utc) - timedelta(hours=24)).date()
+
+            # Build criteria: UNSEEN messages from ALLOWED_SENDER within last 24 hours
+            # Optionally filter by recipient email (useful for plus-addressing like foo+link@example.com)
+            if recipient_email:
+                criteria = AND(seen=False, from_=allowed_sender, to=recipient_email, date_gte=since_date)
+            else:
+                criteria = AND(seen=False, from_=allowed_sender, date_gte=since_date)
 
             # Using fetch(mark_seen=False) initially to process first, then mark seen if successful?
             # Or just mark_seen=True (default is True in fetch unless specified otherwise, actually wait...
