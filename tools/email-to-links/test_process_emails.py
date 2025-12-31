@@ -11,8 +11,6 @@ from datetime import datetime, timezone
 import pytest
 
 # Helper to import the script module which is in tools/email-to-links/process_emails.py
-# Since it's a script not a module, we can import it if we add __init__.py or just use importlib.
-# Given the directory structure 'tools/email-to-links', let's use importlib to load it
 import importlib.util
 import sys
 import os
@@ -21,6 +19,25 @@ spec = importlib.util.spec_from_file_location("process_emails", "tools/email-to-
 process_emails_module = importlib.util.module_from_spec(spec)
 sys.modules["process_emails"] = process_emails_module
 spec.loader.exec_module(process_emails_module)
+
+def test_repro_user_issue():
+    # Case 1: URL with fragment shouldn't trigger tag
+    body = "Check this out: https://example.com/page#section #sqlite"
+    url, tags = process_emails_module.extract_url_and_tags(body)
+
+    # Expected: URL is full, Tags only ['sqlite'], NOT ['section', 'sqlite']
+    print(f"\nDEBUG: URL='{url}', Tags={tags}")
+    assert url == "https://example.com/page#section"
+    assert "section" not in tags
+    assert "sqlite" in tags
+
+    # Case 2: URL with trailing punctuation
+    body = "Here is the link: https://example.com/foo."
+    url, tags = process_emails_module.extract_url_and_tags(body)
+
+    # Expected: URL should not have the trailing dot
+    print(f"\nDEBUG: URL='{url}'")
+    assert url == "https://example.com/foo"
 
 def test_clean_subject():
     assert process_emails_module.clean_subject("Link: Cool Article") == "Cool Article"

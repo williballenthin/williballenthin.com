@@ -47,17 +47,27 @@ def extract_url_and_tags(body):
     # Matches http/s followed by non-whitespace characters
     url_pattern = re.compile(r'(https?://[^\s]+)')
     url_match = url_pattern.search(body)
-    url = url_match.group(1) if url_match else None
+
+    url = None
+    if url_match:
+        raw_url = url_match.group(1)
+        # Strip trailing punctuation commonly found in text (., !, ?, ), >)
+        # We must be careful not to strip valid URL characters if they are not at the very end
+        # or if they are part of a query string, but usually URLs don't end in dot or paren
+        # unless it is balanced. For simple "sent from my iphone" emails, stripping trailing punctuation is safe.
+        url = raw_url.rstrip('.,!?;:)>]}')
+
+        # Remove the FOUND URL from the body to avoid extracting tags from it
+        # We assume the first URL is the target. We remove the *exact match* from body for tag scanning.
+        # But we should remove the full matched string from the regex (including punctuation) to be safe.
+        body_without_url = body.replace(raw_url, '')
+    else:
+        body_without_url = body
 
     # Regex for hashtags
     # Matches # followed by word characters (alphanumeric + underscore)
-    # Excludes hashtags that might be part of a URL fragment if not careful,
-    # but generally #tag is distinct.
-    # Note: URL regex is greedy for non-whitespace, so tags usually aren't inside the URL match
-    # unless it's an anchor, but usually anchors don't look like '#tag ' with space.
-    # We scan the whole body for tags.
     tag_pattern = re.compile(r'#(\w+)')
-    tags = tag_pattern.findall(body)
+    tags = tag_pattern.findall(body_without_url)
 
     return url, tags
 
