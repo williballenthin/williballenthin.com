@@ -40,7 +40,6 @@ logger = logging.getLogger(__name__)
 HERE = Path(__file__).parent
 ROOT = HERE.parent.parent
 RSS_URL = "https://www.williballenthin.com/links/index.xml"
-LOCAL_RSS_PATH = ROOT / "public" / "links" / "index.xml"
 
 def get_target_url_and_tags(permalink):
     """
@@ -49,21 +48,9 @@ def get_target_url_and_tags(permalink):
     Tags are expected in <span class="link-tag"><a href="...">#tag</a></span>
     """
     try:
-        # Try local file first if it exists
-        local_path = None
-        if permalink.startswith('http://www.williballenthin.com/link/'):
-            slug = permalink.split('/')[-2]  # Extract slug from URL
-            local_path = ROOT / "public" / "link" / slug / "index.html"
-        
-        if local_path and local_path.exists():
-            print(f"  Using local permalink: {local_path}")
-            with open(local_path, 'r', encoding='utf-8') as f:
-                html_content = f.read()
-            soup = BeautifulSoup(html_content, 'html.parser')
-        else:
-            response = requests.get(permalink, timeout=10)
-            response.raise_for_status()
-            soup = BeautifulSoup(response.content, 'html.parser')
+        response = requests.get(permalink, timeout=10)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.content, 'html.parser')
 
         # Extract target URL
         title_h1 = soup.find('h1', id='title')
@@ -100,16 +87,8 @@ def get_rss_links(limit=10, exclude_tags=None):
     exclude_tags = exclude_tags or []
     items = []
     
-    # Try to use local RSS first, fallback to remote
-    rss_source = None
-    if LOCAL_RSS_PATH.exists():
-        print(f"Using local RSS feed from {LOCAL_RSS_PATH}...")
-        rss_source = LOCAL_RSS_PATH
-    else:
-        print(f"Local RSS not found, fetching from {RSS_URL}...")
-        rss_source = RSS_URL
-    
-    feed = feedparser.parse(str(rss_source))
+    print(f"Fetching RSS feed from {RSS_URL}...")
+    feed = feedparser.parse(RSS_URL)
 
     if hasattr(feed, 'bozo_exception') and feed.bozo_exception:
         print(f"Warning: Error parsing RSS feed: {feed.bozo_exception}")

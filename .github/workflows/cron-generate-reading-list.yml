@@ -1,6 +1,6 @@
 on:
   schedule:
-    - cron: '0 6 * * *'  # Generate daily at 0600 UTC (early morning)
+    - cron: '0 10 * * *'  # Generate daily at 1000 UTC (after site deployment at 0900 UTC)
   workflow_dispatch:
 
 name: generate reading list PDF
@@ -23,15 +23,6 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: "3.12"
-    
-    - name: Install Hugo
-      run: |
-        wget -O hugo.deb https://github.com/gohugoio/hugo/releases/download/v0.126.1/hugo_extended_0.126.1_linux-amd64.deb
-        sudo dpkg -i hugo.deb
-    
-    - name: Build site locally
-      run: |
-        hugo
     
     - name: Install percollate
       run: |
