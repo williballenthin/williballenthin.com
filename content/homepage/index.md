@@ -56,8 +56,6 @@
 
 {{< includeHtml file="static/fragments/homepage/to-read.html" >}}
 
-<p><a href="/homepage/reading-list/recent10.pdf">📚 Download reading list PDF</a> (latest 10 articles from Pinboard, A4 format for Remarkable 2)</p>
-
 <style>
   p.to-read-metadata-generated {
     display: none;

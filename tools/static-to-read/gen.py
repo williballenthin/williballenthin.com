@@ -59,6 +59,7 @@ for file_path in LINKS_DIR.glob("*.md"):
 links.sort(key=lambda x: x["date"], reverse=True)
 recent = links[:5]
 
+print("<h3><a href='/links/'>to read</a> <a href='/homepage/reading-list/recent10.pdf'>(pdf)</a></h3>")
 print("<ol class='to-read'>")
 for link in recent:
     print(f"  <li class='entry'><a href='{link["url"]}'>{link["title"]}</a></li>")
