@@ -24,6 +24,15 @@ jobs:
       with:
         python-version: "3.12"
     
+    - name: Install Hugo
+      run: |
+        wget -O hugo.deb https://github.com/gohugoio/hugo/releases/download/v0.126.1/hugo_extended_0.126.1_linux-amd64.deb
+        sudo dpkg -i hugo.deb
+    
+    - name: Build site locally
+      run: |
+        hugo
+    
     - name: Install percollate
       run: |
         npm install -g percollate
