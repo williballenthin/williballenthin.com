@@ -1,6 +1,6 @@
 on:
   schedule:
-    - cron: '0 6 * * *'  # Generate daily at 0600 UTC (early morning)
+    - cron: '0 10 * * *'  # Generate daily at 1000 UTC (after site deployment at 0900 UTC)
   workflow_dispatch:
 
 name: generate reading list PDF
