@@ -1,0 +1,45 @@
+name: process emails
+
+on:
+  schedule:
+    - cron: '0 */3 * * *'  # every 3 hours
+  workflow_dispatch:
+
+jobs:
+  process-emails:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Process Emails
+        env:
+          IMAP_SERVER: ${{ secrets.IMAP_SERVER }}
+          IMAP_USERNAME: ${{ secrets.IMAP_USERNAME }}
+          IMAP_PASSWORD: ${{ secrets.IMAP_PASSWORD }}
+          ALLOWED_SENDER: ${{ secrets.ALLOWED_SENDER }}
+        run: |
+          uv run tools/email-to-links/process_emails.py
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add content/links/
+          # Only commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Add links from email"
+            git push
+          fi
