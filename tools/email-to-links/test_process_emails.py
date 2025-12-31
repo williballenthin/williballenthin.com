@@ -29,7 +29,7 @@ def test_clean_subject():
     assert process_emails_module.clean_subject("Just a Subject") == "Just a Subject"
     assert process_emails_module.clean_subject("") == "No Title"
 
-def test_extract_url_and_tags():
+def test_extract_url_and_tags_basic():
     # Basic URL + Tag
     body = "Check this: https://example.com #cool"
     url, tags = process_emails_module.extract_url_and_tags(body)
@@ -75,3 +75,74 @@ def test_generate_markdown_content():
     assert "url: https://example.com" in content
     assert "- one" in content
     assert "- two" in content
+
+    # Test special characters in title (YAML escaping)
+    title_special = 'Title: with "quotes" and \'apostrophes\''
+    slug_special, content_special = process_emails_module.generate_markdown_content(title_special, date_obj, url, tags)
+    assert "---" in content_special
+    # Should not break YAML parsing
+    import yaml
+    try:
+        # Extract frontmatter between --- delimiters
+        parts = content_special.split('---')
+        frontmatter_yaml = parts[1]
+        parsed = yaml.safe_load(frontmatter_yaml)
+        assert parsed['title'] == title_special
+    except yaml.YAMLError:
+        assert False, "Generated YAML should be valid"
+
+
+def test_extract_url_and_tags_html():
+    # URL in HTML <a> tag
+    body = 'Check this out: <a href="https://example.com">Example Site</a> #cool'
+    url, tags = process_emails_module.extract_url_and_tags(body)
+    assert url == "https://example.com"
+    assert tags == ["cool"]
+
+    # Multiple <a> tags (take first)
+    body = 'Links: <a href="https://first.com">First</a> and <a href="https://second.com">Second</a>'
+    url, tags = process_emails_module.extract_url_and_tags(body)
+    assert url == "https://first.com"
+    assert tags == []
+
+    # HTML with tags
+    body = '<p>Check out <a href="https://site.com">this site</a> for #python #tutorials</p>'
+    url, tags = process_emails_module.extract_url_and_tags(body)
+    assert url == "https://site.com"
+    assert tags == ["python", "tutorials"]
+
+    # Mixed HTML and plain text
+    body = 'Some text <a href="https://example.com">link</a> more text #tag'
+    url, tags = process_emails_module.extract_url_and_tags(body)
+    assert url == "https://example.com"
+    assert tags == ["tag"]
+
+    # Complex HTML email
+    body = '''<html><body>
+    <p>Hi there,</p>
+    <p>Check out this article: <a href="https://blog.example.com/article">Great Article</a></p>
+    <p>It covers #webdev #javascript topics.</p>
+    <p>Best regards,<br>Someone</p>
+    </body></html>'''
+    url, tags = process_emails_module.extract_url_and_tags(body)
+    assert url == "https://blog.example.com/article"
+    assert tags == ["webdev", "javascript"]
+
+def test_extract_url_and_tags_edge_cases():
+    # Invalid HTML should fallback to text parsing
+    body = 'Broken <a href="https://example.com>link #tag'
+    url, tags = process_emails_module.extract_url_and_tags(body)
+    assert url == "https://example.com"
+    assert tags == ["tag"]
+
+    # No href in <a> tag, should find plain text URL
+    body = 'Link: <a>https://example.com</a> #tag'
+    url, tags = process_emails_module.extract_url_and_tags(body)
+    assert url == "https://example.com"
+    assert tags == ["tag"]
+
+    # Relative URL in href should be ignored, find plain text URL
+    body = 'Link: <a href="/relative">text</a> and https://example.com #tag'
+    url, tags = process_emails_module.extract_url_and_tags(body)
+    assert url == "https://example.com"
+    assert tags == ["tag"]

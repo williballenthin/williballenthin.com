@@ -3,6 +3,8 @@
 # dependencies = [
 #     "imap-tools",
 #     "python-dateutil",
+#     "pyyaml",
+#     "beautifulsoup4",
 # ]
 # ///
 
@@ -10,8 +12,10 @@ import os
 import re
 import sys
 import logging
+import yaml
 from datetime import datetime
 from imap_tools import MailBox, AND
+from bs4 import BeautifulSoup
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -36,34 +40,85 @@ def clean_subject(subject):
     cleaned = pattern.sub('', subject).strip()
     return cleaned if cleaned else "No Title"
 
+def extract_url_from_html(body):
+    """
+    Extract URL from HTML content, preferring href attributes in <a> tags.
+    """
+    try:
+        soup = BeautifulSoup(body, 'html.parser')
+        
+        # Look for <a> tags with href attributes
+        for link in soup.find_all('a', href=True):
+            href = link['href']
+            if href.startswith(('http://', 'https://')):
+                return href, str(soup)  # Return URL and parsed HTML as text
+                
+        # If no <a> tags found, convert to text and fallback to text parsing
+        return None, soup.get_text()
+    except:
+        # If HTML parsing fails, return None and original body
+        return None, body
+
 def extract_url_and_tags(body):
     """
-    Finds the first URL and all hashtags in the body.
+    Finds the first URL and hashtags near the URL in the body.
+    Handles both HTML (with <a> tags) and plain text content.
+    Only extracts tags that are preceded by whitespace or start of string,
+    and only from the vicinity of the URL to avoid headers/signatures.
     """
     if not body:
         return None, []
 
-    # Regex for URL (simple http/https)
-    # Matches http/s followed by non-whitespace characters
-    url_pattern = re.compile(r'(https?://[^\s]+)')
-    url_match = url_pattern.search(body)
-    url = url_match.group(1) if url_match else None
+    # First try to extract URL from HTML if it looks like HTML
+    url = None
+    text_body = body
+    
+    if '<' in body and '>' in body:
+        html_url, text_body = extract_url_from_html(body)
+        if html_url:
+            url = html_url
+    
+    # If no URL found in HTML, try regex on the text content
+    if not url:
+        url_pattern = re.compile(r'(https?://[^\s]+)')
+        url_match = url_pattern.search(text_body)
+        url = url_match.group(1) if url_match else None
 
-    # Regex for hashtags
-    # Matches # followed by word characters (alphanumeric + underscore)
-    # Excludes hashtags that might be part of a URL fragment if not careful,
-    # but generally #tag is distinct.
-    # Note: URL regex is greedy for non-whitespace, so tags usually aren't inside the URL match
-    # unless it's an anchor, but usually anchors don't look like '#tag ' with space.
-    # We scan the whole body for tags.
-    tag_pattern = re.compile(r'#(\w+)')
-    tags = tag_pattern.findall(body)
+    if not url:
+        return None, []
+
+    # Find the position of the URL in the text body for tag extraction
+    # Use the text version for tag extraction to avoid HTML noise
+    url_position = text_body.find(url)
+    if url_position == -1:
+        # If exact URL not found in text, search for the domain part
+        try:
+            from urllib.parse import urlparse
+            parsed = urlparse(url)
+            domain = parsed.netloc
+            url_position = text_body.find(domain)
+        except:
+            url_position = 0
+    
+    if url_position != -1:
+        # Extract a reasonable window around the URL to look for tags
+        window_size = 500
+        start_pos = max(0, url_position - window_size)
+        end_pos = min(len(text_body), url_position + len(url) + window_size)
+        url_vicinity = text_body[start_pos:end_pos]
+    else:
+        # Fallback: search entire text body if URL position not found
+        url_vicinity = text_body
+
+    # Regex for hashtags that are preceded by whitespace or start of string
+    tag_pattern = re.compile(r'(?:^|\s)#(\w+)')
+    tags = tag_pattern.findall(url_vicinity)
 
     return url, tags
 
 def generate_markdown_content(title, date_obj, url, tags):
     """
-    Generates the markdown content with frontmatter.
+    Generates the markdown content with frontmatter using YAML serialization.
     """
     # Slug format: YYYYMMDDTHHMMSS
     slug = date_obj.strftime("%Y%m%dT%H%M%S")
@@ -73,19 +128,22 @@ def generate_markdown_content(title, date_obj, url, tags):
     # imap-tools usually returns timezone-aware datetimes.
     date_str = date_obj.isoformat()
 
-    # Clean tags
-    tag_list = "\n".join([f"- {tag}" for tag in tags])
+    # Create frontmatter data structure
+    frontmatter = {
+        'title': title,
+        'slug': slug,
+        'date': date_str,
+        'params': {
+            'url': url
+        },
+        'tags': tags
+    }
 
-    content = f"""---
-title: {title}
-slug: {slug}
-date: {date_str}
-params:
-  url: {url}
-tags:
-{tag_list}
----
-"""
+    # Serialize to YAML
+    yaml_content = yaml.dump(frontmatter, default_flow_style=False, allow_unicode=True)
+    
+    # Create final content with YAML frontmatter
+    content = f"---\n{yaml_content}---\n"
     return slug, content
 
 def main():
