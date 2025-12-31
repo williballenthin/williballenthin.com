@@ -1,139 +1,139 @@
 #!/usr/bin/env python3
 # /// script
 # dependencies = [
-#  "PyYAML==6.0.1",
+#  "feedparser",
+#  "requests",
+#  "beautifulsoup4",
 # ]
 # ///
 
 """
-Generate a PDF reading list from local link Markdown files for Remarkable 2.
+Generate a PDF reading list from RSS feed links for Remarkable 2.
 
 This script:
-1. Scans the local 'content/links' directory for Markdown files
-2. Extracts metadata (title, url, date, tags) from frontmatter
-3. Sorts by date descending
-4. Extracts the top N URLs
+1. Fetches the RSS feed from https://www.williballenthin.com/links/index.xml
+2. Extracts permalinks from the RSS feed
+3. Fetches each permalink page to find the actual target URL and tags
+4. Filters by exclude tags
 5. Uses percollate to generate an A4 PDF suitable for Remarkable 2
 
 Requires:
 - percollate (npm install -g percollate)
-- Python 3 with standard library + PyYAML (via uv)
+- Python 3 with feedparser, requests, beautifulsoup4
 """
 
 import sys
 import subprocess
 import os
-import glob
-import re
-import yaml
+import requests
+import feedparser
+from bs4 import BeautifulSoup
 from pathlib import Path
-from datetime import datetime, timezone
+from datetime import datetime
+import time
 
 # Define paths relative to the script location
 HERE = Path(__file__).parent
 ROOT = HERE.parent.parent
-LINKS_DIR = ROOT / "content" / "links"
+RSS_URL = "https://www.williballenthin.com/links/index.xml"
 
-def parse_frontmatter(content):
+def get_target_url_and_tags(permalink):
     """
-    Parse YAML frontmatter using PyYAML.
-    Extracts title, date, url, and tags.
+    Fetch the permalink page and extract the target URL and tags.
+    Target URL is expected in <h1 id="title"><a href="...">...</a></h1>
+    Tags are expected in <span class="link-tag"><a href="...">#tag</a></span>
     """
-    # Extract the frontmatter block
-    # Robustly split by '---'
-    parts = content.split('---')
-    if len(parts) < 3:
-        return None
-
-    fm_text = parts[1]
-
     try:
-        data = yaml.safe_load(fm_text)
-    except yaml.YAMLError as e:
-        print(f"Warning: could not parse YAML: {e}")
-        return None
+        response = requests.get(permalink, timeout=10)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.content, 'html.parser')
 
-    if not isinstance(data, dict):
-        return None
+        # Extract target URL
+        title_h1 = soup.find('h1', id='title')
+        if not title_h1:
+            return None, []
 
-    title = data.get('title', 'Untitled')
+        link = title_h1.find('a')
+        if not link or not link.get('href'):
+            return None, []
 
-    # URL is usually nested under params
-    url = None
-    params = data.get('params')
-    if isinstance(params, dict):
-        url = params.get('url')
+        target_url = link['href']
 
-    # Fallback if url is top-level
-    if not url:
-        url = data.get('url')
-
-    # Extract tags
-    tags = data.get('tags', [])
-    if not isinstance(tags, list):
+        # Extract tags
         tags = []
+        # Look for tags in standard Hugo structure based on observed HTML
+        # <span class="link-tag"><a href="...">#tag</a></span>
+        tag_spans = soup.find_all('span', class_='link-tag')
+        for span in tag_spans:
+            a_tag = span.find('a')
+            if a_tag:
+                tag_text = a_tag.get_text(strip=True).lstrip('#')
+                tags.append(tag_text)
 
-    # Parse date
-    date_val = datetime.min.replace(tzinfo=timezone.utc)
-    date_obj = data.get('date')
+        return target_url, tags
 
-    if isinstance(date_obj, datetime):
-        # PyYAML parsed it as datetime
-        if date_obj.tzinfo is None:
-            # Assume UTC if naive, or whatever policy (here just safe default)
-            date_val = date_obj.replace(tzinfo=timezone.utc)
-        else:
-            date_val = date_obj
-    elif isinstance(date_obj, str):
-        try:
-            date_val = datetime.fromisoformat(date_obj)
-        except ValueError:
-            print(f"Warning: could not parse date string {date_obj}")
+    except Exception as e:
+        print(f"Error fetching {permalink}: {e}")
+        return None, []
 
-    return {
-        'title': title,
-        'url': url,
-        'date': date_val,
-        'tags': tags
-    }
-
-def get_local_links(limit=10, exclude_tags=None):
+def get_rss_links(limit=10, exclude_tags=None):
     """
-    Scan content/links directory and return sorted list of items.
+    Fetch RSS feed and return list of items with target URLs.
     """
     exclude_tags = exclude_tags or []
     items = []
     
-    if not LINKS_DIR.exists():
-        print(f"Error: Links directory not found at {LINKS_DIR}")
-        return []
+    print(f"Fetching RSS feed from {RSS_URL}...")
+    feed = feedparser.parse(RSS_URL)
+
+    if hasattr(feed, 'bozo_exception') and feed.bozo_exception:
+        print(f"Warning: Error parsing RSS feed: {feed.bozo_exception}")
+
+    print(f"Found {len(feed.entries)} entries in RSS feed.")
+
+    processed_count = 0
+
+    for entry in feed.entries:
+        if len(items) >= limit:
+            break
+
+        processed_count += 1
+        title = entry.title
+        permalink = entry.link
         
-    print(f"Scanning files in {LINKS_DIR}...")
-
-    files = list(LINKS_DIR.glob("*.md"))
-    print(f"Found {len(files)} markdown files.")
-
-    for file_path in files:
-        try:
-            content = file_path.read_text(encoding='utf-8')
-            meta = parse_frontmatter(content)
-
-            if not meta or not meta['url']:
-                continue
-
-            # Check exclusions
-            if exclude_tags and any(tag in exclude_tags for tag in meta['tags']):
-                continue
-
-            items.append(meta)
-        except Exception as e:
-            print(f"Error processing {file_path.name}: {e}")
+        # Parse date
+        published = entry.published_parsed
+        if published:
+            date_val = datetime.fromtimestamp(time.mktime(published))
+        else:
+            date_val = datetime.now()
             
-    # Sort by date descending
-    items.sort(key=lambda x: x['date'], reverse=True)
+        print(f"Processing [{processed_count}]: {title}")
 
-    print(f"Found {len(items)} valid items (after filtering)")
-    return items[:limit]
+        target_url, tags = get_target_url_and_tags(permalink)
+
+        if not target_url:
+            print(f"  Skipping: Could not find target URL for {permalink}")
+            continue
+
+        # Check exclusions
+        if exclude_tags and any(tag in exclude_tags for tag in tags):
+            print(f"  Skipping: Excluded tag found (tags: {tags})")
+            continue
+
+        items.append({
+            'title': title,
+            'url': target_url,
+            'date': date_val,
+            'tags': tags,
+            'permalink': permalink
+        })
+
+        # Be nice to the server
+        time.sleep(0.1)
+
+    print(f"Found {len(items)} valid items.")
+    return items
 
 def generate_pdf(urls, output_path="reading-list.pdf"):
     """Use percollate to generate A4 PDF from URLs."""
@@ -150,7 +150,7 @@ def generate_pdf(urls, output_path="reading-list.pdf"):
         '--output', output_path,
         '--css', '@page { size: A4; margin: 0.5cm }',
         '--title', f'Reading List - {datetime.now().strftime("%Y-%m-%d")}',
-        '--author', 'williballenthin via Pinboard',
+        '--author', 'williballenthin via RSS',
         '--toc',  # Generate table of contents
         '--wait', '2'  # Be nice to servers
     ]
@@ -165,6 +165,15 @@ def generate_pdf(urls, output_path="reading-list.pdf"):
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
         if result.returncode == 0:
             print(f"Successfully generated PDF: {output_path}")
+
+            # Check file size
+            try:
+                size_bytes = os.path.getsize(output_path)
+                size_mb = size_bytes / (1024 * 1024)
+                print(f"Output file size: {size_mb:.2f} MB")
+            except OSError:
+                print("Could not determine output file size")
+
             return True
         else:
             print(f"Error generating PDF: {result.stderr}")
@@ -211,15 +220,15 @@ def main():
                 print(f"Unknown argument: {arg}")
                 return 1
         
-        print(f"Generating reading list with {num_articles} articles")
+        print(f"Generating reading list with {num_articles} articles from RSS")
         if exclude_tags:
             print(f"Excluding articles with tags: {', '.join(exclude_tags)}")
         
-        # Fetch local links
-        urls = get_local_links(num_articles, exclude_tags)
+        # Fetch RSS links
+        urls = get_rss_links(num_articles, exclude_tags)
         
         if not urls:
-            print("No URLs found in content/links")
+            print("No URLs found in RSS feed")
             return 1
         
         # Print what we found
