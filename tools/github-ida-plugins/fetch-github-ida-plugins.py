@@ -29,6 +29,9 @@ from rich.logging import RichHandler
 
 logger = logging.getLogger(__name__)
 
+# URL for the official HexRays plugin repository metadata
+HEXRAYS_PLUGIN_REPOSITORY_URL = "https://raw.githubusercontent.com/HexRaysSA/plugin-repository/refs/heads/v1/plugin-repository.json"
+
 # these are handpicked repos to ignore
 # due to embedding the IDA SDK/example plugins
 DENYLIST = (
@@ -204,6 +207,80 @@ class IdaPlugin:
     language: str
 
 
+def extract_github_repo_from_url(url: str) -> Optional[str]:
+    """Extract 'owner/repo' from a GitHub URL."""
+    if not url:
+        return None
+
+    parsed = urlparse(url)
+    if parsed.netloc not in ("github.com", "www.github.com"):
+        return None
+
+    # Path format: /owner/repo or /owner/repo/...
+    parts = parsed.path.strip("/").split("/")
+    if len(parts) >= 2:
+        return f"{parts[0]}/{parts[1]}"
+    return None
+
+
+def fetch_hexrays_plugin_repositories() -> list[SearchResult]:
+    """
+    Fetch the official HexRays plugin repository JSON and extract GitHub repositories.
+
+    Returns a list of SearchResult entries for GitHub-hosted plugins.
+    """
+    results = []
+
+    try:
+        logger.info("Fetching HexRays plugin repository from %s", HEXRAYS_PLUGIN_REPOSITORY_URL)
+        response = requests.get(HEXRAYS_PLUGIN_REPOSITORY_URL, timeout=30)
+        response.raise_for_status()
+        data = response.json()
+    except requests.RequestException as e:
+        logger.warning("Failed to fetch HexRays plugin repository: %s", e)
+        return results
+    except json.JSONDecodeError as e:
+        logger.warning("Failed to parse HexRays plugin repository JSON: %s", e)
+        return results
+
+    plugins = data.get("plugins", [])
+    logger.info("Found %d plugins in HexRays repository", len(plugins))
+
+    seen_repos = set()
+
+    for plugin in plugins:
+        # Primary source: the 'host' field which is typically the repository URL
+        host_url = plugin.get("host", "")
+        repo_name = extract_github_repo_from_url(host_url)
+
+        if repo_name and repo_name not in seen_repos and repo_name not in DENYLIST:
+            seen_repos.add(repo_name)
+
+            # Get plugin name from metadata if available
+            plugin_name = plugin.get("name", "")
+
+            # Try to get a description from metadata
+            description = ""
+            versions = plugin.get("versions", {})
+            for version_key, distributions in versions.items():
+                if distributions and len(distributions) > 0:
+                    metadata = distributions[0].get("metadata", {})
+                    description = metadata.get("description", "")
+                    if description:
+                        break
+
+            results.append(SearchResult(
+                repository=repo_name,
+                file="(HexRays plugin repository)",
+                url=host_url,
+                language="plugin-repository",
+            ))
+            logger.info("Found HexRays plugin: %s (%s)", repo_name, plugin_name or "unnamed")
+
+    logger.info("Extracted %d unique GitHub repositories from HexRays plugin repository", len(results))
+    return results
+
+
 def log_rate_limit_status(response: requests.Response, api_type: str = "REST") -> None:
     if api_type == "GraphQL":
         remaining = response.headers.get("x-ratelimit-remaining")
@@ -298,8 +375,19 @@ def search_github_code(token: str, query: str, limit: int | None = None) -> list
 def collect_search_results(token: str, limit: int | None = None) -> list[SearchResult]:
     """Collect search results using direct API calls."""
     results = []
-    
-    # Define search configurations
+    seen_repos = set()
+
+    # First, fetch plugins from the official HexRays plugin repository
+    # This doesn't require GitHub API calls, so we do it first
+    hexrays_results = fetch_hexrays_plugin_repositories()
+    for result in hexrays_results:
+        if result.repository not in seen_repos:
+            seen_repos.add(result.repository)
+            results.append(result)
+
+    logger.info("After HexRays repository: %d unique repositories", len(results))
+
+    # Define search configurations for GitHub code search
     search_configs = [
         {
             'query': 'language:python AND "def PLUGIN_ENTRY()" AND in:file',
@@ -317,18 +405,18 @@ def collect_search_results(token: str, limit: int | None = None) -> list[SearchR
             'description': 'Python files with ida_domain'
         }
     ]
-    
+
     # Process each search configuration
     for config in search_configs:
         query = config['query']
         language = config['language']
         description = config['description']
-        
+
         logger.info("%s query: %s", description, query)
-        
+
         search_results = search_github_code(token, query, limit)
         logger.info("found %d %s", len(search_results), description)
-        
+
         for result in search_results:
             repo_name = result["repository"]["full_name"]
             file_path = result["path"]
@@ -336,7 +424,13 @@ def collect_search_results(token: str, limit: int | None = None) -> list[SearchR
             # Apply filtering logic
             if should_skip_result(repo_name, file_path, result["html_url"]):
                 continue
-                
+
+            # Skip if we already have this repo from another source
+            if repo_name in seen_repos:
+                logger.debug("Skipping duplicate repository: %s", repo_name)
+                continue
+
+            seen_repos.add(repo_name)
             results.append(SearchResult(
                 repository=repo_name,
                 file=result["path"],
@@ -344,7 +438,8 @@ def collect_search_results(token: str, limit: int | None = None) -> list[SearchR
                 language=language
             ))
             logger.info("Found %s: %s", description.lower(), repo_name)
-    
+
+    logger.info("Total unique repositories collected: %d", len(results))
     return results
 
 
