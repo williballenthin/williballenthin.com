@@ -245,6 +245,12 @@
                 xmlUrl="https://sketch.dev/atom.xml"
                 />
 
+            <outline type="rss"
+                text="Armin Ronacher" title="Armin Ronacher"
+                htmlUrl="https://lucumr.pocoo.org/"
+                xmlUrl="https://lucumr.pocoo.org/feed.atom"
+                />
+
             <!--
             <outline type="rss"
                 text="" title=""
