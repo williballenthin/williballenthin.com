@@ -43,7 +43,7 @@
             <outline type="rss" text="The Grumpy Economist" title="The Grumpy Economist" xmlUrl="http://johnhcochrane.blogspot.com/feeds/posts/default" htmlUrl="https://johnhcochrane.blogspot.com/"/>
             <outline type="rss" text="Cryptography &amp; Security Newsletter" title="Cryptography &amp; Security Newsletter" xmlUrl="https://www.feistyduck.com/bulletproof-tls-newsletter/feed" htmlUrl="https://www.feistyduck.com/newsletter/"/>
             <outline type="rss" text="Paul Khuong: some Lisp" title="Paul Khuong: some Lisp" xmlUrl="http://www.pvk.ca/atom.xml" htmlUrl="https://www.pvk.ca/"/>
-            <outline type="rss" text="Servo Blog" title="Servo Blog" xmlUrl="http://blog.servo.org/feed.xml" htmlUrl="https://servo.org"/>
+            <outline type="rss" text="Servo Blog" title="Servo Blog" xmlUrl="https://servo.org/blog/feed.xml" htmlUrl="https://servo.org"/>
             <outline type="rss" text="Baby Steps" title="Baby Steps" xmlUrl="http://smallcultfollowing.com/babysteps/atom.xml" htmlUrl="https://smallcultfollowing.com/babysteps/"/>
             <outline type="rss" text="Luke Muehlhauser" title="Luke Muehlhauser" xmlUrl="http://feeds.feedburner.com/LukeMuehlhauser" htmlUrl="https://lukemuehlhauser.com"/>
             <outline type="rss" text="Locklin on science" title="Locklin on science" xmlUrl="http://scottlocklin.wordpress.com/feed/" htmlUrl="https://scottlocklin.wordpress.com"/>
