@@ -153,6 +153,26 @@ def fix_broken_heading_elements(html_content):
     return re.sub(broken_heading_pattern, fix_broken_heading, html_content, flags=re.IGNORECASE | re.DOTALL)
 
 
+def escape_html_tags_in_markdown(md_text):
+    """
+    Re-escape HTML tag-like patterns in markdown text.
+
+    html2text unescapes &lt;table&gt; to <table>, which then gets interpreted
+    as an actual HTML element when markdown.markdown() processes it.
+    This function re-escapes common HTML element names that are likely meant
+    to be shown as text examples in documentation.
+    """
+    # Target common HTML element names that appear in documentation
+    doc_elements = r'table|thead|tbody|tfoot|tr|td|th|video|audio|img|input|button|form|div|span|p|br|hr|meta|link|script|style|iframe|canvas|svg|figure|figcaption|details|summary|dialog|template|slot|select|option|textarea|label|fieldset|legend|datalist|output|progress|meter|nav|header|footer|main|section|article|aside|ul|ol|li|dl|dt|dd|pre|code|blockquote|cite|abbr|address|time|mark|del|ins|sub|sup|small|strong|em|b|i|u|s|q|dfn|var|samp|kbd|data|ruby|rt|rp|bdi|bdo|wbr|area|map|track|source|embed|object|param|picture|portal|noscript|base|head|title|body|html|colgroup|col|caption'
+
+    # Escape <element> patterns - opening tags without attributes
+    md_text = re.sub(r'<(' + doc_elements + r')>', r'&lt;\1&gt;', md_text, flags=re.IGNORECASE)
+    # Escape </element> - closing tags
+    md_text = re.sub(r'</(' + doc_elements + r')>', r'&lt;/\1&gt;', md_text, flags=re.IGNORECASE)
+
+    return md_text
+
+
 def parse_opml(opml_path):
     """Parse OPML file directly to extract feeds with all necessary information"""
     tree = ET.parse(opml_path)
@@ -272,6 +292,8 @@ class Feed:
                             cleaned_content = remove_heading_links(content.value)
 
                             content_md = html2text.html2text(cleaned_content)
+                            # Re-escape HTML tags that appear as text examples (e.g., <table>)
+                            content_md = escape_html_tags_in_markdown(content_md)
                             content_html = markdown.markdown(content_md)
                             
                             # Clean up any remaining malformed markdown links in headings
@@ -332,10 +354,12 @@ class Feed:
 
             elif self.category == "mastodon":
                 # mastodon post RSS feed
-                
+
                 # Remove anchor links from headings before processing
                 cleaned_summary = remove_heading_links(entry.summary)
                 content_md = html2text.html2text(cleaned_summary)
+                # Re-escape HTML tags that appear as text examples (e.g., <table>)
+                content_md = escape_html_tags_in_markdown(content_md)
                 content_html = markdown.markdown(content_md)
                 
                 # Clean up any remaining malformed markdown links in headings
