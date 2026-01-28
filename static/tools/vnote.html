@@ -13,160 +13,37 @@
       margin: 0;
       padding: 0;
     }
-
-```
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #1a1a1a;
-  color: #ffffff;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  overflow: hidden;
-}
-
-.status {
-  font-size: 14px;
-  color: #888;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.status.recording {
-  color: #ff4444;
-}
-
-.status.error {
-  color: #ff8800;
-}
-
-.timer {
-  font-size: 48px;
-  font-weight: 200;
-  font-variant-numeric: tabular-nums;
-  margin-bottom: 30px;
-  color: #ffffff;
-}
-
-.stop-button {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: #ff3b30;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px rgba(255, 59, 48, 0.4);
-  transition: transform 0.1s, box-shadow 0.1s;
-  margin-bottom: 30px;
-}
-
-.stop-button:active {
-  transform: scale(0.95);
-  box-shadow: 0 2px 10px rgba(255, 59, 48, 0.3);
-}
-
-.stop-button .stop-icon {
-  width: 36px;
-  height: 36px;
-  background: #ffffff;
-  border-radius: 6px;
-}
-
-.stop-button:disabled {
-  background: #666;
-  box-shadow: none;
-  cursor: not-allowed;
-}
-
-.transcript-container {
-  width: 100%;
-  max-width: 400px;
-  max-height: 200px;
-  overflow-y: auto;
-  background: #2a2a2a;
-  border-radius: 12px;
-  padding: 16px;
-  margin-top: 20px;
-}
-
-.transcript-label {
-  font-size: 12px;
-  color: #666;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
-}
-
-.transcript-text {
-  font-size: 16px;
-  line-height: 1.5;
-  color: #ddd;
-  min-height: 24px;
-}
-
-.transcript-text .interim {
-  color: #888;
-}
-
-.pulse {
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-.start-prompt {
-  text-align: center;
-}
-
-.start-button {
-  padding: 16px 32px;
-  font-size: 18px;
-  background: #007aff;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-}
-
-.start-button:active {
-  background: #0056b3;
-}
-
-.hidden {
-  display: none !important;
-}
-```
-
   </style>
 </head>
 <body>
   <!-- Initial start screen (needed for user gesture to enable permissions) -->
-  <div id="startScreen" class="start-prompt">
-    <p style="margin-bottom: 20px; color: #888;">Tap to start recording</p>
-    <button class="start-button" id="startButton">Start Recording</button>
+  <div id="startScreen">
+    <p>Tap to start recording</p>
+    <button id="startButton">Start Recording</button>
+    <button id="settingsButton">Settings</button>
   </div>
 
   <!-- Recording screen -->
-
   <div id="recordingScreen" class="hidden">
-    <div class="status" id="status">Initializing...</div>
-    <div class="timer" id="timer">0:00</div>
-    <button class="stop-button" id="stopButton" disabled>
-      <div class="stop-icon"></div>
-    </button>
-    <div class="transcript-container">
-      <div class="transcript-label">Live Transcript</div>
-      <div class="transcript-text" id="transcript">
-        <span class="interim">Listening...</span>
+    <div id="status">Initializing...</div>
+    <div id="timer">0:00</div>
+    <button id="stopButton" disabled>Stop</button>
+    <div id="transcriptContainer">
+      <div>Live Transcript</div>
+      <div id="transcript">Listening...</div>
+    </div>
+  </div>
+
+  <!-- Settings dialog -->
+  <div id="settingsDialog" class="hidden">
+    <div id="settingsContent">
+      <h2>Settings</h2>
+      <label for="emailInput">Email address for transcripts:</label>
+      <input type="email" id="emailInput" placeholder="email@example.com">
+      <p>Leave empty to use share sheet instead.</p>
+      <div>
+        <button id="saveSettingsButton">Save</button>
+        <button id="cancelSettingsButton">Cancel</button>
       </div>
     </div>
   </div>
@@ -181,14 +58,53 @@ body {
     let startTime = null;
     let timerInterval = null;
 
+    // LocalStorage key
+    const EMAIL_STORAGE_KEY = 'vnote_email';
+
     // DOM Elements
     const startScreen = document.getElementById('startScreen');
     const recordingScreen = document.getElementById('recordingScreen');
+    const settingsDialog = document.getElementById('settingsDialog');
     const startButton = document.getElementById('startButton');
     const stopButton = document.getElementById('stopButton');
+    const settingsButton = document.getElementById('settingsButton');
+    const saveSettingsButton = document.getElementById('saveSettingsButton');
+    const cancelSettingsButton = document.getElementById('cancelSettingsButton');
+    const emailInput = document.getElementById('emailInput');
     const statusEl = document.getElementById('status');
     const timerEl = document.getElementById('timer');
     const transcriptEl = document.getElementById('transcript');
+
+    // Load email from localStorage
+    function loadEmail() {
+      return localStorage.getItem(EMAIL_STORAGE_KEY) || '';
+    }
+
+    // Save email to localStorage
+    function saveEmail(email) {
+      if (email) {
+        localStorage.setItem(EMAIL_STORAGE_KEY, email);
+      } else {
+        localStorage.removeItem(EMAIL_STORAGE_KEY);
+      }
+    }
+
+    // Show settings dialog
+    function showSettings() {
+      emailInput.value = loadEmail();
+      settingsDialog.classList.remove('hidden');
+    }
+
+    // Hide settings dialog
+    function hideSettings() {
+      settingsDialog.classList.add('hidden');
+    }
+
+    // Save settings
+    function saveSettings() {
+      saveEmail(emailInput.value.trim());
+      hideSettings();
+    }
 
     // Format time as M:SS
     function formatTime(seconds) {
@@ -212,20 +128,25 @@ body {
       return `${iso}-transcription`;
     }
 
+    // Generate email subject with timestamp
+    function generateEmailSubject() {
+      const now = new Date();
+      return `Voice Note - ${now.toLocaleString()}`;
+    }
+
     // Update transcript display
     function updateTranscriptDisplay() {
       if (finalTranscript || interimTranscript) {
-        transcriptEl.innerHTML = finalTranscript + 
-          (interimTranscript ? `<span class="interim">${interimTranscript}</span>` : '');
+        transcriptEl.textContent = finalTranscript + interimTranscript;
       } else {
-        transcriptEl.innerHTML = '<span class="interim">Listening...</span>';
+        transcriptEl.textContent = 'Listening...';
       }
     }
 
     // Initialize speech recognition
     function initSpeechRecognition() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      
+
       if (!SpeechRecognition) {
         console.warn('Speech recognition not supported');
         return null;
@@ -238,7 +159,7 @@ body {
 
       recog.onresult = (event) => {
         interimTranscript = '';
-        
+
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const result = event.results[i];
           if (result.isFinal) {
@@ -247,7 +168,7 @@ body {
             interimTranscript += result[0].transcript;
           }
         }
-        
+
         updateTranscriptDisplay();
       };
 
@@ -284,16 +205,16 @@ body {
         // Switch screens
         startScreen.classList.add('hidden');
         recordingScreen.classList.remove('hidden');
-        
+
         statusEl.textContent = 'Requesting microphone access...';
-        
+
         // Get microphone access
-        const stream = await navigator.mediaDevices.getUserMedia({ 
+        const stream = await navigator.mediaDevices.getUserMedia({
           audio: {
             echoCancellation: true,
             noiseSuppression: true,
             sampleRate: 44100
-          } 
+          }
         });
 
         // Determine supported MIME type
@@ -318,14 +239,14 @@ body {
         mediaRecorder.onstop = async () => {
           // Stop all tracks
           stream.getTracks().forEach(track => track.stop());
-          
+
           // Process and share
           await processAndShare();
         };
 
         // Start recording
         mediaRecorder.start(1000); // Capture in 1-second chunks
-        
+
         // Start timer
         startTime = Date.now();
         timerInterval = setInterval(updateTimer, 100);
@@ -338,14 +259,12 @@ body {
 
         // Update UI
         statusEl.textContent = 'Recording';
-        statusEl.classList.add('recording', 'pulse');
         stopButton.disabled = false;
 
       } catch (error) {
         console.error('Error starting recording:', error);
         statusEl.textContent = `Error: ${error.message}`;
-        statusEl.classList.add('error');
-        
+
         // Show start screen again
         setTimeout(() => {
           recordingScreen.classList.add('hidden');
@@ -361,15 +280,14 @@ body {
         if (recognition) {
           recognition.stop();
         }
-        
+
         // Stop timer
         clearInterval(timerInterval);
-        
+
         // Update UI
         statusEl.textContent = 'Processing...';
-        statusEl.classList.remove('recording', 'pulse');
         stopButton.disabled = true;
-        
+
         // Stop recording (triggers onstop handler)
         mediaRecorder.stop();
       }
@@ -378,49 +296,63 @@ body {
     // Process recording and share
     async function processAndShare() {
       try {
-        statusEl.textContent = 'Preparing to share...';
-        
-        // Create audio blob
-        const mimeType = mediaRecorder.mimeType;
-        const audioBlob = new Blob(audioChunks, { type: mimeType });
-        
-        // Determine file extension
-        const ext = mimeType.includes('mp4') ? 'm4a' : 'webm';
-        const filename = `${generateFilename()}.${ext}`;
-        
-        // Create file
-        const audioFile = new File([audioBlob], filename, { type: mimeType });
-        
         // Prepare transcript
         const transcriptText = finalTranscript.trim() || '(No transcript captured)';
-        
-        // Check if we can share files
-        if (navigator.canShare && navigator.canShare({ files: [audioFile] })) {
-          await navigator.share({
-            files: [audioFile],
-            title: 'Voice Note',
-            text: `Transcript:\n${transcriptText}`
-          });
-          statusEl.textContent = 'Shared successfully!';
+
+        // Check if email is configured
+        const email = loadEmail();
+
+        if (email) {
+          // Use mailto link
+          statusEl.textContent = 'Opening email...';
+          const subject = encodeURIComponent(generateEmailSubject());
+          const body = encodeURIComponent(transcriptText);
+          const mailtoUrl = `mailto:${email}?subject=${subject}&body=${body}`;
+          window.location.href = mailtoUrl;
+          statusEl.textContent = 'Email opened!';
         } else {
-          // Fallback: offer download
-          statusEl.textContent = 'Share not supported, downloading...';
-          const url = URL.createObjectURL(audioBlob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = filename;
-          a.click();
-          URL.revokeObjectURL(url);
-          
-          // Also show transcript
-          alert(`Transcript:\n\n${transcriptText}`);
+          // Use share sheet (original behavior)
+          statusEl.textContent = 'Preparing to share...';
+
+          // Create audio blob
+          const mimeType = mediaRecorder.mimeType;
+          const audioBlob = new Blob(audioChunks, { type: mimeType });
+
+          // Determine file extension
+          const ext = mimeType.includes('mp4') ? 'm4a' : 'webm';
+          const filename = `${generateFilename()}.${ext}`;
+
+          // Create file
+          const audioFile = new File([audioBlob], filename, { type: mimeType });
+
+          // Check if we can share files
+          if (navigator.canShare && navigator.canShare({ files: [audioFile] })) {
+            await navigator.share({
+              files: [audioFile],
+              title: 'Voice Note',
+              text: `Transcript:\n${transcriptText}`
+            });
+            statusEl.textContent = 'Shared successfully!';
+          } else {
+            // Fallback: offer download
+            statusEl.textContent = 'Share not supported, downloading...';
+            const url = URL.createObjectURL(audioBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            // Also show transcript
+            alert(`Transcript:\n\n${transcriptText}`);
+          }
         }
-        
+
         // Reset for next recording
         setTimeout(() => {
           resetState();
         }, 1500);
-        
+
       } catch (error) {
         if (error.name === 'AbortError') {
           statusEl.textContent = 'Share cancelled';
@@ -428,7 +360,7 @@ body {
           console.error('Error sharing:', error);
           statusEl.textContent = `Error: ${error.message}`;
         }
-        
+
         setTimeout(() => {
           resetState();
         }, 1500);
@@ -443,11 +375,10 @@ body {
       finalTranscript = '';
       interimTranscript = '';
       startTime = null;
-      
+
       timerEl.textContent = '0:00';
-      transcriptEl.innerHTML = '<span class="interim">Listening...</span>';
-      statusEl.classList.remove('recording', 'pulse', 'error');
-      
+      transcriptEl.textContent = 'Listening...';
+
       recordingScreen.classList.add('hidden');
       startScreen.classList.remove('hidden');
     }
@@ -455,6 +386,9 @@ body {
     // Event listeners
     startButton.addEventListener('click', startRecording);
     stopButton.addEventListener('click', stopRecording);
+    settingsButton.addEventListener('click', showSettings);
+    saveSettingsButton.addEventListener('click', saveSettings);
+    cancelSettingsButton.addEventListener('click', hideSettings);
 
     // Prevent accidental navigation
     window.addEventListener('beforeunload', (e) => {
