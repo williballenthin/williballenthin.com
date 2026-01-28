@@ -185,6 +185,8 @@
     let analyser = null;
     let volumeAnimationFrame = null;
     let draftSaveInterval = null;
+    let stoppingRecording = false;
+    let onTranscriptionComplete = null;
     const DRAFT_STORAGE_KEY = 'vnote_draft';
 
     // LocalStorage keys
@@ -470,6 +472,14 @@
       };
 
       recog.onend = () => {
+        // If we're intentionally stopping, signal completion
+        if (stoppingRecording && onTranscriptionComplete) {
+          const callback = onTranscriptionComplete;
+          onTranscriptionComplete = null;
+          stoppingRecording = false;
+          callback();
+          return;
+        }
         // Auto-restart if still recording
         if (mediaRecorder && mediaRecorder.state === 'recording') {
           try {
@@ -669,13 +679,51 @@
       }
     }
 
-    // Stop recording
-    function stopRecording() {
-      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-        // Stop speech recognition
-        if (recognition) {
-          recognition.stop();
+    // Wait for transcription to finalize
+    function waitForTranscriptionComplete() {
+      return new Promise((resolve) => {
+        if (!recognition) {
+          resolve();
+          return;
         }
+
+        // Set up completion callback
+        stoppingRecording = true;
+        onTranscriptionComplete = resolve;
+
+        // Safety timeout in case onend doesn't fire (e.g., recognition already stopped)
+        const timeout = setTimeout(() => {
+          if (onTranscriptionComplete) {
+            onTranscriptionComplete = null;
+            stoppingRecording = false;
+            resolve();
+          }
+        }, 1000);
+
+        // Clear timeout if callback fires first
+        const originalResolve = resolve;
+        onTranscriptionComplete = () => {
+          clearTimeout(timeout);
+          originalResolve();
+        };
+
+        // Stop recognition (will trigger onend which calls our callback)
+        recognition.stop();
+      });
+    }
+
+    // Stop recording
+    async function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        // Update button to show we're processing
+        mainRecordButton.textContent = 'Finishing...';
+        mainRecordButton.disabled = true;
+
+        // Show status that we're waiting for transcription
+        statusEl.textContent = 'Finalizing transcription...';
+
+        // Wait for speech recognition to finish processing any pending audio
+        await waitForTranscriptionComplete();
 
         // Stop timer
         clearInterval(timerInterval);
@@ -689,6 +737,9 @@
 
         // Update UI
         statusEl.textContent = 'Processing...';
+
+        // Re-enable button (will be reset in resetState)
+        mainRecordButton.disabled = false;
 
         // Stop recording (triggers onstop handler)
         mediaRecorder.stop();
@@ -783,6 +834,8 @@
       interimTranscript = '';
       startTime = null;
       pausedTime = 0;
+      stoppingRecording = false;
+      onTranscriptionComplete = null;
 
       timerEl.textContent = '0:00';
       transcriptEl.textContent = 'Listening...';
