@@ -42,12 +42,11 @@
       flex-direction: column;
       height: 100%;
     }
-    .top-bar {
-      display: flex;
-      justify-content: flex-end;
+    .recording-area {
+      flex: 0 0 auto;
       padding: 10px;
     }
-    .content-area {
+    .bottom-area {
       flex: 0 0 auto;
       padding: 10px;
     }
@@ -81,7 +80,6 @@
       margin-top: 10px;
     }
     #recordingInfo {
-      margin-top: 15px;
       padding: 10px;
       border: 1px solid #ccc;
       background-color: #fafafa;
@@ -122,25 +120,22 @@
       background: #666;
       transition: width 50ms ease-out;
     }
-    #pauseButton {
-      margin-left: 10px;
+    .transcript-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+    #emailInput {
+      padding: 8px;
+      width: 100%;
+      max-width: 300px;
     }
   </style>
 </head>
 <body>
   <!-- Initial start screen (needed for user gesture to enable permissions) -->
   <div id="startScreen">
-    <div class="top-bar">
-      <button id="settingsButton">Settings</button>
-    </div>
-    <div class="content-area">
-      <p id="emailDisplay"></p>
-      <details id="historySection">
-        <summary>History</summary>
-        <table id="historyTable">
-          <tbody id="historyBody"></tbody>
-        </table>
-      </details>
+    <div class="recording-area">
       <div id="recordingInfo" class="hidden">
         <div id="status">Initializing...</div>
         <div id="timer">0:00</div>
@@ -149,27 +144,30 @@
           <div>Live Transcript</div>
           <div id="transcript">Listening...</div>
         </div>
-        <button id="copyButton">Copy Transcript</button>
-        <button id="pauseButton">Pause</button>
+        <div class="transcript-buttons">
+          <button id="copyButton">Copy Transcript</button>
+          <button id="pauseButton">Pause</button>
+        </div>
       </div>
     </div>
     <div class="button-area">
       <button id="mainRecordButton">Start Recording</button>
     </div>
-  </div>
-
-
-  <!-- Settings dialog -->
-  <div id="settingsDialog" class="hidden">
-    <div id="settingsContent">
-      <h2>Settings</h2>
-      <label for="emailInput">Email address for transcripts:</label>
-      <input type="email" id="emailInput" placeholder="email@example.com">
-      <p>Leave empty to use share sheet instead.</p>
-      <div>
-        <button id="saveSettingsButton">Save</button>
-        <button id="cancelSettingsButton">Cancel</button>
-      </div>
+    <div class="bottom-area">
+      <details id="settingsSection">
+        <summary>Settings</summary>
+        <div style="margin-top: 10px;">
+          <label for="emailInput">Email address for transcripts:</label>
+          <input type="email" id="emailInput" placeholder="email@example.com">
+          <p style="margin-top: 5px; color: #666; font-size: 14px;">Leave empty to use share sheet instead.</p>
+        </div>
+      </details>
+      <details id="historySection">
+        <summary>History</summary>
+        <table id="historyTable">
+          <tbody id="historyBody"></tbody>
+        </table>
+      </details>
     </div>
   </div>
 
@@ -196,17 +194,12 @@
     // DOM Elements
     const startScreen = document.getElementById('startScreen');
     const recordingInfo = document.getElementById('recordingInfo');
-    const settingsDialog = document.getElementById('settingsDialog');
     const mainRecordButton = document.getElementById('mainRecordButton');
     const copyButton = document.getElementById('copyButton');
     const pauseButton = document.getElementById('pauseButton');
     const volumeBar = document.getElementById('volumeBar');
     const historySummary = document.querySelector('#historySection summary');
-    const settingsButton = document.getElementById('settingsButton');
-    const saveSettingsButton = document.getElementById('saveSettingsButton');
-    const cancelSettingsButton = document.getElementById('cancelSettingsButton');
     const emailInput = document.getElementById('emailInput');
-    const emailDisplay = document.getElementById('emailDisplay');
     const statusEl = document.getElementById('status');
     const timerEl = document.getElementById('timer');
     const transcriptEl = document.getElementById('transcript');
@@ -226,14 +219,9 @@
       }
     }
 
-    // Update email display on start screen
-    function updateEmailDisplay() {
-      const email = loadEmail();
-      if (email) {
-        emailDisplay.textContent = `Email: ${email}`;
-      } else {
-        emailDisplay.textContent = 'No email configured (will use share sheet)';
-      }
+    // Load saved email into input field
+    function loadEmailIntoInput() {
+      emailInput.value = loadEmail();
     }
 
     // Load history from localStorage
@@ -368,22 +356,9 @@
       });
     }
 
-    // Show settings dialog
-    function showSettings() {
-      emailInput.value = loadEmail();
-      settingsDialog.classList.remove('hidden');
-    }
-
-    // Hide settings dialog
-    function hideSettings() {
-      settingsDialog.classList.add('hidden');
-    }
-
-    // Save settings
-    function saveSettings() {
+    // Save email on input change
+    function onEmailInputChange() {
       saveEmail(emailInput.value.trim());
-      updateEmailDisplay();
-      hideSettings();
     }
 
     // Format time as M:SS
@@ -844,9 +819,7 @@
     mainRecordButton.addEventListener('click', toggleRecording);
     pauseButton.addEventListener('click', togglePause);
     copyButton.addEventListener('click', copyCurrentTranscript);
-    settingsButton.addEventListener('click', showSettings);
-    saveSettingsButton.addEventListener('click', saveSettings);
-    cancelSettingsButton.addEventListener('click', hideSettings);
+    emailInput.addEventListener('input', onEmailInputChange);
 
     // Prevent accidental navigation
     window.addEventListener('beforeunload', (e) => {
@@ -857,7 +830,7 @@
     });
 
     // Initialize on load
-    updateEmailDisplay();
+    loadEmailIntoInput();
     renderHistory();
     checkForDraft();
 
