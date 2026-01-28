@@ -86,6 +86,26 @@
       border: 1px solid #ddd;
       margin-top: 5px;
     }
+    .interim {
+      color: #666;
+      font-style: italic;
+    }
+    #volumeMeter {
+      height: 8px;
+      background: #ddd;
+      margin: 10px 0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    #volumeBar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, #4caf50, #8bc34a, #ffeb3b, #ff9800, #f44336);
+      transition: width 50ms ease-out;
+    }
+    #pauseButton {
+      margin-left: 10px;
+    }
   </style>
 </head>
 <body>
@@ -105,11 +125,13 @@
       <div id="recordingInfo" class="hidden">
         <div id="status">Initializing...</div>
         <div id="timer">0:00</div>
+        <div id="volumeMeter"><div id="volumeBar"></div></div>
         <div id="transcriptContainer">
           <div>Live Transcript</div>
           <div id="transcript">Listening...</div>
         </div>
         <button id="copyButton">Copy Transcript</button>
+        <button id="pauseButton">Pause</button>
       </div>
     </div>
     <div class="button-area">
@@ -140,7 +162,13 @@
     let finalTranscript = '';
     let interimTranscript = '';
     let startTime = null;
+    let pausedTime = 0;
     let timerInterval = null;
+    let audioContext = null;
+    let analyser = null;
+    let volumeAnimationFrame = null;
+    let draftSaveInterval = null;
+    const DRAFT_STORAGE_KEY = 'vnote_draft';
 
     // LocalStorage keys
     const EMAIL_STORAGE_KEY = 'vnote_email';
@@ -152,6 +180,9 @@
     const settingsDialog = document.getElementById('settingsDialog');
     const mainRecordButton = document.getElementById('mainRecordButton');
     const copyButton = document.getElementById('copyButton');
+    const pauseButton = document.getElementById('pauseButton');
+    const volumeBar = document.getElementById('volumeBar');
+    const historySummary = document.querySelector('#historySection summary');
     const settingsButton = document.getElementById('settingsButton');
     const saveSettingsButton = document.getElementById('saveSettingsButton');
     const cancelSettingsButton = document.getElementById('cancelSettingsButton');
@@ -213,6 +244,21 @@
       renderHistory();
     }
 
+    // Delete entry from history
+    function deleteHistoryEntry(index) {
+      const history = loadHistory();
+      history.splice(index, 1);
+      saveHistory(history);
+      renderHistory();
+    }
+
+    // Update history count in summary
+    function updateHistoryCount() {
+      const history = loadHistory();
+      const count = history.length;
+      historySummary.textContent = count > 0 ? `History (${count})` : 'History';
+    }
+
     // Generate email subject with timestamp
     function generateEmailSubjectForDate(dateStr) {
       const date = new Date(dateStr);
@@ -247,10 +293,11 @@
     function renderHistory() {
       const history = loadHistory();
       historyBody.innerHTML = '';
+      updateHistoryCount();
 
       if (history.length === 0) {
         const row = document.createElement('tr');
-        row.innerHTML = '<td colspan="4">No history yet</td>';
+        row.innerHTML = '<td colspan="5">No history yet</td>';
         historyBody.appendChild(row);
         return;
       }
@@ -283,10 +330,21 @@
         emailBtn.onclick = () => sendEmailForTranscript(entry.text, entry.date);
         emailCell.appendChild(emailBtn);
 
+        const deleteCell = document.createElement('td');
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.onclick = () => {
+          if (confirm('Delete this entry?')) {
+            deleteHistoryEntry(index);
+          }
+        };
+        deleteCell.appendChild(deleteBtn);
+
         row.appendChild(dateCell);
         row.appendChild(previewCell);
         row.appendChild(copyCell);
         row.appendChild(emailCell);
+        row.appendChild(deleteCell);
         historyBody.appendChild(row);
       });
     }
@@ -319,7 +377,7 @@
     // Update timer display
     function updateTimer() {
       if (startTime) {
-        const elapsed = (Date.now() - startTime) / 1000;
+        const elapsed = (pausedTime + Date.now() - startTime) / 1000;
         timerEl.textContent = formatTime(elapsed);
       }
     }
@@ -340,7 +398,18 @@
     // Update transcript display
     function updateTranscriptDisplay() {
       if (finalTranscript || interimTranscript) {
-        transcriptEl.textContent = finalTranscript + interimTranscript;
+        transcriptEl.innerHTML = '';
+        if (finalTranscript) {
+          const finalSpan = document.createElement('span');
+          finalSpan.textContent = finalTranscript;
+          transcriptEl.appendChild(finalSpan);
+        }
+        if (interimTranscript) {
+          const interimSpan = document.createElement('span');
+          interimSpan.className = 'interim';
+          interimSpan.textContent = interimTranscript;
+          transcriptEl.appendChild(interimSpan);
+        }
       } else {
         transcriptEl.textContent = 'Listening...';
       }
@@ -416,6 +485,107 @@
       return recog;
     }
 
+    // Volume meter using Web Audio API
+    function startVolumeMeter(stream) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioContext.createAnalyser();
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+      analyser.fftSize = 256;
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+      function updateVolume() {
+        if (!analyser) return;
+        analyser.getByteFrequencyData(dataArray);
+        const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+        const volume = Math.min(100, (average / 128) * 100);
+        volumeBar.style.width = volume + '%';
+        volumeAnimationFrame = requestAnimationFrame(updateVolume);
+      }
+      updateVolume();
+    }
+
+    function stopVolumeMeter() {
+      if (volumeAnimationFrame) {
+        cancelAnimationFrame(volumeAnimationFrame);
+        volumeAnimationFrame = null;
+      }
+      if (audioContext) {
+        audioContext.close();
+        audioContext = null;
+        analyser = null;
+      }
+      volumeBar.style.width = '0%';
+    }
+
+    // Draft save/load/clear
+    function saveDraft() {
+      const draft = {
+        finalTranscript,
+        interimTranscript,
+        savedAt: new Date().toISOString()
+      };
+      localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
+    }
+
+    function loadDraft() {
+      const data = localStorage.getItem(DRAFT_STORAGE_KEY);
+      return data ? JSON.parse(data) : null;
+    }
+
+    function clearDraft() {
+      localStorage.removeItem(DRAFT_STORAGE_KEY);
+    }
+
+    function startDraftSaving() {
+      draftSaveInterval = setInterval(saveDraft, 5000); // Save every 5 seconds
+    }
+
+    function stopDraftSaving() {
+      if (draftSaveInterval) {
+        clearInterval(draftSaveInterval);
+        draftSaveInterval = null;
+      }
+    }
+
+    // Pause/Resume recording
+    function pauseRecording() {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.pause();
+        if (recognition) {
+          recognition.stop();
+        }
+        pausedTime += Date.now() - startTime;
+        startTime = null;
+        clearInterval(timerInterval);
+        pauseButton.textContent = 'Resume';
+        statusEl.textContent = 'Paused';
+      }
+    }
+
+    function resumeRecording() {
+      if (mediaRecorder && mediaRecorder.state === 'paused') {
+        mediaRecorder.resume();
+        if (recognition) {
+          recognition.start();
+        }
+        startTime = Date.now();
+        timerInterval = setInterval(updateTimer, 100);
+        pauseButton.textContent = 'Pause';
+        statusEl.textContent = 'Recording';
+      }
+    }
+
+    function togglePause() {
+      if (mediaRecorder) {
+        if (mediaRecorder.state === 'recording') {
+          pauseRecording();
+        } else if (mediaRecorder.state === 'paused') {
+          resumeRecording();
+        }
+      }
+    }
+
     // Start recording
     async function startRecording() {
       try {
@@ -467,8 +637,12 @@
         // Start recording
         mediaRecorder.start(1000); // Capture in 1-second chunks
 
+        // Start volume meter
+        startVolumeMeter(stream);
+
         // Start timer
         startTime = Date.now();
+        pausedTime = 0;
         timerInterval = setInterval(updateTimer, 100);
 
         // Initialize and start speech recognition
@@ -476,6 +650,12 @@
         if (recognition) {
           recognition.start();
         }
+
+        // Start auto-saving drafts
+        startDraftSaving();
+
+        // Reset pause button
+        pauseButton.textContent = 'Pause';
 
         // Update UI
         statusEl.textContent = 'Recording';
@@ -503,6 +683,13 @@
 
         // Stop timer
         clearInterval(timerInterval);
+
+        // Stop volume meter
+        stopVolumeMeter();
+
+        // Stop draft saving and clear draft
+        stopDraftSaving();
+        clearDraft();
 
         // Update UI
         statusEl.textContent = 'Processing...';
@@ -599,9 +786,11 @@
       finalTranscript = '';
       interimTranscript = '';
       startTime = null;
+      pausedTime = 0;
 
       timerEl.textContent = '0:00';
       transcriptEl.textContent = 'Listening...';
+      pauseButton.textContent = 'Pause';
 
       // Reset main button state and hide recording info
       mainRecordButton.textContent = 'Start Recording';
@@ -611,15 +800,28 @@
 
     // Toggle recording on main button click
     function toggleRecording() {
-      if (mediaRecorder && mediaRecorder.state === 'recording') {
+      if (mediaRecorder && (mediaRecorder.state === 'recording' || mediaRecorder.state === 'paused')) {
         stopRecording();
       } else {
         startRecording();
       }
     }
 
+    // Check for recovered draft on load
+    function checkForDraft() {
+      const draft = loadDraft();
+      if (draft && draft.finalTranscript) {
+        const savedAt = new Date(draft.savedAt).toLocaleString();
+        if (confirm(`Found unsaved draft from ${savedAt}. Recover it?`)) {
+          addToHistory(draft.finalTranscript);
+        }
+        clearDraft();
+      }
+    }
+
     // Event listeners
     mainRecordButton.addEventListener('click', toggleRecording);
+    pauseButton.addEventListener('click', togglePause);
     copyButton.addEventListener('click', copyCurrentTranscript);
     settingsButton.addEventListener('click', showSettings);
     saveSettingsButton.addEventListener('click', saveSettings);
@@ -627,7 +829,7 @@
 
     // Prevent accidental navigation
     window.addEventListener('beforeunload', (e) => {
-      if (mediaRecorder && mediaRecorder.state === 'recording') {
+      if (mediaRecorder && (mediaRecorder.state === 'recording' || mediaRecorder.state === 'paused')) {
         e.preventDefault();
         e.returnValue = '';
       }
@@ -636,6 +838,14 @@
     // Initialize on load
     updateEmailDisplay();
     renderHistory();
+    checkForDraft();
+
+    // Register service worker for offline support
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/tools/vnote-sw.js')
+        .then((reg) => console.log('Service worker registered'))
+        .catch((err) => console.warn('Service worker registration failed:', err));
+    }
   </script>
 
 </body>
