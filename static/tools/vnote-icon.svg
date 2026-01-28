@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#f0f0f0"/>
+  <g fill="#333">
+    <!-- Microphone body -->
+    <rect x="176" y="96" width="160" height="224" rx="80" ry="80"/>
+    <!-- Stand -->
+    <rect x="240" y="352" width="32" height="64"/>
+    <!-- Base -->
+    <rect x="176" y="416" width="160" height="32" rx="8"/>
+    <!-- Sound waves left -->
+    <path d="M128 208 Q96 256 128 304" fill="none" stroke="#333" stroke-width="24" stroke-linecap="round"/>
+    <!-- Sound waves right -->
+    <path d="M384 208 Q416 256 384 304" fill="none" stroke="#333" stroke-width="24" stroke-linecap="round"/>
+  </g>
+</svg>
