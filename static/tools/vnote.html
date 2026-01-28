@@ -24,6 +24,14 @@
     <p>Tap to start recording</p>
     <button id="startButton">Start Recording</button>
     <button id="settingsButton">Settings</button>
+    <p id="emailDisplay"></p>
+    <hr>
+    <div id="historySection">
+      <h3>History</h3>
+      <table id="historyTable">
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
   </div>
 
   <!-- Recording screen -->
@@ -31,6 +39,7 @@
     <div id="status">Initializing...</div>
     <div id="timer">0:00</div>
     <button id="stopButton" disabled>Stop</button>
+    <button id="copyButton">Copy Transcript</button>
     <div id="transcriptContainer">
       <div>Live Transcript</div>
       <div id="transcript">Listening...</div>
@@ -61,8 +70,9 @@
     let startTime = null;
     let timerInterval = null;
 
-    // LocalStorage key
+    // LocalStorage keys
     const EMAIL_STORAGE_KEY = 'vnote_email';
+    const HISTORY_STORAGE_KEY = 'vnote_history';
 
     // DOM Elements
     const startScreen = document.getElementById('startScreen');
@@ -70,13 +80,16 @@
     const settingsDialog = document.getElementById('settingsDialog');
     const startButton = document.getElementById('startButton');
     const stopButton = document.getElementById('stopButton');
+    const copyButton = document.getElementById('copyButton');
     const settingsButton = document.getElementById('settingsButton');
     const saveSettingsButton = document.getElementById('saveSettingsButton');
     const cancelSettingsButton = document.getElementById('cancelSettingsButton');
     const emailInput = document.getElementById('emailInput');
+    const emailDisplay = document.getElementById('emailDisplay');
     const statusEl = document.getElementById('status');
     const timerEl = document.getElementById('timer');
     const transcriptEl = document.getElementById('transcript');
+    const historyBody = document.getElementById('historyBody');
 
     // Load email from localStorage
     function loadEmail() {
@@ -90,6 +103,121 @@
       } else {
         localStorage.removeItem(EMAIL_STORAGE_KEY);
       }
+    }
+
+    // Update email display on start screen
+    function updateEmailDisplay() {
+      const email = loadEmail();
+      if (email) {
+        emailDisplay.textContent = `Email: ${email}`;
+      } else {
+        emailDisplay.textContent = 'No email configured (will use share sheet)';
+      }
+    }
+
+    // Load history from localStorage
+    function loadHistory() {
+      const data = localStorage.getItem(HISTORY_STORAGE_KEY);
+      return data ? JSON.parse(data) : [];
+    }
+
+    // Save history to localStorage
+    function saveHistory(history) {
+      localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
+    }
+
+    // Add transcription to history
+    function addToHistory(transcript) {
+      const history = loadHistory();
+      const entry = {
+        date: new Date().toISOString(),
+        text: transcript
+      };
+      history.unshift(entry); // Add to beginning
+      // Keep only last 50 entries
+      if (history.length > 50) {
+        history.pop();
+      }
+      saveHistory(history);
+      renderHistory();
+    }
+
+    // Generate email subject with timestamp
+    function generateEmailSubjectForDate(dateStr) {
+      const date = new Date(dateStr);
+      return `Voice Note - ${date.toLocaleString()}`;
+    }
+
+    // Send email for a transcript
+    function sendEmailForTranscript(text, dateStr) {
+      const email = loadEmail();
+      if (!email) {
+        alert('No email configured. Go to Settings to add one.');
+        return;
+      }
+      const subject = encodeURIComponent(generateEmailSubjectForDate(dateStr));
+      const body = encodeURIComponent(text);
+      const mailtoUrl = `mailto:${email}?subject=${subject}&body=${body}`;
+      window.location.href = mailtoUrl;
+    }
+
+    // Copy text to clipboard
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (e) {
+        console.error('Copy failed:', e);
+        return false;
+      }
+    }
+
+    // Render history table
+    function renderHistory() {
+      const history = loadHistory();
+      historyBody.innerHTML = '';
+
+      if (history.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = '<td colspan="4">No history yet</td>';
+        historyBody.appendChild(row);
+        return;
+      }
+
+      history.forEach((entry, index) => {
+        const row = document.createElement('tr');
+        const date = new Date(entry.date);
+        const preview = entry.text.substring(0, 32) + (entry.text.length > 32 ? '...' : '');
+
+        const dateCell = document.createElement('td');
+        dateCell.textContent = date.toLocaleString();
+
+        const previewCell = document.createElement('td');
+        previewCell.textContent = preview;
+
+        const copyCell = document.createElement('td');
+        const copyBtn = document.createElement('button');
+        copyBtn.textContent = 'Copy';
+        copyBtn.onclick = async () => {
+          if (await copyToClipboard(entry.text)) {
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => copyBtn.textContent = 'Copy', 1500);
+          }
+        };
+        copyCell.appendChild(copyBtn);
+
+        const emailCell = document.createElement('td');
+        const emailBtn = document.createElement('button');
+        emailBtn.textContent = 'Email';
+        emailBtn.onclick = () => sendEmailForTranscript(entry.text, entry.date);
+        emailCell.appendChild(emailBtn);
+
+        row.appendChild(dateCell);
+        row.appendChild(previewCell);
+        row.appendChild(copyCell);
+        row.appendChild(emailCell);
+        historyBody.appendChild(row);
+      });
     }
 
     // Show settings dialog
@@ -106,6 +234,7 @@
     // Save settings
     function saveSettings() {
       saveEmail(emailInput.value.trim());
+      updateEmailDisplay();
       hideSettings();
     }
 
@@ -143,6 +272,20 @@
         transcriptEl.textContent = finalTranscript + interimTranscript;
       } else {
         transcriptEl.textContent = 'Listening...';
+      }
+    }
+
+    // Copy current transcript
+    async function copyCurrentTranscript() {
+      const text = finalTranscript.trim() || interimTranscript.trim();
+      if (!text) {
+        copyButton.textContent = 'Nothing to copy';
+        setTimeout(() => copyButton.textContent = 'Copy Transcript', 1500);
+        return;
+      }
+      if (await copyToClipboard(text)) {
+        copyButton.textContent = 'Copied!';
+        setTimeout(() => copyButton.textContent = 'Copy Transcript', 1500);
       }
     }
 
@@ -302,6 +445,11 @@
         // Prepare transcript
         const transcriptText = finalTranscript.trim() || '(No transcript captured)';
 
+        // Save to history
+        if (transcriptText !== '(No transcript captured)') {
+          addToHistory(transcriptText);
+        }
+
         // Check if email is configured
         const email = loadEmail();
 
@@ -389,6 +537,7 @@
     // Event listeners
     startButton.addEventListener('click', startRecording);
     stopButton.addEventListener('click', stopRecording);
+    copyButton.addEventListener('click', copyCurrentTranscript);
     settingsButton.addEventListener('click', showSettings);
     saveSettingsButton.addEventListener('click', saveSettings);
     cancelSettingsButton.addEventListener('click', hideSettings);
@@ -400,6 +549,10 @@
         e.returnValue = '';
       }
     });
+
+    // Initialize on load
+    updateEmailDisplay();
+    renderHistory();
   </script>
 
 </body>
