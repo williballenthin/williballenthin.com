@@ -1,6 +1,8 @@
-const CACHE_NAME = 'vnote-v1';
+const CACHE_NAME = 'vnote-v2';
 const ASSETS = [
-  '/tools/vnote.html'
+  '/tools/vnote.html',
+  '/tools/vnote-manifest.json',
+  '/tools/vnote-icon.svg'
 ];
 
 // Install - cache assets

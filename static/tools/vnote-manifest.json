@@ -1,0 +1,28 @@
+{
+  "name": "vnote",
+  "short_name": "vnote",
+  "description": "Voice recording with live transcription",
+  "start_url": "/tools/vnote.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f0f0f0",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/tools/vnote-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/tools/vnote-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/tools/vnote-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
