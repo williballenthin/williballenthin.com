@@ -207,19 +207,19 @@
             <outline type="rss"
                 text="r/york" title="r/york"
                 htmlUrl="https://www.reddit.com/r/york"
-                xmlUrl="https://www.reddit.com/r/york/new/.rss?sort=new"
+                xmlUrl="https://www.reddit.com/r/york/top/.rss?t=week"
                 />
 
             <outline type="rss"
                 text="r/Leeds" title="r/Leeds"
                 htmlUrl="https://www.reddit.com/r/Leeds"
-                xmlUrl="https://www.reddit.com/r/Leeds/new/.rss?sort=new"
+                xmlUrl="https://www.reddit.com/r/Leeds/top/.rss?t=week"
                 />
 
             <outline type="rss"
                 text="r/Harrogate" title="r/Harrogate"
                 htmlUrl="https://www.reddit.com/r/Harrogate"
-                xmlUrl="https://www.reddit.com/r/Harrogate/new/.rss?sort=new"
+                xmlUrl="https://www.reddit.com/r/Harrogate/top/.rss?t=week"
                 />
 
             <outline type="rss"
