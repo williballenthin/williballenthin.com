@@ -223,6 +223,12 @@
                 />
 
             <outline type="rss"
+                text="r/Yorkshire" title="r/Yorkshire"
+                htmlUrl="https://www.reddit.com/r/Yorkshire"
+                xmlUrl="https://www.reddit.com/r/Yorkshire/top/.rss?t=week"
+                />
+
+            <outline type="rss"
                 text="Aider Blog" title="Aider Blog"
                 htmlUrl="https://aider.chat/blog/"
                 xmlUrl="https://aider.chat/feed.xml"
