@@ -402,7 +402,6 @@ class Feed:
 
 
 feeds = [
-    Feed.from_mastodon("@cxiao@infosec.exchange"),
     Feed.from_mastodon("@malcat@infosec.exchange"),
     Feed.from_mastodon("@pnx@infosec.exchange"),
     Feed.from_mastodon("@HexRaysSA@infosec.exchange"),
