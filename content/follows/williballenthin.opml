@@ -287,6 +287,12 @@
                 xmlUrl="https://blog.exe.dev/atom.xml"
                 />
 
+            <outline type="rss"
+                text="Mario Zechner" title="Mario Zechner"
+                htmlUrl="https://mariozechner.at/"
+                xmlUrl="https://mariozechner.at/rss.xml"
+                />
+
             <!--
             <outline type="rss"
                 text="" title=""
