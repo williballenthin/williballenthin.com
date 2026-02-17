@@ -275,6 +275,18 @@
                 xmlUrl="https://lucumr.pocoo.org/feed.atom"
                 />
 
+            <outline type="rss"
+                text="Don't Panic" title="Don't Panic"
+                htmlUrl="https://commaok.xyz/"
+                xmlUrl="https://commaok.xyz/index.xml"
+                />
+
+            <outline type="rss"
+                text="exe.dev" title="exe.dev"
+                htmlUrl="https://blog.exe.dev/"
+                xmlUrl="https://blog.exe.dev/atom.xml"
+                />
+
             <!--
             <outline type="rss"
                 text="" title=""
