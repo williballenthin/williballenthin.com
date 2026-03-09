@@ -171,11 +171,14 @@
     </div>
   </div>
 
+  <script src="/tools/vnote-transcript.js"></script>
   <script>
     // State
     let mediaRecorder = null;
     let audioChunks = [];
     let recognition = null;
+    let committedTranscript = '';
+    let recognitionResults = [];
     let finalTranscript = '';
     let interimTranscript = '';
     let startTime = null;
@@ -400,6 +403,9 @@
           finalSpan.textContent = finalTranscript;
           transcriptEl.appendChild(finalSpan);
         }
+        if (finalTranscript && interimTranscript) {
+          transcriptEl.appendChild(document.createTextNode(' '));
+        }
         if (interimTranscript) {
           const interimSpan = document.createElement('span');
           interimSpan.className = 'interim';
@@ -413,10 +419,37 @@
       transcriptEl.scrollTop = transcriptEl.scrollHeight;
     }
 
+    function syncTranscriptState() {
+      const transcriptState = VNoteTranscript.computeTranscriptState(recognitionResults);
+      finalTranscript = VNoteTranscript.joinTranscriptParts([
+        committedTranscript,
+        transcriptState.finalTranscript
+      ]);
+      interimTranscript = transcriptState.interimTranscript;
+    }
+
+    function getCurrentTranscriptText(includeInterim = false) {
+      return VNoteTranscript.joinTranscriptParts([
+        finalTranscript,
+        includeInterim ? interimTranscript : ''
+      ]) || '(No transcript captured)';
+    }
+
+    function commitRecognitionResults(includeInterim = false) {
+      const transcriptText = VNoteTranscript.getTranscriptText(recognitionResults, { includeInterim });
+
+      if (transcriptText !== '(No transcript captured)') {
+        committedTranscript = VNoteTranscript.joinTranscriptParts([committedTranscript, transcriptText]);
+      }
+
+      recognitionResults = [];
+      syncTranscriptState();
+    }
+
     // Copy current transcript
     async function copyCurrentTranscript() {
-      const text = finalTranscript.trim() || interimTranscript.trim();
-      if (!text) {
+      const text = getCurrentTranscriptText(true);
+      if (text === '(No transcript captured)') {
         copyButton.textContent = 'Nothing to copy';
         setTimeout(() => copyButton.textContent = 'Copy Transcript', 1500);
         return;
@@ -442,17 +475,8 @@
       recog.lang = 'en-US';
 
       recog.onresult = (event) => {
-        interimTranscript = '';
-
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const result = event.results[i];
-          if (result.isFinal) {
-            finalTranscript += result[0].transcript + ' ';
-          } else {
-            interimTranscript += result[0].transcript;
-          }
-        }
-
+        recognitionResults = VNoteTranscript.snapshotRecognitionResults(event.results);
+        syncTranscriptState();
         updateTranscriptDisplay();
       };
 
@@ -474,12 +498,16 @@
       recog.onend = () => {
         // If we're intentionally stopping, signal completion
         if (stoppingRecording && onTranscriptionComplete) {
+          commitRecognitionResults(true);
           const callback = onTranscriptionComplete;
           onTranscriptionComplete = null;
           stoppingRecording = false;
           callback();
           return;
         }
+
+        commitRecognitionResults();
+
         // Auto-restart if still recording
         if (mediaRecorder && mediaRecorder.state === 'recording') {
           try {
@@ -694,6 +722,7 @@
         // Safety timeout in case onend doesn't fire (e.g., recognition already stopped)
         const timeout = setTimeout(() => {
           if (onTranscriptionComplete) {
+            commitRecognitionResults(true);
             onTranscriptionComplete = null;
             stoppingRecording = false;
             resolve();
@@ -750,7 +779,7 @@
     async function processAndShare() {
       try {
         // Prepare transcript
-        const transcriptText = finalTranscript.trim() || '(No transcript captured)';
+        const transcriptText = getCurrentTranscriptText(true);
 
         // Save to history
         if (transcriptText !== '(No transcript captured)') {
@@ -830,6 +859,8 @@
       mediaRecorder = null;
       audioChunks = [];
       recognition = null;
+      committedTranscript = '';
+      recognitionResults = [];
       finalTranscript = '';
       interimTranscript = '';
       startTime = null;
@@ -859,10 +890,15 @@
     // Check for recovered draft on load
     function checkForDraft() {
       const draft = loadDraft();
-      if (draft && draft.finalTranscript) {
+      const draftTranscript = [draft?.finalTranscript, draft?.interimTranscript]
+        .map(part => (part || '').trim())
+        .filter(Boolean)
+        .join(' ');
+
+      if (draftTranscript) {
         const savedAt = new Date(draft.savedAt).toLocaleString();
         if (confirm(`Found unsaved draft from ${savedAt}. Recover it?`)) {
-          addToHistory(draft.finalTranscript);
+          addToHistory(draftTranscript);
         }
         clearDraft();
       }
