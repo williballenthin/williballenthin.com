@@ -172,6 +172,7 @@
   </div>
 
   <script>
+    // vnote-transcript-helpers:start
     const VNoteTranscript = (() => {
       function readTranscript(result) {
         if (!result || !result[0] || typeof result[0].transcript !== 'string') {
@@ -235,6 +236,7 @@
         getTranscriptText
       };
     })();
+    // vnote-transcript-helpers:end
 
     // State
     let mediaRecorder = null;

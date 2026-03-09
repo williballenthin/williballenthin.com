@@ -9,14 +9,16 @@ function loadTranscriptHelpers() {
     path.join(__dirname, '..', 'static', 'tools', 'vnote.html'),
     'utf8'
   );
-  const match = html.match(/const VNoteTranscript = \(\(\) => \{[\s\S]*?\n    \}\)\(\);/);
+  const match = html.match(
+    /\/\/ vnote-transcript-helpers:start\s*([\s\S]*?)\s*\/\/ vnote-transcript-helpers:end/
+  );
 
   assert.ok(match, 'expected inline VNoteTranscript helper in vnote.html');
 
   const context = {
     module: { exports: null }
   };
-  vm.runInNewContext(`${match[0]}\nmodule.exports = VNoteTranscript;`, context);
+  vm.runInNewContext(`${match[1]}\nmodule.exports = VNoteTranscript;`, context);
   return context.module.exports;
 }
 
@@ -35,10 +37,10 @@ function makeResult(transcript, isFinal) {
 }
 
 test('snapshotRecognitionResults keeps every result slot so later updates do not drop earlier text', () => {
-  const results = JSON.parse(JSON.stringify(snapshotRecognitionResults([
+  const results = structuredClone(snapshotRecognitionResults([
     makeResult('first part', true),
     makeResult('second half', false)
-  ])));
+  ]));
 
   assert.deepEqual(results, [
     { transcript: 'first part', isFinal: true },
