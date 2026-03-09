@@ -1,12 +1,31 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+
+function loadTranscriptHelpers() {
+  const html = fs.readFileSync(
+    path.join(__dirname, '..', 'static', 'tools', 'vnote.html'),
+    'utf8'
+  );
+  const match = html.match(/const VNoteTranscript = \(\(\) => \{[\s\S]*?\n    \}\)\(\);/);
+
+  assert.ok(match, 'expected inline VNoteTranscript helper in vnote.html');
+
+  const context = {
+    module: { exports: null }
+  };
+  vm.runInNewContext(`${match[0]}\nmodule.exports = VNoteTranscript;`, context);
+  return context.module.exports;
+}
 
 const {
   joinTranscriptParts,
   snapshotRecognitionResults,
   computeTranscriptState,
   getTranscriptText
-} = require('../static/tools/vnote-transcript.js');
+} = loadTranscriptHelpers();
 
 function makeResult(transcript, isFinal) {
   return {
@@ -16,10 +35,10 @@ function makeResult(transcript, isFinal) {
 }
 
 test('snapshotRecognitionResults keeps every result slot so later updates do not drop earlier text', () => {
-  const results = snapshotRecognitionResults([
+  const results = JSON.parse(JSON.stringify(snapshotRecognitionResults([
     makeResult('first part', true),
     makeResult('second half', false)
-  ]);
+  ])));
 
   assert.deepEqual(results, [
     { transcript: 'first part', isFinal: true },
