@@ -522,6 +522,7 @@
         recognition.start();
       } catch (error) {
         recognitionState = 'inactive';
+        console.warn('Unable to start speech recognition:', error);
       }
     }
 
@@ -536,6 +537,7 @@
         return true;
       } catch (error) {
         recognitionState = 'inactive';
+        console.warn('Unable to stop speech recognition:', error);
         return false;
       }
     }
@@ -819,6 +821,7 @@
 
         // Stop recognition (will trigger onend which calls our callback)
         if (!stopSpeechRecognition()) {
+          commitRecognitionResults();
           onTranscriptionComplete = null;
           stoppingRecording = false;
           resolve();
