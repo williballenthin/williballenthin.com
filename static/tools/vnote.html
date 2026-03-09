@@ -255,6 +255,7 @@
     let draftSaveInterval = null;
     let stoppingRecording = false;
     let onTranscriptionComplete = null;
+    let recognitionState = 'inactive';
     const DRAFT_STORAGE_KEY = 'vnote_draft';
 
     // LocalStorage keys
@@ -511,6 +512,34 @@
       syncTranscriptState();
     }
 
+    function startSpeechRecognition() {
+      if (!recognition || recognitionState !== 'inactive') {
+        return;
+      }
+
+      try {
+        recognitionState = 'starting';
+        recognition.start();
+      } catch (error) {
+        recognitionState = 'inactive';
+      }
+    }
+
+    function stopSpeechRecognition() {
+      if (!recognition || recognitionState === 'inactive') {
+        return false;
+      }
+
+      try {
+        recognitionState = 'stopping';
+        recognition.stop();
+        return true;
+      } catch (error) {
+        recognitionState = 'inactive';
+        return false;
+      }
+    }
+
     // Copy current transcript
     async function copyCurrentTranscript() {
       const text = getCurrentTranscriptText(true);
@@ -539,6 +568,10 @@
       recog.interimResults = true;
       recog.lang = 'en-US';
 
+      recog.onstart = () => {
+        recognitionState = 'active';
+      };
+
       recog.onresult = (event) => {
         recognitionResults = VNoteTranscript.snapshotRecognitionResults(event.results);
         syncTranscriptState();
@@ -550,10 +583,10 @@
         if (event.error === 'no-speech') {
           // Restart on no-speech timeout
           try {
-            recog.stop();
+            stopSpeechRecognition();
             setTimeout(() => {
-              if (mediaRecorder && mediaRecorder.state === 'recording') {
-                recog.start();
+              if (mediaRecorder && mediaRecorder.state === 'recording' && !stoppingRecording) {
+                startSpeechRecognition();
               }
             }, 100);
           } catch (e) {}
@@ -561,9 +594,11 @@
       };
 
       recog.onend = () => {
+        recognitionState = 'inactive';
+
         // If we're intentionally stopping, signal completion
         if (stoppingRecording && onTranscriptionComplete) {
-          commitRecognitionResults(true);
+          commitRecognitionResults();
           const callback = onTranscriptionComplete;
           onTranscriptionComplete = null;
           stoppingRecording = false;
@@ -575,9 +610,7 @@
 
         // Auto-restart if still recording
         if (mediaRecorder && mediaRecorder.state === 'recording') {
-          try {
-            recog.start();
-          } catch (e) {}
+          startSpeechRecognition();
         }
       };
 
@@ -652,7 +685,7 @@
       if (mediaRecorder && mediaRecorder.state === 'recording') {
         mediaRecorder.pause();
         if (recognition) {
-          recognition.stop();
+          stopSpeechRecognition();
         }
         pausedTime += Date.now() - startTime;
         startTime = null;
@@ -666,7 +699,7 @@
       if (mediaRecorder && mediaRecorder.state === 'paused') {
         mediaRecorder.resume();
         if (recognition) {
-          recognition.start();
+          startSpeechRecognition();
         }
         startTime = Date.now();
         timerInterval = setInterval(updateTimer, 100);
@@ -747,7 +780,7 @@
         // Initialize and start speech recognition
         recognition = initSpeechRecognition();
         if (recognition) {
-          recognition.start();
+          startSpeechRecognition();
         }
 
         // Start auto-saving drafts
@@ -775,7 +808,7 @@
     // Wait for transcription to finalize
     function waitForTranscriptionComplete() {
       return new Promise((resolve) => {
-        if (!recognition) {
+        if (!recognition || recognitionState === 'inactive') {
           resolve();
           return;
         }
@@ -784,25 +817,12 @@
         stoppingRecording = true;
         onTranscriptionComplete = resolve;
 
-        // Safety timeout in case onend doesn't fire (e.g., recognition already stopped)
-        const timeout = setTimeout(() => {
-          if (onTranscriptionComplete) {
-            commitRecognitionResults(true);
-            onTranscriptionComplete = null;
-            stoppingRecording = false;
-            resolve();
-          }
-        }, 1000);
-
-        // Clear timeout if callback fires first
-        const originalResolve = resolve;
-        onTranscriptionComplete = () => {
-          clearTimeout(timeout);
-          originalResolve();
-        };
-
         // Stop recognition (will trigger onend which calls our callback)
-        recognition.stop();
+        if (!stopSpeechRecognition()) {
+          onTranscriptionComplete = null;
+          stoppingRecording = false;
+          resolve();
+        }
       });
     }
 
@@ -844,7 +864,7 @@
     async function processAndShare() {
       try {
         // Prepare transcript
-        const transcriptText = getCurrentTranscriptText(true);
+        const transcriptText = getCurrentTranscriptText();
 
         // Save to history
         if (transcriptText !== '(No transcript captured)') {
@@ -932,6 +952,7 @@
       pausedTime = 0;
       stoppingRecording = false;
       onTranscriptionComplete = null;
+      recognitionState = 'inactive';
 
       timerEl.textContent = '0:00';
       transcriptEl.textContent = 'Listening...';
