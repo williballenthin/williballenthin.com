@@ -33,22 +33,10 @@ jobs:
         uv run tools/github-ida-plugins/fetch-github-ida-plugins.py > static/fragments/github-ida-plugins/list.html
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-    - name: gen homepage to-read
-      run: |
-        pip install uv
-        uv run tools/static-to-read/gen.py > static/fragments/homepage/to-read.html
-      env:
-        PINBOARD_TOKEN: ${{ secrets.PINBOARD_TOKEN }}
     - name: gen homepage feed
       run: |
         pip install uv
         uv run tools/static-rss/gen.py content/follows/williballenthin.opml > static/fragments/homepage/feed.html
-    - name: gen pinboard data
-      run: |
-        pip install uv
-        uv run tools/fetch-pinboard-data/gen.py > data/pinboard.json
-      env:
-        PINBOARD_TOKEN: ${{ secrets.PINBOARD_TOKEN }}
     - name: install percollate
       run: |
         npm install -g percollate
