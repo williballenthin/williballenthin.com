@@ -49,7 +49,6 @@
             <outline type="rss" text="tonsky.me" title="tonsky.me" xmlUrl="http://tonsky.me/blog/atom.xml" htmlUrl="https://tonsky.me/"/>
             <outline type="rss" text="delan azabani" title="delan azabani" xmlUrl="https://www.azabani.com/feed/tag/home.xml" htmlUrl="https://www.azabani.com/"/>
             <outline type="rss" text="Fosskers.ca Blog" title="Fosskers.ca Blog" xmlUrl="https://www.fosskers.ca/en/rss" htmlUrl="https://www.fosskers.ca"/>
-            <outline type="rss" text="sacha chua :: living an awesome life" title="sacha chua :: living an awesome life" xmlUrl="http://feeds.feedburner.com/sachac" htmlUrl="https://sachachua.com"/>
             <outline type="rss" text="Llogiq on stuff" title="Llogiq on stuff" xmlUrl="http://llogiq.github.io/feed.xml" htmlUrl="https://llogiq.github.io/"/>
             <outline type="rss" text="Articles by thoughtram" title="Articles by thoughtram" xmlUrl="http://feeds.feedburner.com/thoughtram" htmlUrl="http://blog.thoughtram.io/"/>
             <outline type="rss" text="Julia Evans" title="Julia Evans" xmlUrl="http://jvns.ca/atom.xml" htmlUrl="http://jvns.ca"/>
