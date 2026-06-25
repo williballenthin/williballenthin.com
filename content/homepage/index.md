@@ -54,16 +54,6 @@
 
 <hr />
 
-{{< includeHtml file="static/fragments/homepage/to-read.html" >}}
-
-<style>
-  p.to-read-metadata-generated {
-    display: none;
-  }
-</style>
-
-<hr />
-
 {{< includeHtml file="static/fragments/homepage/feed.html" >}}
 
 <style>

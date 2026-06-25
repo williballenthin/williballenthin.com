@@ -24,12 +24,6 @@ jobs:
         uv run tools/github-ida-plugins/fetch-github-ida-plugins.py > static/fragments/github-ida-plugins/list.html
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-    - name: gen homepage to-read
-      run: |
-        pip install uv==0.3.3
-        uv run tools/static-to-read/gen.py > static/fragments/homepage/to-read.html
-      env:
-        PINBOARD_TOKEN: ${{ secrets.PINBOARD_TOKEN }}
     - name: gen homepage feed
       run: |
         pip install uv==0.3.3
