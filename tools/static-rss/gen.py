@@ -476,16 +476,15 @@ entries = [
 ]
 
 print("<ol class='feed'>")
-for entry in entries:
-    entry.timestamp = normalize_timestamp(entry.timestamp)
-entries.sort(key=lambda f: f.timestamp, reverse=True)
-for day, entries in itertools.groupby(entries, lambda entry: entry.timestamp.date()):
+normalized_entries = [(normalize_timestamp(entry.timestamp), entry) for entry in entries]
+normalized_entries.sort(key=lambda pair: pair[0], reverse=True)
+for day, day_entries in itertools.groupby(normalized_entries, lambda pair: pair[0].date()):
     print(f"""
       <li><span class="date">{day.strftime("%B %d, %Y")}</span>
           <ol class="date-entries">
     """)
 
-    for entry in entries:
+    for _, entry in day_entries:
         print(f"""
           <li class="entry">
               <details>
