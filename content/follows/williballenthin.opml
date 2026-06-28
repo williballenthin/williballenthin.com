@@ -270,7 +270,7 @@
 
             <outline type="rss"
                 text="New Music Releases" title="New Music Releases"
-                htmlUrl="https://muspy.com/"
+                htmlUrl="https://muspy.com/releases"
                 xmlUrl="https://muspy.com/feed?id=x9oinvx5ilhdudhvfkippruh8je95i"
                 />
 
