@@ -476,7 +476,8 @@ entries = [
 ]
 
 print("<ol class='feed'>")
-entries = [entry for entry in entries if entry.timestamp.tzinfo is not None] 
+for entry in entries:
+    entry.timestamp = normalize_timestamp(entry.timestamp)
 entries.sort(key=lambda f: f.timestamp, reverse=True)
 for day, entries in itertools.groupby(entries, lambda entry: entry.timestamp.date()):
     print(f"""
