@@ -37,9 +37,16 @@ logging.basicConfig(level=logging.DEBUG)
 
 # Configuration: Number of days to look back for recent entries
 RECENT_DAYS = 3
+FUTURE_TOLERANCE_HOURS = 24
 
 # Global list to track feeds with no entries for summary
 feeds_with_no_entries = []
+
+
+def normalize_timestamp(ts: datetime.datetime) -> datetime.datetime:
+    if ts.tzinfo is None:
+        return ts.replace(tzinfo=datetime.timezone.utc)
+    return ts.astimezone(datetime.timezone.utc)
 
 
 def remove_heading_links(html_content):
@@ -458,22 +465,26 @@ entries = [e for e in entries
            if "Ghostty Tip" not in e.title
            and e.title != "nightly"]
 
-# only show entries within the past three days
-now = datetime.datetime.now()
-three_days_ago = (now - datetime.timedelta(days=RECENT_DAYS)).date()
-# TODO
-entries = list(filter(lambda entry: entry.timestamp.date() >= three_days_ago, entries))
+# only show entries within the past few days, and avoid far-future posts
+snapshot_time = datetime.datetime.now(datetime.timezone.utc)
+three_days_ago = (snapshot_time - datetime.timedelta(days=RECENT_DAYS)).date()
+future_cutoff = snapshot_time + datetime.timedelta(hours=FUTURE_TOLERANCE_HOURS)
+entries = [
+    entry for entry in entries
+    if normalize_timestamp(entry.timestamp).date() >= three_days_ago
+    and normalize_timestamp(entry.timestamp) <= future_cutoff
+]
 
 print("<ol class='feed'>")
-entries = [entry for entry in entries if entry.timestamp.tzinfo is not None] 
-entries.sort(key=lambda f: f.timestamp, reverse=True)
-for day, entries in itertools.groupby(entries, lambda entry: entry.timestamp.date()):
+normalized_entries = [(normalize_timestamp(entry.timestamp), entry) for entry in entries]
+normalized_entries.sort(key=lambda pair: pair[0], reverse=True)
+for day, day_entries in itertools.groupby(normalized_entries, lambda pair: pair[0].date()):
     print(f"""
       <li><span class="date">{day.strftime("%B %d, %Y")}</span>
           <ol class="date-entries">
     """)
 
-    for entry in entries:
+    for _, entry in day_entries:
         print(f"""
           <li class="entry">
               <details>
@@ -494,7 +505,7 @@ for day, entries in itertools.groupby(entries, lambda entry: entry.timestamp.dat
     print("</ol>")
 
 print("</ol>")
-print(f"<p class='feed-metadata-generated'>generated: {now.strftime('%B %d, %Y at %H:%M:%S')}</p>")
+print(f"<p class='feed-metadata-generated'>generated: {snapshot_time.strftime('%B %d, %Y at %H:%M:%S')}</p>")
 
 # Summarize feeds with no entries
 if feeds_with_no_entries:
