@@ -35,9 +35,12 @@ import xml.etree.ElementTree as ET
 logger = logging.getLogger("gen")
 logging.basicConfig(level=logging.DEBUG)
 
-# Configuration: Number of days to look back for recent entries
+# number of days to look back for recent entries
 RECENT_DAYS = 3
-FUTURE_TOLERANCE_HOURS = 24
+
+# some feeds publish events way far in the future.
+# this is the number of hours to accept pre-published.
+FUTURE_TOLERANCE_HOURS = 4
 
 # Global list to track feeds with no entries for summary
 feeds_with_no_entries = []
