@@ -13,6 +13,7 @@
 #
 # requires env variable GITHUB_TOKEN to be set.
 import os
+import re
 import json
 import logging
 import requests
@@ -311,10 +312,15 @@ def handle_rate_limit_response(response: requests.Response, attempt: int = 1) ->
 
 
 def search_github_code(token: str, query: str, limit: int | None = None) -> list[dict]:
-    """Search GitHub code using REST API directly with rate limit handling."""
+    """Search GitHub code using REST API directly with rate limit handling.
+
+    Requests the text-match media type so each result carries `text_matches`
+    fragments showing where the query matched. We use those fragments to reject
+    substring false positives (see `result_has_genuine_match`).
+    """
     headers = {
         "Authorization": f"Bearer {token}",
-        "Accept": "application/vnd.github.v3+json"
+        "Accept": "application/vnd.github.text-match+json"
     }
     
     results = []
@@ -387,22 +393,31 @@ def collect_search_results(token: str, limit: int | None = None) -> list[SearchR
 
     logger.info("After HexRays repository: %d unique repositories", len(results))
 
-    # Define search configurations for GitHub code search
+    # Define search configurations for GitHub code search.
+    #
+    # GitHub code search matches query tokens as substrings, so e.g. "ida_domain"
+    # also matches inside unrelated identifiers like "louw_nida_domain". Each config
+    # carries a `validator` regex that must match one of the returned text-match
+    # fragments at a word boundary, which rejects those false positives while
+    # keeping genuine hits (e.g. `import ida_domain`, `from ida_domain import ...`).
     search_configs = [
         {
             'query': 'language:python AND "def PLUGIN_ENTRY()" AND in:file',
             'language': 'python',
-            'description': 'Python IDA plugins'
+            'description': 'Python IDA plugins',
+            'validator': re.compile(r"\bPLUGIN_ENTRY\b"),
         },
         {
             'query': '"idaapi init" AND in:file AND language:"C++"',
             'language': 'C++',
-            'description': 'C++ IDA plugins'
+            'description': 'C++ IDA plugins',
+            'validator': re.compile(r"\bidaapi\b"),
         },
         {
             'query': 'language:python AND "ida_domain" AND in:file',
             'language': 'python',
-            'description': 'Python files with ida_domain'
+            'description': 'Python files with ida_domain',
+            'validator': re.compile(r"\bida_domain\b"),
         }
     ]
 
@@ -411,6 +426,7 @@ def collect_search_results(token: str, limit: int | None = None) -> list[SearchR
         query = config['query']
         language = config['language']
         description = config['description']
+        validator = config['validator']
 
         logger.info("%s query: %s", description, query)
 
@@ -423,6 +439,15 @@ def collect_search_results(token: str, limit: int | None = None) -> list[SearchR
 
             # Apply filtering logic
             if should_skip_result(repo_name, file_path, result["html_url"]):
+                continue
+
+            # Reject substring false positives (e.g. "ida_domain" inside
+            # "louw_nida_domain") by requiring a genuine word-boundary match.
+            if not result_has_genuine_match(result, validator):
+                logger.info(
+                    "skipping %s (%s): %r not found at a word boundary (substring false positive)",
+                    repo_name, file_path, validator.pattern,
+                )
                 continue
 
             # Skip if we already have this repo from another source
@@ -441,6 +466,26 @@ def collect_search_results(token: str, limit: int | None = None) -> list[SearchR
 
     logger.info("Total unique repositories collected: %d", len(results))
     return results
+
+
+def result_has_genuine_match(result: dict, validator: "re.Pattern[str]") -> bool:
+    """Confirm a code search hit contains a real, word-boundary-delimited token.
+
+    GitHub code search matches query tokens as substrings, so a query for
+    ``ida_domain`` also returns files that merely contain it inside a larger
+    identifier such as ``louw_nida_domain`` (unrelated to IDA). We requested the
+    text-match media type, so each result carries ``text_matches`` fragments
+    showing the matched regions; we re-check those locally with a word-boundary
+    regex to drop the false positives.
+
+    Returns True when no text-match fragments are available, so that a missing
+    field never silently drops a legitimate plugin.
+    """
+    text_matches = result.get("text_matches")
+    if not text_matches:
+        return True
+
+    return any(validator.search(tm.get("fragment", "")) for tm in text_matches)
 
 
 def should_skip_result(repo_name: str, file_path: str, html_url: str) -> bool:
