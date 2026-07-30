@@ -280,6 +280,12 @@
                 xmlUrl="https://hnrss.org/newcomments?q=idalib"
                 />
 
+            <outline type="rss"
+                text="hacker news ida pro references" title="hacker news ida pro references"
+                htmlUrl="https://news.ycombinator.com/"
+                xmlUrl="https://hnrss.org/newcomments?q=ida+pro"
+                />
+
             <!--
             <outline type="rss"
                 text="" title=""
