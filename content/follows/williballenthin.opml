@@ -274,6 +274,12 @@
                 xmlUrl="https://muspy.com/feed?id=x9oinvx5ilhdudhvfkippruh8je95i"
                 />
 
+            <outline type="rss"
+                text="hacker news idalib references" title="hacker news idalib references"
+                htmlUrl="https://news.ycombinator.com/"
+                xmlUrl="https://hnrss.org/newcomments?q=idalib"
+                />
+
             <!--
             <outline type="rss"
                 text="" title=""
