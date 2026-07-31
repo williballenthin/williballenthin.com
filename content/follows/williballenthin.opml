@@ -186,12 +186,6 @@
                 />
 
             <outline type="rss"
-                text="r/reverseengineering" title="r/reverseengineering"
-                htmlUrl="https://www.reddit.com/r/reverseengineering"
-                xmlUrl="https://www.reddit.com/r/reverseengineering/new/.rss?sort=new"
-                />
-
-            <outline type="rss"
                 text="r/LocalLLaMA" title="r/LocalLLaMA"
                 htmlUrl="https://www.reddit.com/r/LocalLLaMA"
                 xmlUrl="https://www.reddit.com/r/LocalLLaMA/top/.rss?t=week"
