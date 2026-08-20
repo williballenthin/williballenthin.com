@@ -62,6 +62,7 @@
             <outline type="rss" text="The Mad Ned Memo" title="The Mad Ned Memo" xmlUrl="https://madned.substack.com/feed/" htmlUrl="https://madned.substack.com"/>
             <outline type="rss" text="Valtetu" title="Valtetu" xmlUrl="https://valtetu.framer.website/blog/rss.xml" htmlUrl="https://valtetu.framer.website/blog"/>
             <outline type="rss" text="Rock or Ager" title="Rock or Ager" xmlUrl="https://rockorager.dev/feed.xml" htmlUrl="https://rockorager.dev/log/"/>
+            <outline type="rss" text="Quarkslab's blog" title="Quarkslab's blog" xmlUrl="https://blog.quarkslab.com/feeds/all.atom.xml" htmlUrl="https://blog.quarkslab.com/"/>
         </outline>
     </body>
 </opml>
