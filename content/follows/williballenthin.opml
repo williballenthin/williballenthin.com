@@ -280,7 +280,11 @@
                 xmlUrl="https://hnrss.org/newcomments?q=ida+pro"
                 />
 
-            <outline type="rss" text="Quarkslab's blog" title="Quarkslab's blog" xmlUrl="https://blog.quarkslab.com/feeds/all.atom.xml" htmlUrl="https://blog.quarkslab.com/"/>
+            <outline type="rss"
+                text="Quarkslab's blog" title="Quarkslab's blog"
+                htmlUrl="https://blog.quarkslab.com/"
+                xmlUrl="https://blog.quarkslab.com/feeds/all.atom.xml"
+                />
 
             <!--
             <outline type="rss"
