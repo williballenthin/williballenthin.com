@@ -64,7 +64,9 @@ jobs:
         npx rehype-cli public -o
     - name: deploy
       run: |
-        aws s3 sync ./public s3://www.williballenthin.com --delete
+        aws s3 sync ./public s3://www.williballenthin.com --delete --exclude '*.opml'
+        # the AWS CLI doesn't know the OPML mime type
+        aws s3 sync ./public s3://www.williballenthin.com --delete --exclude '*' --include '*.opml' --content-type text/x-opml
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
