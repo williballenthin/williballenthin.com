@@ -62,16 +62,10 @@ jobs:
       run: |
         npm install
         npx rehype-cli public -o
-    - name: cleanup
-      run: |
-        mv public /tmp/
-        rm -rf * .git .github .gitignore .gitmodules
-        mv /tmp/public/* .
     - name: deploy
-      uses: peter-evans/s3-backup@v1.0.0
+      run: |
+        aws s3 sync ./public s3://www.williballenthin.com --delete
       env:
-        ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
-        SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
-        MIRROR_TARGET: www.williballenthin.com
-      with:
-        args: --overwrite --remove
+        AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: 'us-east-1'
