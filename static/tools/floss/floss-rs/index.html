@@ -52,6 +52,7 @@ pre code { background: none; border: none; padding: 0; font-size: inherit; }
   font-size: 1.25rem; font-weight: 600; margin: 48px 0 16px; border-top: 1px solid var(--c-border);
   padding-top: 24px; letter-spacing: -.02em; line-height: 32px;
 }
+.page h2.report-title { font-size: 1.6rem; font-weight: 400; letter-spacing: 0; }
 .page h3 { font-size: 1rem; font-weight: 600; margin: 24px 0 8px; }
 .page p { margin: 12px 0; }
 .muted { color: var(--c-light); font-size: .75rem; font-family: var(--font-mono); }
@@ -237,7 +238,7 @@ footer.foot { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--c
 <nav class="nav">
   <div class="nav-mark">
     <a href="#top" class="nav-brand">floss-rs</a>
-    <span class="nav-badge">research report</span>
+    <span class="nav-badge">tool and report</span>
   </div>
   <div class="nav-cta">
     <span class="nav-meta">october 2026</span>
@@ -247,7 +248,55 @@ footer.foot { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--c
 <div class="layout">
 <main class="content">
 <article class="page" id="top">
-  <h1>floss-rs: FLOSS, ported to Rust, emulating with icicle</h1>
+  <h1 id="tool">floss-rs: find the strings a Windows program hides</h1>
+  <p class="lede">floss-rs is FLOSS, the FLARE Obfuscated String Solver, ported to Rust. It emulates a program's code to find the strings it builds on the stack or decodes at run time. Drop a program below; it's analyzed in your browser, not uploaded.</p>
+  <p>Until then, the results are from an example program embedded in this page, <code>sample.exe</code> (3KB), which hides a registry key, a privilege name, a URL, and a UTF-16 path.</p>
+<div class="demo" id="demo" data-sample="#sample-exe">
+  <div class="drop" id="drop">
+    <div class="drop-text">
+      <div class="drop-title">drop a Windows program here</div>
+      <div class="drop-note">a PE file (.exe, .dll), 32- or 64-bit. floss-rs runs in this page, as WebAssembly: the file never leaves your computer.</div>
+    </div>
+    <div class="drop-controls">
+      <label class="button primary" for="demo-file">choose a file</label>
+      <input type="file" id="demo-file" hidden>
+      <button type="button" class="button" id="demo-sample">run the embedded sample</button>
+      <label class="field" for="demo-budget">time budget
+        <select id="demo-budget">
+          <option value="0">0s: the top 20</option>
+          <option value="5" selected>5s</option>
+          <option value="30">30s</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <div class="run">
+    <span class="run-file" id="demo-name">sample.exe</span>
+    <span id="demo-size">3KB</span>
+    <span class="run-state ok" id="demo-state">showing the embedded sample</span>
+  </div>
+
+  <div class="facts" id="demo-facts"></div>
+
+  <div class="scroll"><table class="found">
+    <thead><tr><th>string</th><th>found as</th><th>by routine</th></tr></thead>
+    <tbody id="demo-strings"></tbody>
+  </table></div>
+
+  <details class="panel">
+    <summary class="panel-body-head" id="demo-static-head">static strings</summary>
+    <div class="panel-body"><pre class="statics" id="demo-static"></pre></div>
+  </details>
+  <details class="panel">
+    <summary class="panel-body-head">log</summary>
+    <div class="panel-body"><pre class="log" id="demo-log"></pre></div>
+  </details>
+  <div class="drop-controls"><button type="button" class="button" id="demo-copy">copy results as JSON</button></div>
+</div>
+  <p>How it was built, and how it compares with Python FLOSS on real malware: <a href="#report">the report</a>, below.</p>
+
+  <h2 id="report" class="report-title">the report: FLOSS, ported to Rust, emulating with icicle</h2>
   <div class="badges">
     <span class="badge status-pass">verdict: it works</span>
     <span class="badge status-pass">floss tests 43/43</span>
@@ -255,7 +304,7 @@ footer.foot { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--c
     <span class="badge">MIT/Apache-2.0 stack</span>
     <span class="badge">x86 · x64 · PE · shellcode</span>
   </div>
-  <p class="lede">Can FLOSS, the FLARE Obfuscated String Solver, run on a fast, permissively licensed emulator instead of vivisect's pure-Python one? Yes. This page shows what was built, how it works, how it compares with Python FLOSS on real malware, and where icicle falls short.</p>
+  <p class="lede">Can FLOSS, the FLARE Obfuscated String Solver, run on a fast, permissively licensed emulator instead of vivisect's pure-Python one? Yes. This report shows what was built, how it works, how it compares with Python FLOSS on real malware, and where icicle falls short.</p>
 
   <table class="kv">
     <tr><th>what</th><td>a Rust port of FLOSS's stack, tight, and decoded string extraction</td></tr>
@@ -682,52 +731,8 @@ footer.foot { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--c
     <li><strong>a keep-going mode</strong>: keep emulating candidates until the user presses enter. On the two largest files, the default covers only 4–15% of the candidates.</li>
   </ul>
 
-  <h2 id="browser">in your browser</h2>
-  <p>floss-rs also compiles to WebAssembly, so it runs in a web page. Drop a program below and floss-rs analyzes it in your browser; the file isn't uploaded. This page embeds an example program, <code>sample.exe</code> (3KB, written for this page), which hides a registry key, a privilege name, a URL, and a UTF-16 path. The results below are from that sample until you drop or choose a file of your own. floss-rs is part of this page (6MB, compressed to 1.9MB), and starts when you run it.</p>
-<div class="demo" id="demo" data-sample="#sample-exe">
-  <div class="drop" id="drop">
-    <div class="drop-text">
-      <div class="drop-title">drop a Windows program here</div>
-      <div class="drop-note">a PE file (.exe, .dll), 32- or 64-bit. floss-rs runs in this page, as WebAssembly: the file never leaves your computer.</div>
-    </div>
-    <div class="drop-controls">
-      <label class="button primary" for="demo-file">choose a file</label>
-      <input type="file" id="demo-file" hidden>
-      <button type="button" class="button" id="demo-sample">run the embedded sample</button>
-      <label class="field" for="demo-budget">time budget
-        <select id="demo-budget">
-          <option value="0">0s: the top 20</option>
-          <option value="5" selected>5s</option>
-          <option value="30">30s</option>
-        </select>
-      </label>
-    </div>
-  </div>
-
-  <div class="run">
-    <span class="run-file" id="demo-name">sample.exe</span>
-    <span id="demo-size">3KB</span>
-    <span class="run-state ok" id="demo-state">showing the embedded sample</span>
-  </div>
-
-  <div class="facts" id="demo-facts"></div>
-
-  <div class="scroll"><table class="found">
-    <thead><tr><th>string</th><th>found as</th><th>by routine</th></tr></thead>
-    <tbody id="demo-strings"></tbody>
-  </table></div>
-
-  <details class="panel">
-    <summary class="panel-body-head" id="demo-static-head">static strings</summary>
-    <div class="panel-body"><pre class="statics" id="demo-static"></pre></div>
-  </details>
-  <details class="panel">
-    <summary class="panel-body-head">log</summary>
-    <div class="panel-body"><pre class="log" id="demo-log"></pre></div>
-  </details>
-  <div class="drop-controls"><button type="button" class="button" id="demo-copy">copy results as JSON</button></div>
-</div>
-  <p>The browser build is the same code as the command line. On 10 capa test files it gives identical results, at about half the speed of the native build on one thread.</p>
+  <h2 id="browser">the browser build</h2>
+  <p>The browser build is the same code as the command line, compiled to WebAssembly and embedded in this page (6MB, compressed to 1.9MB); it starts when you run it. On 10 capa test files it gives identical results, at about half the speed of the native build on one thread.</p>
   <ul class="list">
     <li><strong>no JIT.</strong> icicle's VM always creates a JIT, which writes executable machine code, and a browser doesn't allow that. floss-rs never enables the JIT, so the browser build swaps in a stub with the same interface, through a Cargo patch, without changing icicle.</li>
     <li><strong>WASI, for a clock.</strong> icicle reads the clock, which the standard library supports in WebAssembly only through WASI. The module imports six WASI functions, such as the clock and randomness, and 70 lines of JavaScript provide them.</li>
@@ -744,6 +749,8 @@ footer.foot { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--c
 <aside class="toc">
   <span class="toc-heading">sections</span>
   <ul>
+    <li><a href="#tool"><span class="toc-label">try it</span><span class="toc-meta">wasm</span></a></li>
+    <li><a href="#report"><span class="toc-label">the report</span></a></li>
     <li><a href="#question"><span class="toc-label">the question</span></a></li>
     <li><a href="#verdict"><span class="toc-label">the verdict</span></a></li>
     <li><a href="#architecture"><span class="toc-label">architecture</span></a></li>
@@ -754,7 +761,7 @@ footer.foot { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--c
     <li><a href="#ranking"><span class="toc-label">ranking candidates</span><span class="toc-meta">39→52%</span></a></li>
     <li><a href="#icicle"><span class="toc-label">icicle</span><span class="toc-meta">99.94%</span></a></li>
     <li><a href="#limits"><span class="toc-label">not done yet</span></a></li>
-    <li><a href="#browser"><span class="toc-label">in your browser</span><span class="toc-meta">wasm</span></a></li>
+    <li><a href="#browser"><span class="toc-label">the browser build</span></a></li>
   </ul>
 </aside>
 </div>
